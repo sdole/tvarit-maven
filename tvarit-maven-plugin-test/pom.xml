@@ -67,7 +67,11 @@
                             <goal>hello</goal>
                         </goals>
                         <configuration>
-                            <stack>any</stack>
+                            <roleArn>arn:aws:iam::085224677438:role/automaton</roleArn>
+                            <instanceProfileArn>arn:aws:iam::085224677438:instance-profile/automaton</instanceProfileArn>
+                            <stack>asdf</stack>
+                            <accessKey>${accessKey}</accessKey>
+                            <secretKey>${secretKey}</secretKey>
                         </configuration>
                     </execution>
                 </executions>
