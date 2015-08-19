@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="tvarit-maven-plugin-test:war">
+    <output-path>$PROJECT_DIR$/tvarit-maven-plugin-test/target</output-path>
+    <root id="archive" name="tvarit-maven-plugin-test-1.0.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="tvarit-maven-plugin-test:war exploded" />
+    </root>
+  </artifact>
+</component>

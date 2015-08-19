@@ -4,7 +4,7 @@
     <groupId>tvarit</groupId>
     <artifactId>tvarit-maven-plugin</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>maven-plugin</packaging>
+    <packaging>pom</packaging>
     <name>tvarit-maven-plugin</name>
     <url>http://maven.apache.org</url>
     <properties>
