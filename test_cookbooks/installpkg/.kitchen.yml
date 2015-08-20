@@ -1,0 +1,17 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: hashicorp/precise32
+
+suites:
+  - name: default
+    run_list:
+
+      - recipe[installpkg::default]
+
+    attributes:
