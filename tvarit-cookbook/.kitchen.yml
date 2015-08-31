@@ -6,11 +6,12 @@ provisioner:
   name: chef_solo
 
 platforms:
-  - name:  ubuntu/trusty64
+  - name: ubuntu-12.04
 
 suites:
   - name: default
     run_list:
-      - recipe[java]
+
       - recipe[tvarit-cookbook::default]
+
     attributes:
