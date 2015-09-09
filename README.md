@@ -10,3 +10,4 @@ Tvarit is an dev ops automation project for Wildfly JEE, Maven and AWS platforms
 ##Long term goals
 1. Create fenced environments for test and production based on declared dependencies in pom.xml or another mechanism of declaring dependencies. (e.g. if App A depends on App B's RESTful services, then, Tvarit should be able to deploy both App A and App B in a fenced network - such as VPC).
 
+

@@ -12,3 +12,5 @@ bin/*
 
 *.lock
 */target
+*/*.iml
+.idea
