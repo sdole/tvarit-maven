@@ -17,6 +17,7 @@ Tools required:
 - [Chef DK](https://downloads.chef.io/chef-dk/)
 - [Vagrant](https://www.vagrantup.com/downloads.html)
 - [Kitchen](http://kitchen.ci/)
+- [Berkshelf](http://berkshelf.com/)
 - [Oracle virtual box](https://www.virtualbox.org/wiki/Downloads)
 - Maven and other java tools, IDEs etc
 
@@ -32,3 +33,8 @@ Assuming windows for developer workstation:
     Java HotSpot(TM) 64-Bit Server VM (build 25.40-b25, mixed mode)
     vagrant@default-ubuntu-trusty64:~$
 ```
+
+###Reading list
+* http://docs.aws.amazon.com/opsworks/latest/userguide/cookbooks-101.html
+* http://docs.aws.amazon.com/opsworks/latest/userguide/workingcookbook.html
+
