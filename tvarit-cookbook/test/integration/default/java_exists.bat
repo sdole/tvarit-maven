@@ -4,3 +4,4 @@
   run which java
   [ "$status" -eq 0 ]
 }
+
