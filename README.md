@@ -21,6 +21,7 @@ Tools required:
 - [Oracle virtual box](https://www.virtualbox.org/wiki/Downloads)
 - Maven and other java tools, IDEs etc
 
+###To execute the basic run
 Assuming windows for developer workstation:
 - navigate to the tvarit-cookbook folder within this project in PowerShell
 - run command "kitchen converge". Depending on your internet speed, this could take upto 10 minutes or more.
