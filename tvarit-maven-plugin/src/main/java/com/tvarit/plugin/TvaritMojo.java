@@ -31,10 +31,10 @@ public class TvaritMojo extends AbstractMojo {
     private String instanceProfileArn;
     //    @Inject
     //TODO inject this instead of direct instantiation
-    private StackCreator stackCreator=new StackCreator();
+    private StackCreator stackCreator = new StackCreator();
 
-//    @Inject
-    private LayerCreator layerCreator=new LayerCreator();
+    //    @Inject
+    private LayerCreator layerCreator = new LayerCreator();
     private VpcCreator vpcCreator = new VpcCreator();
 
     @Override
@@ -56,8 +56,9 @@ public class TvaritMojo extends AbstractMojo {
             layerName = project.getGroupId() + "-" + project.getArtifactId() + "-" + "layer";
         }
 
-        final String vpcId = vpcCreator.create(amazonEc2Client,vpcName);
-        final String stack = stackCreator.create(awsOpsWorksClient, stackName, this, roleArn, layerName, instanceProfileArn,vpcId);
+        VpcIds vpcIds = vpcCreator.create(amazonEc2Client, vpcName);
+        final String vpcId = vpcIds.getVpcId();
+        final String stack = stackCreator.create(awsOpsWorksClient, stackName, this, roleArn, layerName, instanceProfileArn, vpcId, vpcIds.getSubnetId());
         final String layerId = layerCreator.create(awsOpsWorksClient, layerName, this, stack);
 
         getLog().debug("Done!");

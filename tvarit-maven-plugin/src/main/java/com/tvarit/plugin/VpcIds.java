@@ -7,20 +7,19 @@ public class VpcIds {
     private String vpcId;
     private String subnetId;
 
+    public VpcIds(String vpcId, String subnetId) {
+
+        this.vpcId = vpcId;
+        this.subnetId = subnetId;
+    }
+
 
     public String getSubnetId() {
         return subnetId;
-    }
-
-    public void setSubnetId(String subnetId) {
-        this.subnetId = subnetId;
     }
 
     public String getVpcId() {
         return vpcId;
     }
 
-    public void setVpcId(String vpcId) {
-        this.vpcId = vpcId;
-    }
 }

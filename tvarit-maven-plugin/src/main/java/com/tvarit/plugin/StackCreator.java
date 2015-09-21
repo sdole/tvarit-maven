@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class StackCreator  {
-    public String create(AWSOpsWorksClient awsOpsWorksClient, String stackName, TvaritMojo tvaritMojo, String roleArn, String layerName, String instanceProfileArn, String vpcId) {
+    public String create(AWSOpsWorksClient awsOpsWorksClient, String stackName, TvaritMojo tvaritMojo, String roleArn, String layerName, String instanceProfileArn, String vpcId,String subnetId) {
         DescribeStacksRequest describeStacksRequest = new DescribeStacksRequest();
         DescribeStacksResult describeStacksResult = awsOpsWorksClient.describeStacks(describeStacksRequest);
         List<String> stacksFound = describeStacksResult.getStacks().stream().map(Stack::getName).collect(Collectors.toList());
@@ -18,7 +18,7 @@ public class StackCreator  {
             final Source customCookbooksSource = new Source();
             customCookbooksSource.setUrl("https://github.com/sdole/tvarit-2");
             customCookbooksSource.setType(SourceType.Git);
-            createStackRequest.withName(stackName).withServiceRoleArn(roleArn).withRegion(Regions.US_EAST_1.getName()).withDefaultInstanceProfileArn(instanceProfileArn).withCustomCookbooksSource(customCookbooksSource).withUseCustomCookbooks(true).withVpcId(vpcId).withDefaultSubnetId();
+            createStackRequest.withName(stackName).withServiceRoleArn(roleArn).withRegion(Regions.US_EAST_1.getName()).withDefaultInstanceProfileArn(instanceProfileArn).withCustomCookbooksSource(customCookbooksSource).withUseCustomCookbooks(true).withVpcId(vpcId).withDefaultSubnetId(subnetId);
             CreateStackResult createStackResult = awsOpsWorksClient.createStack(createStackRequest);
             tvaritMojo.getLog().debug("Created stack! "  + createStackResult.getStackId());
             return createStackResult.getStackId();

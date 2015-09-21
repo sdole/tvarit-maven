@@ -20,16 +20,22 @@ public class VpcCreator {
             createVpcRequest.withCidrBlock("10.0.0.0/16");
             final CreateVpcResult createVpcResult = amazonEc2Client.createVpc(createVpcRequest);
             vpcId = createVpcResult.getVpc().getVpcId();
-            final CreateTagsRequest createTagsRequest = new CreateTagsRequest();
+             CreateTagsRequest createTagsRequest = new CreateTagsRequest();
             createTagsRequest.withResources(vpcId).withTags(new Tag("Name", vpcName));
             amazonEc2Client.createTags(createTagsRequest);
+            createTagsRequest = new CreateTagsRequest();
+            createTagsRequest.withResources(vpcId).withTags(new Tag("Name", vpcName+"-subnet"));
+            amazonEc2Client.createTags(createTagsRequest);
             CreateSubnetRequest createSubnetRequest = new CreateSubnetRequest();
-            createSubnetRequest.withVpcId(vpcId);
             final CreateSubnetResult createSubnetResult = amazonEc2Client.createSubnet(createSubnetRequest);
             subnetId = createSubnetResult.getSubnet().getSubnetId();
         } else {
-            vpcId = describeVpcsResult.getVpcs().get(0).getVpcId();
-//            subnetId = describeVpcsResult.getVpcs().get(0).get
+            Vpc vpc = describeVpcsResult.getVpcs().get(0);
+            vpcId = vpc.getVpcId();
+            DescribeSubnetsRequest describeSubnetsRequest = new DescribeSubnetsRequest();
+            describeSubnetsRequest.withFilters(new Filter("tag:Name", Collections.singletonList(vpcName+"-subnet")));
+            DescribeSubnetsResult describeSubnetsResult = amazonEc2Client.describeSubnets(describeSubnetsRequest);
+            subnetId = describeSubnetsResult.getSubnets().get(0).getSubnetId();
         }
         return new VpcIds(vpcId, subnetId);
     }
