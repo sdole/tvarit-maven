@@ -14,5 +14,11 @@ bin/*
 */target
 */*.iml
 .idea
-.idea/*
+.idea/
+
+out
+
+
+## Sachin's local folder to be ignored.
+test_cookbooks
 
