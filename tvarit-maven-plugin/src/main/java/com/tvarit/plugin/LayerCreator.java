@@ -11,7 +11,6 @@ public class LayerCreator {
         DescribeLayersRequest describeLayersRequest = new DescribeLayersRequest();
         describeLayersRequest.withStackId(stackId);
         DescribeLayersResult describeLayersResult = awsOpsWorksClient.describeLayers(describeLayersRequest);
-        Layer toReturn;
         List<String> layersFound = describeLayersResult.getLayers().stream().map(Layer::getName).collect(Collectors.toList());
         if (layersFound.isEmpty() || !layersFound.contains(layerName)) {
             tvaritMojo.getLog().debug("No layers found! Will create!");

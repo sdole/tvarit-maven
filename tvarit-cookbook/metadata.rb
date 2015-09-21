@@ -8,4 +8,3 @@ long_description 'Installs/Configures tvarit-cookbook'
 version          '0.1.0'
 
 depends 'java', '~> 1.35.0'
-depends 'wildfly', '~> 0.1.19'

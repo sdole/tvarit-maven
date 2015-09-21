@@ -10,8 +10,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import javax.inject.Inject;
-
 @Mojo(name = "hello", defaultPhase = LifecyclePhase.COMPILE)
 public class TvaritMojo extends AbstractMojo {
 
@@ -26,14 +24,13 @@ public class TvaritMojo extends AbstractMojo {
     private String accessKey;
     @Parameter(required = true, alias = "secretKey", readonly = true)
     private String secretKey;
-
     @Parameter(required = true, alias = "instance_profile_arn")
     private String instanceProfileArn;
 
-    @Inject
-    private StackCreator stackCreator;
-    @Inject
-    private LayerCreator layerCreator;
+//    @Inject
+    private StackCreator stackCreator=new StackCreator();
+//    @Inject
+    private LayerCreator layerCreator=new LayerCreator();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
