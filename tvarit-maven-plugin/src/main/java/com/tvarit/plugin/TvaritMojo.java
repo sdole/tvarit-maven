@@ -28,6 +28,7 @@ public class TvaritMojo extends AbstractMojo {
     private String instanceProfileArn;
 
 //    @Inject
+    //TODO inject this instead of direct instantiation
     private StackCreator stackCreator=new StackCreator();
 //    @Inject
     private LayerCreator layerCreator=new LayerCreator();
