@@ -67,7 +67,9 @@
                             <goal>hello</goal>
                         </goals>
                         <configuration>
+                            <!-- Amazon resource number of the role with which this stack will be run -->
                             <roleArn>arn:aws:iam::085224677438:role/automaton</roleArn>
+                            <!-- Amazon resource number of instance profile with which to run the instance -->
                             <instanceProfileArn>arn:aws:iam::085224677438:instance-profile/automaton</instanceProfileArn>
                             <accessKey>${accessKey}</accessKey>
                             <secretKey>${secretKey}</secretKey>

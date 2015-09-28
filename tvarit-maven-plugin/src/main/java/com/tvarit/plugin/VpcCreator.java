@@ -27,6 +27,7 @@ public class VpcCreator {
             createTagsRequest.withResources(vpcId).withTags(new Tag("Name", vpcName+"-subnet"));
             amazonEc2Client.createTags(createTagsRequest);
             CreateSubnetRequest createSubnetRequest = new CreateSubnetRequest();
+            createSubnetRequest.withVpcId(vpcId).withCidrBlock("10.0.0.0/16");
             final CreateSubnetResult createSubnetResult = amazonEc2Client.createSubnet(createSubnetRequest);
             subnetId = createSubnetResult.getSubnet().getSubnetId();
         } else {
