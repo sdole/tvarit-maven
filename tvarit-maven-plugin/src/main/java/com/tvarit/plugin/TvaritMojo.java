@@ -32,9 +32,8 @@ public class TvaritMojo extends AbstractMojo {
     @Parameter(required = true, alias = "instance_profile_arn")
     private String instanceProfileArn;
 
-
-
     private InfrastructureCreator infrastructureCreator = new InfrastructureCreator();
+    private InstanceCreator instanceCreator = new InstanceCreator();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -59,6 +58,8 @@ public class TvaritMojo extends AbstractMojo {
         }
 
         infrastructureCreator.create(this,awsOpsWorksClient,amazonEc2Client,vpcName,subnetName,stackName,layerName,roleArn,instanceProfileArn);
+
+        instanceCreator.create();
 
         getLog().debug("Done!");
     }
