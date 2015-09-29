@@ -14,6 +14,8 @@ import org.apache.maven.project.MavenProject;
 @Mojo(name = "hello", defaultPhase = LifecyclePhase.COMPILE)
 public class TvaritMojo extends AbstractMojo {
 
+    @Parameter(required = false, alias = "subnet")
+    private String subnetName;
     @Parameter(required = false, alias = "vpc")
     private String vpcName;
     @Parameter(required = false, alias = "stack")
@@ -29,13 +31,10 @@ public class TvaritMojo extends AbstractMojo {
 
     @Parameter(required = true, alias = "instance_profile_arn")
     private String instanceProfileArn;
-    //    @Inject
-    //TODO inject this instead of direct instantiation
-    private StackCreator stackCreator = new StackCreator();
 
-    //    @Inject
-    private LayerCreator layerCreator = new LayerCreator();
-    private VpcCreator vpcCreator = new VpcCreator();
+
+
+    private InfrastructureCreator infrastructureCreator = new InfrastructureCreator();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -44,6 +43,9 @@ public class TvaritMojo extends AbstractMojo {
         AWSOpsWorksClient awsOpsWorksClient = new AWSOpsWorksClient(awsCredentials);
         final AmazonEC2Client amazonEc2Client = new AmazonEC2Client(awsCredentials);
         final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
+        if (subnetName == null) {
+            subnetName = project.getGroupId() + "-" + project.getArtifactId() + "-" + "subnet";
+        }
         if (vpcName == null) {
             vpcName = project.getGroupId() + "-" + project.getArtifactId() + "-" + "vpc";
         }
@@ -56,10 +58,7 @@ public class TvaritMojo extends AbstractMojo {
             layerName = project.getGroupId() + "-" + project.getArtifactId() + "-" + "layer";
         }
 
-        VpcIds vpcIds = vpcCreator.create(amazonEc2Client, vpcName);
-        final String vpcId = vpcIds.getVpcId();
-        final String stack = stackCreator.create(awsOpsWorksClient, stackName, this, roleArn, layerName, instanceProfileArn, vpcId, vpcIds.getSubnetId());
-        final String layerId = layerCreator.create(awsOpsWorksClient, layerName, this, stack);
+        infrastructureCreator.create(this,awsOpsWorksClient,amazonEc2Client,vpcName,subnetName,stackName,layerName,roleArn,instanceProfileArn);
 
         getLog().debug("Done!");
     }

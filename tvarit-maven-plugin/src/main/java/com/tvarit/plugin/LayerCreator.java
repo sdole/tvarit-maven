@@ -12,13 +12,14 @@ public class LayerCreator {
         describeLayersRequest.withStackId(stackId);
         DescribeLayersResult describeLayersResult = awsOpsWorksClient.describeLayers(describeLayersRequest);
         List<String> layersFound = describeLayersResult.getLayers().stream().map(Layer::getName).collect(Collectors.toList());
-        if (layersFound.isEmpty() || !layersFound.contains(layerName)) {
+        final String shortenedLayerName = layerName.substring(0, 31);
+        if (layersFound.isEmpty() || !layersFound.contains(shortenedLayerName)) {
             tvaritMojo.getLog().debug("No layers found! Will create!");
             CreateLayerRequest createLayerRequest = new CreateLayerRequest();
             final Recipes customRecipes = new Recipes();
             customRecipes.withSetup("tvarit-cookbook::default");
             createLayerRequest.withCustomRecipes(customRecipes);
-            createLayerRequest.withName(layerName.substring(0,31)).withStackId(stackId).withType(LayerType.Custom).withAutoAssignElasticIps(true).withShortname(layerName.substring(0,16));
+            createLayerRequest.withName(shortenedLayerName).withStackId(stackId).withType(LayerType.Custom).withAutoAssignElasticIps(true).withShortname(layerName.substring(0,16));
             CreateLayerResult createLayerResult = awsOpsWorksClient.createLayer(createLayerRequest);
             tvaritMojo.getLog().debug("Created layer! " + createLayerResult.getLayerId());
             return createLayerResult.getLayerId();
