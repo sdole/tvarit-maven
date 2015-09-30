@@ -11,7 +11,8 @@ public class LayerCreator {
         DescribeLayersRequest describeLayersRequest = new DescribeLayersRequest();
         describeLayersRequest.withStackId(stackId);
         DescribeLayersResult describeLayersResult = awsOpsWorksClient.describeLayers(describeLayersRequest);
-        List<String> layersFound = describeLayersResult.getLayers().stream().map(Layer::getName).collect(Collectors.toList());
+        final List<Layer> layers = describeLayersResult.getLayers();
+        List<String> layersFound = layers.stream().map(Layer::getName).collect(Collectors.toList());
         final String shortenedLayerName = layerName.substring(0, 31);
         if (layersFound.isEmpty() || !layersFound.contains(shortenedLayerName)) {
             tvaritMojo.getLog().debug("No layers found! Will create!");
@@ -25,7 +26,7 @@ public class LayerCreator {
             return createLayerResult.getLayerId();
         } else {
             tvaritMojo.getLog().debug("Found layer: " + layersFound.toString());
-            return layersFound.get(0);
+            return layers.get(0).getLayerId();
         }
     }
 }

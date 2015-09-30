@@ -57,9 +57,9 @@ public class TvaritMojo extends AbstractMojo {
             layerName = project.getGroupId() + "-" + project.getArtifactId() + "-" + "layer";
         }
 
-        infrastructureCreator.create(this,awsOpsWorksClient,amazonEc2Client,vpcName,subnetName,stackName,layerName,roleArn,instanceProfileArn);
+        final InfrastructureIds infrastructureIds = infrastructureCreator.create(this, awsOpsWorksClient, amazonEc2Client, vpcName, subnetName, stackName, layerName, roleArn, instanceProfileArn);
 
-        instanceCreator.create();
+        instanceCreator.create(this,awsOpsWorksClient,infrastructureIds);
 
         getLog().debug("Done!");
     }
