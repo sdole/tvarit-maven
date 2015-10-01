@@ -18,6 +18,10 @@ public class StackCreator  {
             final Source customCookbooksSource = new Source();
             customCookbooksSource.setUrl("https://github.com/sdole/tvarit-2");
             customCookbooksSource.setType(SourceType.Git);
+            final ChefConfiguration chefConfiguration = new ChefConfiguration();
+            chefConfiguration.withManageBerkshelf(true);
+            final StackConfigurationManager stackConfigurationManager = new StackConfigurationManager();
+            stackConfigurationManager.withVersion("11.4");
             createStackRequest.
                     withName(stackName).
                     withServiceRoleArn(roleArn).
@@ -26,7 +30,9 @@ public class StackCreator  {
                     withCustomCookbooksSource(customCookbooksSource).
                     withUseCustomCookbooks(true).
                     withVpcId(vpcId).
-                    withDefaultSubnetId(subnetId);
+                    withDefaultSubnetId(subnetId).
+                    withChefConfiguration(chefConfiguration).
+                    withConfigurationManager(stackConfigurationManager);
             CreateStackResult createStackResult = awsOpsWorksClient.createStack(createStackRequest);
             tvaritMojo.getLog().debug("Created stack! "  + createStackResult.getStackId());
             return createStackResult.getStackId();
