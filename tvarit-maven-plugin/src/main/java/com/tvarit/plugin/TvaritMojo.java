@@ -1,7 +1,6 @@
 package com.tvarit.plugin;
 
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.opsworks.AWSOpsWorksClient;
 import org.apache.maven.plugin.AbstractMojo;
@@ -25,10 +24,12 @@ public class TvaritMojo extends AbstractMojo {
     private String layerName;
     @Parameter(required = true, alias = "role_arn")
     private String roleArn;
-    @Parameter(required = true, alias = "accessKey")
+    @Parameter(required = true, alias = "accessKey",readonly = true)
     private String accessKey;
     @Parameter(required = true, alias = "secretKey", readonly = true)
     private String secretKey;
+    @Parameter(required = true,alias ="baseName")
+    private String baseName;
 
     @Parameter(required = true, alias = "instance_profile_arn")
     private String instanceProfileArn;
@@ -43,26 +44,24 @@ public class TvaritMojo extends AbstractMojo {
         AWSOpsWorksClient awsOpsWorksClient = new AWSOpsWorksClient(awsCredentials);
         final AmazonEC2Client amazonEc2Client = new AmazonEC2Client(awsCredentials);
         final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
-        if (subnetName == null) {
-            subnetName = project.getGroupId() + "-" + project.getArtifactId() + "-" + "subnet";
-        }
         if (vpcName == null) {
-            vpcName = project.getGroupId() + "-" + project.getArtifactId() + "-" + "vpc";
+            vpcName = baseName + "-" + "vpc";
+        }
+        if (subnetName == null) {
+            subnetName = baseName + "-" + "subnet";
         }
 
         if (stackName == null) {
-            stackName = project.getGroupId() + "-" + project.getArtifactId() + "-" + "stack";
+            stackName = baseName + "-" + "stack";
         }
 
         if (layerName == null) {
-            layerName = project.getGroupId() + "-" + project.getArtifactId() + "-" + "layer";
+            layerName = baseName + "-" + "layer";
         }
 
         final InfrastructureIds infrastructureIds = infrastructureCreator.create(this, awsOpsWorksClient, amazonEc2Client, vpcName, subnetName, stackName, layerName, roleArn, instanceProfileArn);
 
         final String instanceId = instanceCreator.create(this, awsOpsWorksClient, infrastructureIds);
-        AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
-
         InstanceStarter instanceStarter = new InstanceStarter();
         instanceStarter.start(awsOpsWorksClient, instanceId);
         getLog().debug("Done!");
