@@ -2,6 +2,7 @@ package com.tvarit.plugin;
 
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.opsworks.AWSOpsWorksClient;
+import com.amazonaws.services.opsworks.model.AutoScalingType;
 import com.amazonaws.services.opsworks.model.CreateInstanceRequest;
 import com.amazonaws.services.opsworks.model.CreateInstanceResult;
 import com.amazonaws.services.opsworks.model.RootDeviceType;
@@ -17,7 +18,8 @@ public class InstanceCreator {
                 withLayerIds(infrastructureIds.getLayerId()).
                 withInstanceType(InstanceType.T2Micro.toString()).
                 withRootDeviceType(RootDeviceType.Ebs).
-                withSubnetId(infrastructureIds.getSubnetId());
+                withSubnetId(infrastructureIds.getSubnetId()).
+                withAutoScalingType(AutoScalingType.Load);
         final CreateInstanceResult createInstanceResult = awsOpsWorksClient.createInstance(createInstanceRequest);
         tvaritMojo.getLog().debug("started instance with id: " + createInstanceResult.getInstanceId());
         return createInstanceResult.getInstanceId();

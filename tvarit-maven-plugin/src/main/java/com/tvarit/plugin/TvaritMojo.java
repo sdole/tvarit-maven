@@ -1,6 +1,7 @@
 package com.tvarit.plugin;
 
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.opsworks.AWSOpsWorksClient;
 import org.apache.maven.plugin.AbstractMojo;
@@ -60,10 +61,10 @@ public class TvaritMojo extends AbstractMojo {
         final InfrastructureIds infrastructureIds = infrastructureCreator.create(this, awsOpsWorksClient, amazonEc2Client, vpcName, subnetName, stackName, layerName, roleArn, instanceProfileArn);
 
         final String instanceId = instanceCreator.create(this, awsOpsWorksClient, infrastructureIds);
+        AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
 
         InstanceStarter instanceStarter = new InstanceStarter();
         instanceStarter.start(awsOpsWorksClient, instanceId);
-
         getLog().debug("Done!");
     }
 

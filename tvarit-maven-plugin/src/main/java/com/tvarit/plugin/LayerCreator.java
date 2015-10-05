@@ -19,8 +19,12 @@ public class LayerCreator {
             CreateLayerRequest createLayerRequest = new CreateLayerRequest();
             final Recipes customRecipes = new Recipes();
             customRecipes.withSetup("tvarit-cookbook::default");
-            createLayerRequest.withCustomRecipes(customRecipes);
-            createLayerRequest.withName(shortenedLayerName).withStackId(stackId).withType(LayerType.Custom).withAutoAssignElasticIps(true).withShortname(layerName.substring(0,16));
+            createLayerRequest.withCustomRecipes(customRecipes).
+                    withName(shortenedLayerName).
+                    withStackId(stackId).
+                    withType(LayerType.Custom).
+                    withAutoAssignElasticIps(true).
+                    withShortname(layerName.substring(0,16));
             CreateLayerResult createLayerResult = awsOpsWorksClient.createLayer(createLayerRequest);
             tvaritMojo.getLog().debug("Created layer! " + createLayerResult.getLayerId());
             return createLayerResult.getLayerId();
