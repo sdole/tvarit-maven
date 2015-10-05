@@ -31,7 +31,11 @@ public class StackCreator  {
                     withUseCustomCookbooks(true).
                     withVpcId(vpcId).
                     withConfigurationManager(configurationManager).
-                    withDefaultSubnetId(subnetId).withChefConfiguration(chefConfiguration);
+                    withDefaultSubnetId(subnetId).
+                    withChefConfiguration(chefConfiguration).
+                    withDefaultSshKeyName("trelair").
+                    withDefaultRootDeviceType(RootDeviceType.Ebs)
+            ;
             CreateStackResult createStackResult = awsOpsWorksClient.createStack(createStackRequest);
             tvaritMojo.getLog().debug("Created stack! "  + createStackResult.getStackId());
             return createStackResult.getStackId();
