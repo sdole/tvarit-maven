@@ -68,14 +68,12 @@
                         </goals>
                         <configuration>
                             <!-- Amazon resource number of the role with which this stack will be run -->
-                            <roleArn>arn:aws:iam::085224677438:role/automaton</roleArn>
                             <!-- Amazon resource number of instance profile with which to run the instance -->
-                            <instanceProfileArn>arn:aws:iam::085224677438:instance-profile/automaton</instanceProfileArn>
                             <accessKey>${accessKey}</accessKey>
                             <secretKey>${secretKey}</secretKey>
                             <baseName>test</baseName>
-                            <roleArn>arn:aws:iam::085224677438:role/automaton</roleArn>
-                            <instanceProfileArn>arn:aws:iam::085224677438:instance-profile/automaton</instanceProfileArn>
+                            <roleArn>arn:aws:iam::085224677438:role/aws-opsworks-service-role</roleArn>
+                            <instanceProfileArn>arn:aws:iam::085224677438:instance-profile/aws-opsworks-ec2-role.1444248588259</instanceProfileArn>
                         </configuration>
                     </execution>
                 </executions>
