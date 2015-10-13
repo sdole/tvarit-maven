@@ -34,7 +34,12 @@ public class StackCreator  {
                     withDefaultSubnetId(subnetId).
                     withChefConfiguration(chefConfiguration).
                     withDefaultSshKeyName("trelair").
-                    withDefaultRootDeviceType(RootDeviceType.Ebs)
+                    withDefaultRootDeviceType(RootDeviceType.Ebs).
+                    withCustomJson("{\n" +
+                            "  \"opsworks_berkshelf\": { \n" +
+                            "      \"debug\" : true  \n" +
+                            "  }\n" +
+                            "}")
             ;
             CreateStackResult createStackResult = awsOpsWorksClient.createStack(createStackRequest);
             tvaritMojo.getLog().debug("Created stack! "  + createStackResult.getStackId());
