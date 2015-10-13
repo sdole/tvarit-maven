@@ -3,4 +3,6 @@ source "https://supermarket.chef.io"
 cookbook 'wildfly', '~> 0.1.19'
 cookbook 'java', '~> 1.35.0'
 
+metadata
+
 
