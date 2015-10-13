@@ -16,7 +16,7 @@ public class StackCreator  {
             tvaritMojo.getLog().debug("No stacks found! Will create!");
             CreateStackRequest createStackRequest = new CreateStackRequest();
             final Source customCookbooksSource = new Source();
-            customCookbooksSource.setUrl("https://github.com/sdole/tvarit-2");
+            customCookbooksSource.setUrl("https://github.com/sdole/tvarit");
             customCookbooksSource.setType(SourceType.Git);
             final StackConfigurationManager configurationManager = new StackConfigurationManager();
             configurationManager.withVersion("11.10").withName("Chef");
