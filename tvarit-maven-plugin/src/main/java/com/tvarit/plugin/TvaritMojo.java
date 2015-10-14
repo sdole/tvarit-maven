@@ -59,7 +59,7 @@ public class TvaritMojo extends AbstractMojo {
             layerName = baseName + "-" + "layer";
         }
 
-        final InfrastructureIds infrastructureIds = infrastructureCreator.create(this, awsOpsWorksClient, amazonEc2Client, vpcName, subnetName, stackName, layerName, roleArn, instanceProfileArn);
+        final InfrastructureIds infrastructureIds = infrastructureCreator.create(this, awsOpsWorksClient, amazonEc2Client, vpcName, subnetName, stackName, layerName, roleArn, instanceProfileArn,baseName);
 
         final String instanceId = instanceCreator.create(this, awsOpsWorksClient, infrastructureIds);
         InstanceStarter instanceStarter = new InstanceStarter();

@@ -15,9 +15,10 @@ public class InfrastructureCreator {
     private LayerCreator layerCreator = new LayerCreator();
     private VpcCreator vpcCreator = new VpcCreator();
     private SubnetCreator subnetCreator = new SubnetCreator();
+    private SecurityGroupCreator securityGroupCreator = new SecurityGroupCreator();
     private  InternetGatewayCreator igCreator = new InternetGatewayCreator();
 
-    public InfrastructureIds create(TvaritMojo tvaritMojo, AWSOpsWorksClient awsOpsWorksClient, AmazonEC2Client amazonEc2Client, String vpcName, String subnetName, String stackName, String layerName, String roleArn, String instanceProfileArn) {
+    public InfrastructureIds create(TvaritMojo tvaritMojo, AWSOpsWorksClient awsOpsWorksClient, AmazonEC2Client amazonEc2Client, String vpcName, String subnetName, String stackName, String layerName, String roleArn, String instanceProfileArn, String baseName) {
         String vpcId = vpcCreator.create(amazonEc2Client, vpcName);
         String subnetId = subnetCreator.create(amazonEc2Client, vpcId, subnetName);
         final String igId = igCreator.create(amazonEc2Client,vpcId);

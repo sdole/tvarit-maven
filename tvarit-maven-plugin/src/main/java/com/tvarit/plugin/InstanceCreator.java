@@ -23,7 +23,8 @@ public class InstanceCreator {
                 withInstanceType(InstanceType.M3Medium.toString()).
                 withRootDeviceType(RootDeviceType.Ebs).
                 withSubnetId(infrastructureIds.getSubnetId()).
-                withBlockDeviceMappings(blockDeviceMapping);
+                withBlockDeviceMappings(blockDeviceMapping)
+        ;
         final CreateInstanceResult createInstanceResult = awsOpsWorksClient.createInstance(createInstanceRequest);
         tvaritMojo.getLog().debug("started instance with id: " + createInstanceResult.getInstanceId());
         return createInstanceResult.getInstanceId();
