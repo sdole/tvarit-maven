@@ -39,3 +39,11 @@ Assuming windows for developer workstation:
 * http://docs.aws.amazon.com/opsworks/latest/userguide/cookbooks-101.html
 * http://docs.aws.amazon.com/opsworks/latest/userguide/workingcookbook.html
 
+##Main components of Tvarit
+###VPC and related AWS resources
+Tvarit deploys a wildfly server on EC2 instance and makes it available to the world. For this, it creates a VPC, security groups, subnet, internet gateway, EC2 instances, IP address and other AWS resources. 
+###Stacks and Layers
+Stacks and Layers are AWS Opsworks resources within which EC2 instances are started.
+###Chef recipes
+
+
