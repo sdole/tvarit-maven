@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LayerCreator {
-    public String create(AWSOpsWorksClient awsOpsWorksClient, String layerName, TvaritMojo tvaritMojo, String stackId) {
+    public String create(AWSOpsWorksClient awsOpsWorksClient, String layerName, TvaritMojo tvaritMojo, String stackId, String securityGroupId) {
         DescribeLayersRequest describeLayersRequest = new DescribeLayersRequest();
         describeLayersRequest.withStackId(stackId);
         DescribeLayersResult describeLayersResult = awsOpsWorksClient.describeLayers(describeLayersRequest);
@@ -23,7 +23,8 @@ public class LayerCreator {
                     withStackId(stackId).
                     withType(LayerType.Custom).
                     withAutoAssignElasticIps(true).
-                    withShortname(layerName)
+                    withShortname(layerName).
+                    withCustomSecurityGroupIds(securityGroupId)
                     ;
             CreateLayerResult createLayerResult = awsOpsWorksClient.createLayer(createLayerRequest);
             tvaritMojo.getLog().debug("Created layer! " + createLayerResult.getLayerId());

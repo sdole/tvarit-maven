@@ -22,8 +22,9 @@ public class InfrastructureCreator {
         String vpcId = vpcCreator.create(amazonEc2Client, vpcName);
         String subnetId = subnetCreator.create(amazonEc2Client, vpcId, subnetName);
         final String igId = igCreator.create(amazonEc2Client,vpcId);
+        final String securityGroupId = securityGroupCreator.create(amazonEc2Client, vpcId, baseName);
         final String stackId = stackCreator.create(awsOpsWorksClient, stackName, tvaritMojo, roleArn, layerName, instanceProfileArn, vpcId, subnetId);
-        final String layerId = layerCreator.create(awsOpsWorksClient, layerName, tvaritMojo, stackId);
+        final String layerId = layerCreator.create(awsOpsWorksClient, layerName, tvaritMojo, stackId, securityGroupId);
         return new InfrastructureIds(vpcId,subnetId,stackId,layerId);
     }
 }

@@ -4,13 +4,10 @@ import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
 import com.amazonaws.services.ec2.model.CreateSecurityGroupResult;
-import com.amazonaws.services.ec2.model.IpPermission;
 
 /**
  * Created by sachi_000 on 10/13/2015.
- * @deprecated dont really need this!
  */
-@Deprecated
 public class SecurityGroupCreator {
     public String create(AmazonEC2Client amazonEC2Client, String vpcId, String baseName) {
         final CreateSecurityGroupRequest createSecurityGroupRequest = new CreateSecurityGroupRequest();
@@ -21,18 +18,29 @@ public class SecurityGroupCreator {
                 withDescription("Tvarit securityGroup")
         ;
         final CreateSecurityGroupResult createSecurityGroupResult = amazonEC2Client.createSecurityGroup(createSecurityGroupRequest);
-        final IpPermission letHttpIn = new IpPermission();
-        letHttpIn.withIpProtocol("tcp").withFromPort(80).withToPort(80);
-        final IpPermission letSshIn = new IpPermission();
-        letSshIn.withIpProtocol("tcp").withFromPort(80).withToPort(80);
         final AuthorizeSecurityGroupIngressRequest authorizeSecurityGroupIngressRequest = new AuthorizeSecurityGroupIngressRequest();
         final String groupId = createSecurityGroupResult.getGroupId();
-        authorizeSecurityGroupIngressRequest.
-                withGroupId(groupId).
-                withIpPermissions(letSshIn, letHttpIn).
-                withCidrIp("0.0.0.0/0")
+        authorizeSecurityGroupIngressRequest
+                .withGroupId(groupId)
+                .withCidrIp("0.0.0.0/0")
+                .withIpProtocol("tcp")
+                .withFromPort(8080)
+                .withToPort(8080)
         ;
-        amazonEC2Client.authorizeSecurityGroupIngress(authorizeSecurityGroupIngressRequest);
+        amazonEC2Client
+                .authorizeSecurityGroupIngress(authorizeSecurityGroupIngressRequest)
+        ;
+        final AuthorizeSecurityGroupIngressRequest authorizeSecurityGroupIngressRequest2 = new AuthorizeSecurityGroupIngressRequest();
+        authorizeSecurityGroupIngressRequest2
+                .withGroupId(groupId)
+                .withCidrIp("0.0.0.0/0")
+                .withIpProtocol("tcp")
+                .withFromPort(9990)
+                .withToPort(9990)
+        ;
+        amazonEC2Client
+                .authorizeSecurityGroupIngress(authorizeSecurityGroupIngressRequest2)
+        ;
         return groupId;
     }
 }
