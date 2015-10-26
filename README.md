@@ -11,7 +11,7 @@ Tvarit is an dev ops automation project for Wildfly JEE, Maven and AWS platforms
 1. Create fenced environments for test and production based on declared dependencies in pom.xml or another mechanism of declaring dependencies. (e.g. if App A depends on App B's RESTful services, then, Tvarit should be able to deploy both App A and App B in a fenced network - such as VPC).
 
 ##Features
-Main goal is to be able to use Tvarit to deploy a war file in standalone mode and in a clustered domain mode. Please see [feature files](https://github.com/sdole/tvarit-maven/blob/master/tvarit-maven-plugin/StandaloneMode.feature).
+Using Tvarit developers can deploy a war file in [wildfly](http://wildfly.org/) standalone mode or in a clustered domain mode. Please see [feature files](https://github.com/sdole/tvarit-maven/blob/master/tvarit-maven-plugin/StandaloneMode.feature) for a BDD style description of what Tvarit does.
 
 ##How to contribute
 ###Initial setup
