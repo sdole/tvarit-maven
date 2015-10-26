@@ -45,5 +45,5 @@ Tvarit deploys a wildfly server on EC2 instance and makes it available to the wo
 ###Stacks and Layers
 Stacks and Layers are AWS Opsworks resources within which EC2 instances are started.
 ###Chef recipes
-
+Tvarit uses recipes from the opscode market place as well as a wrapper recipe of its own that is hosted on github.
 
