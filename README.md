@@ -13,6 +13,15 @@ Tvarit is an dev ops automation project for Wildfly JEE, Maven and AWS platforms
 ##Features
 Using Tvarit developers can deploy a war file in [wildfly](http://wildfly.org/) standalone mode or in a clustered domain mode. Please see [feature files](https://github.com/sdole/tvarit-maven/blob/master/tvarit-maven-plugin/StandaloneMode.feature) for a BDD style description of what Tvarit does.
 
+##Main components of Tvarit
+###VPC and related AWS resources
+Tvarit deploys a wildfly server on EC2 instance and makes it available to the world. For this, it creates a VPC, security groups, subnet, internet gateway, EC2 instances, IP address and other AWS resources. 
+###Stacks and Layers
+Stacks and Layers are AWS Opsworks resources within which EC2 instances are started.
+###Chef recipes
+Tvarit uses recipes from the opscode market place as well as a wrapper recipe of its own that is hosted on github.
+
+
 ##How to contribute
 ###Initial setup
 Tools required:
@@ -24,9 +33,11 @@ Tools required:
 - [Oracle virtual box](https://www.virtualbox.org/wiki/Downloads)
 - Maven and other java tools, IDEs etc
 
-###To execute the basic run
+###Kitchen test (recipe only)
+This sub-section shows how to run the [Tvarit](https://github.com/sdole/tvarit/tree/master/tvarit-cookbook) cookbook on developer workstation with [Kitchen CI](http://kitchen.ci).
+
 Assuming windows for developer workstation:
-- navigate to the tvarit-cookbook folder within this project in PowerShell
+- navigate to the tvarit-cookbook folder in PowerShell
 - run command "kitchen converge". Depending on your internet speed, this could take upto 10 minutes or more.
 - after converge is complete, run "kitchen login"
 - verify that wildfly and java 8 are installed. For example:
@@ -37,16 +48,11 @@ Assuming windows for developer workstation:
     Java HotSpot(TM) 64-Bit Server VM (build 25.40-b25, mixed mode)
     vagrant@default-ubuntu-trusty64:~$
 ```
+###Deploy to AWS
+1. Install the maven plugin in your local repo with `mvn install`
+2. Run the maven goal from the test project `mvn compile`
 
 ###Reading list
 * http://docs.aws.amazon.com/opsworks/latest/userguide/cookbooks-101.html
 * http://docs.aws.amazon.com/opsworks/latest/userguide/workingcookbook.html
-
-##Main components of Tvarit
-###VPC and related AWS resources
-Tvarit deploys a wildfly server on EC2 instance and makes it available to the world. For this, it creates a VPC, security groups, subnet, internet gateway, EC2 instances, IP address and other AWS resources. 
-###Stacks and Layers
-Stacks and Layers are AWS Opsworks resources within which EC2 instances are started.
-###Chef recipes
-Tvarit uses recipes from the opscode market place as well as a wrapper recipe of its own that is hosted on github.
 
