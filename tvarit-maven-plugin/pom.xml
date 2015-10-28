@@ -8,7 +8,7 @@
     <name>tvarit-maven-plugin</name>
     <url>http://maven.apache.org</url>
     <properties>
-        <version.aws.sdk>1.10.11</version.aws.sdk>
+        <version.aws.sdk>1.10.29</version.aws.sdk>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
