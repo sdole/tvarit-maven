@@ -11,6 +11,5 @@ public class InstanceStarter {
         final StartInstanceRequest startInstanceRequest = new StartInstanceRequest();
         startInstanceRequest.withInstanceId(instanceId);
         awsOpsWorksClient.startInstance(startInstanceRequest);
-
     }
 }

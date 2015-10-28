@@ -9,8 +9,9 @@ import java.util.Collections;
  * Created by sachi_000 on 9/28/2015.
  */
 public class SubnetCreator {
-    String create(AmazonEC2Client amazonEc2Client, String vpcId, String subnetName) {
+    String create(AmazonEC2Client amazonEc2Client, String vpcId, String baseName) {
 
+        String subnetName = baseName+"-subnet";
         DescribeSubnetsRequest describeSubnetsRequest = new DescribeSubnetsRequest();
         describeSubnetsRequest.withFilters(new Filter("tag:Name", Collections.singletonList(subnetName)));
         DescribeSubnetsResult describeSubnetsResult = amazonEc2Client.describeSubnets(describeSubnetsRequest);

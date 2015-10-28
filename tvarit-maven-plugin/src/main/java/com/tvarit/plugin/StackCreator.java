@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class StackCreator  {
-    public String create(AWSOpsWorksClient awsOpsWorksClient, String stackName, TvaritMojo tvaritMojo, String roleArn, String layerName, String instanceProfileArn, String vpcId,String subnetId) {
+    public String create(AWSOpsWorksClient awsOpsWorksClient, String baseName, TvaritMojo tvaritMojo, String roleArn, String instanceProfileArn, String vpcId, String subnetId) {
+        String stackName=baseName+"-stack";
         DescribeStacksRequest describeStacksRequest = new DescribeStacksRequest();
         DescribeStacksResult describeStacksResult = awsOpsWorksClient.describeStacks(describeStacksRequest);
         List<String> stacksFound = describeStacksResult.getStacks().stream().map(Stack::getName).collect(Collectors.toList());

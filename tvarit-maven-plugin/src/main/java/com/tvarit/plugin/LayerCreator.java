@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LayerCreator {
-    public String create(AWSOpsWorksClient awsOpsWorksClient, String layerName, TvaritMojo tvaritMojo, String stackId, String securityGroupId) {
+    public String create(AWSOpsWorksClient awsOpsWorksClient, String baseName, TvaritMojo tvaritMojo, String stackId, String securityGroupId) {
+        String layerName=baseName+"-layer";
         DescribeLayersRequest describeLayersRequest = new DescribeLayersRequest();
         describeLayersRequest.withStackId(stackId);
         DescribeLayersResult describeLayersResult = awsOpsWorksClient.describeLayers(describeLayersRequest);
