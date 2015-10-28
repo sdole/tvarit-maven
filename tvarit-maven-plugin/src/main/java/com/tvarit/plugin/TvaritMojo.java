@@ -28,6 +28,7 @@ public class TvaritMojo extends AbstractMojo {
 
     private InfrastructureCreator infrastructureCreator = new InfrastructureCreator();
     private InstanceCreator instanceCreator = new InstanceCreator();
+    private InstanceStarter instanceStarter = new InstanceStarter();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -38,7 +39,6 @@ public class TvaritMojo extends AbstractMojo {
         final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
         final InfrastructureIds infrastructureIds = infrastructureCreator.create(this, awsOpsWorksClient, amazonEc2Client, roleArn, instanceProfileArn, baseName);
         final String instanceId = instanceCreator.create(this, awsOpsWorksClient, infrastructureIds);
-        InstanceStarter instanceStarter = new InstanceStarter();
         instanceStarter.start(awsOpsWorksClient, instanceId);
         getLog().debug("Done!");
     }
