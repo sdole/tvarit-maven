@@ -41,7 +41,7 @@ public class TvaritMojo extends AbstractMojo {
         final InfrastructureIds infrastructureIds = infrastructureCreator.create(this, awsOpsWorksClient, amazonEc2Client, roleArn, instanceProfileArn, baseName);
         final String instanceId = instanceCreator.create(this, awsOpsWorksClient, infrastructureIds);
         instanceStarter.start(awsOpsWorksClient, instanceId);
-        warAppDeployer.deploy(project);
+        warAppDeployer.deploy(project,awsOpsWorksClient,instanceId);
         getLog().debug("Done!");
     }
 
