@@ -30,6 +30,7 @@ public class TvaritMojo extends AbstractMojo {
     private InstanceCreator instanceCreator = new InstanceCreator();
     private InstanceStarter instanceStarter = new InstanceStarter();
     private WarAppDeployer warAppDeployer = new WarAppDeployer();
+    private WaitTillInstanceOnline waitTillInstanceOnline = new  WaitTillInstanceOnline();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -41,6 +42,7 @@ public class TvaritMojo extends AbstractMojo {
         final InfrastructureIds infrastructureIds = infrastructureCreator.create(this, awsOpsWorksClient, amazonEc2Client, roleArn, instanceProfileArn, baseName);
         final String instanceId = instanceCreator.create(this, awsOpsWorksClient, infrastructureIds);
         instanceStarter.start(awsOpsWorksClient, instanceId);
+        waitTillInstanceOnline.waitTillInstanceOnline(awsOpsWorksClient,instanceId);
         warAppDeployer.deploy(project,awsOpsWorksClient,instanceId);
         getLog().debug("Done!");
     }
