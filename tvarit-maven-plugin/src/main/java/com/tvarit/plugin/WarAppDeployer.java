@@ -56,7 +56,7 @@ public class WarAppDeployer {
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(
                 new AuthScope(target.getHostName(), target.getPort()),
-                new UsernamePasswordCredentials("trelair", "Tr3la1r!@3"));
+                new UsernamePasswordCredentials("wildfly", "wildfly"));
         CloseableHttpClient aDefault = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
         AuthCache authCache = new BasicAuthCache();
         DigestScheme digestAuth = new DigestScheme();
