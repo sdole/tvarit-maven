@@ -11,7 +11,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-@Mojo(name = "hello", defaultPhase = LifecyclePhase.COMPILE)
+@Mojo(name = "hello", defaultPhase = LifecyclePhase.PACKAGE)
 public class TvaritMojo extends AbstractMojo {
 
     @Parameter(required = true, alias = "role_arn")
@@ -43,7 +43,7 @@ public class TvaritMojo extends AbstractMojo {
         final String instanceId = instanceCreator.create(this, awsOpsWorksClient, infrastructureIds);
         instanceStarter.start(awsOpsWorksClient, instanceId);
         waitTillInstanceOnline.waitTillInstanceOnline(awsOpsWorksClient,instanceId);
-        warAppDeployer.deploy(project,awsOpsWorksClient,instanceId);
+        warAppDeployer.deploy(project,getLog(),awsOpsWorksClient,instanceId);
         getLog().debug("Done!");
     }
 

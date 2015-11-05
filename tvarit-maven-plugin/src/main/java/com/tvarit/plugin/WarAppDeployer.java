@@ -28,6 +28,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
@@ -35,13 +36,14 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by sachi_000 on 10/27/2015.
  */
 public class WarAppDeployer {
 
-    public void deploy(MavenProject project, AWSOpsWorksClient awsOpsWorksClient, String instanceId) {
+    public void deploy(MavenProject project, Log log, AWSOpsWorksClient awsOpsWorksClient, String instanceId) {
         final DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest();
         describeInstancesRequest.withInstanceIds(instanceId);
         final DescribeInstancesResult describeInstancesResult = awsOpsWorksClient.describeInstances(describeInstancesRequest);
@@ -104,7 +106,7 @@ public class WarAppDeployer {
             throw new RuntimeException(e);
         }
 
-//        log.info("Uploaded and received: " + responseText);
+        log.info("Uploaded and received: " + responseText);
         ObjectMapper codec = new ObjectMapper();
         ObjectNode treeNode;
         try {
@@ -115,12 +117,12 @@ public class WarAppDeployer {
 
         int waitTimeForUploadedFileToSettle = 30000;
         try {
-//            log.info("Waiting " + TimeUnit.SECONDS.convert(waitTimeForUploadedFileToSettle, TimeUnit.MILLISECONDS) + " seconds for uploaded file to settle.");
+            log.info("Waiting " + TimeUnit.SECONDS.convert(waitTimeForUploadedFileToSettle, TimeUnit.MILLISECONDS) + " seconds for uploaded file to settle.");
             Thread.sleep(waitTimeForUploadedFileToSettle);
         } catch (InterruptedException e) {
             throw new RuntimeException("Thread interrupted when waiting for jboss to accept new deployable war file.", e);
         }
-//        log.info("Done waiting for uploaded file to settle");
+        log.info("Done waiting for uploaded file to settle");
 
         DeployRequestMaker deployRequestMaker = new DeployRequestMaker();
         StringEntity entity = null;
@@ -142,6 +144,7 @@ public class WarAppDeployer {
         String deployResponseString = null;
         try {
             deployResponseString = EntityUtils.toString(deployResponseEntity);
+            log.info("Done deploying: " + deployResponseString);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
