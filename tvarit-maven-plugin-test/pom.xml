@@ -7,10 +7,18 @@
     <artifactId>tvarit-maven-plugin-test</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
+    <distributionManagement>
+        <repository>
+            <id>local-test-releases</id>
+            <url>file://C:/users/sachi_000/dev/tvarit/mvn_repo</url>
+        </repository>
+        <snapshotRepository>
+            <id>local-test-snapshot</id>
+            <url>file://C:/users/sachi_000/dev/tvarit/mvn_repo</url>
+        </snapshotRepository>
+    </distributionManagement>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
     </properties>
@@ -67,10 +75,6 @@
                             <goal>hello</goal>
                         </goals>
                         <configuration>
-                            <!-- Amazon resource number of the role with which this stack will be run -->
-                            <!-- Amazon resource number of instance profile with which to run the instance -->
-                            <accessKey>${accessKey}</accessKey>
-                            <secretKey>${secretKey}</secretKey>
                             <baseName>test</baseName>
                             <roleArn>arn:aws:iam::085224677438:role/aws-opsworks-service-role</roleArn>
                             <instanceProfileArn>arn:aws:iam::085224677438:instance-profile/aws-opsworks-ec2-role.1444248588259</instanceProfileArn>

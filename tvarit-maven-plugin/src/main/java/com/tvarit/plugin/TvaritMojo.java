@@ -1,6 +1,8 @@
 package com.tvarit.plugin;
 
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
+import com.amazonaws.services.cloudformation.model.CreateStackRequest;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.opsworks.AWSOpsWorksClient;
 import org.apache.maven.plugin.AbstractMojo;
@@ -11,19 +13,19 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-@Mojo(name = "hello", defaultPhase = LifecyclePhase.PACKAGE)
+@Mojo(name = "hello", defaultPhase = LifecyclePhase.DEPLOY)
 public class TvaritMojo extends AbstractMojo {
 
-    @Parameter(required = true, alias = "role_arn")
+    @Parameter(required = true)
     private String roleArn;
-    @Parameter(required = true, alias = "accessKey", readonly = true)
+    @Parameter(required = true, readonly = true,property = "myAccessKey")
     private String accessKey;
-    @Parameter(required = true, alias = "secretKey", readonly = true)
+    @Parameter(required = true,  readonly = true,property = "mySecretKey")
     private String secretKey;
-    @Parameter(required = true, alias = "baseName")
+    @Parameter(required = true)
     private String baseName;
 
-    @Parameter(required = true, alias = "instance_profile_arn")
+    @Parameter(required = true)
     private String instanceProfileArn;
 
     private InfrastructureCreator infrastructureCreator = new InfrastructureCreator();
@@ -40,6 +42,10 @@ public class TvaritMojo extends AbstractMojo {
         final AmazonEC2Client amazonEc2Client = new AmazonEC2Client(awsCredentials);
         final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
         final InfrastructureIds infrastructureIds = infrastructureCreator.create(this, awsOpsWorksClient, amazonEc2Client, roleArn, instanceProfileArn, baseName);
+        AmazonCloudFormationClient cloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
+        final CreateStackRequest createStackRequest = new CreateStackRequest();
+//        createStackRequest.withTemplateURL();
+        cloudFormationClient.createStack(createStackRequest);
         final String instanceId = instanceCreator.create(this, awsOpsWorksClient, infrastructureIds);
         instanceStarter.start(awsOpsWorksClient, instanceId);
         waitTillInstanceOnline.waitTillInstanceOnline(awsOpsWorksClient,instanceId);
