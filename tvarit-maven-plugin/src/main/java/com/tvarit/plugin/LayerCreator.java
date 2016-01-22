@@ -23,9 +23,10 @@ public class LayerCreator {
                     withName(layerName).
                     withStackId(stackId).
                     withType(LayerType.Custom).
-                    withAutoAssignElasticIps(true).
+                    withAutoAssignElasticIps(false).
                     withShortname(layerName).
-                    withCustomSecurityGroupIds(securityGroupId)
+                    withCustomSecurityGroupIds(securityGroupId).
+                    withAutoAssignPublicIps(false)
                     ;
             CreateLayerResult createLayerResult = awsOpsWorksClient.createLayer(createLayerRequest);
             tvaritMojo.getLog().debug("Created layer! " + createLayerResult.getLayerId());

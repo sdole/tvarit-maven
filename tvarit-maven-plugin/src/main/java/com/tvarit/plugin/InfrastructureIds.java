@@ -8,13 +8,14 @@ public class InfrastructureIds {
     private final String subnetId;
     private final String stackId;
     private final String layerId;
+    private final String ipAddress;
 
-    public InfrastructureIds(String vpcId, String subnetId, String stackId, String layerId) {
-
+    public InfrastructureIds(String vpcId, String subnetId, String stackId, String layerId, String ipAddress) {
         this.vpcId = vpcId;
         this.subnetId = subnetId;
         this.stackId = stackId;
         this.layerId = layerId;
+        this.ipAddress = ipAddress;
     }
 
     public String getVpcId() {
@@ -31,5 +32,9 @@ public class InfrastructureIds {
 
     public String getStackId() {
         return stackId;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
     }
 }

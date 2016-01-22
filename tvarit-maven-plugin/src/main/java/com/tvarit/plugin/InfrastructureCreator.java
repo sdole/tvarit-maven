@@ -16,15 +16,18 @@ public class InfrastructureCreator {
     private VpcCreator vpcCreator = new VpcCreator();
     private SubnetCreator subnetCreator = new SubnetCreator();
     private SecurityGroupCreator securityGroupCreator = new SecurityGroupCreator();
-    private  InternetGatewayCreator igCreator = new InternetGatewayCreator();
+    private InternetGatewayCreator igCreator = new InternetGatewayCreator();
+    private AddressRegisterer addressRegisterer = new AddressRegisterer();
 
     public InfrastructureIds create(TvaritMojo tvaritMojo, AWSOpsWorksClient awsOpsWorksClient, AmazonEC2Client amazonEc2Client, String roleArn, String instanceProfileArn, String baseName) {
         String vpcId = vpcCreator.create(amazonEc2Client, baseName);
         String subnetId = subnetCreator.create(amazonEc2Client, vpcId, baseName);
-        final String igId = igCreator.create(amazonEc2Client,vpcId);
+        final String igId = igCreator.create(amazonEc2Client, vpcId);
         final String securityGroupId = securityGroupCreator.create(amazonEc2Client, vpcId, baseName);
         final String stackId = stackCreator.create(awsOpsWorksClient, baseName, tvaritMojo, roleArn, instanceProfileArn, vpcId, subnetId);
+        final String ipAddress = addressRegisterer.registerIpAddress(amazonEc2Client,awsOpsWorksClient,stackId);
+
         final String layerId = layerCreator.create(awsOpsWorksClient, baseName, tvaritMojo, stackId, securityGroupId);
-        return new InfrastructureIds(vpcId,subnetId,stackId,layerId);
+        return new InfrastructureIds(vpcId, subnetId, stackId, layerId,ipAddress);
     }
 }

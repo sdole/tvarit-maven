@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 public class WarAppDeployer {
 
     public void deploy(MavenProject project, Log log, AWSOpsWorksClient awsOpsWorksClient, String instanceId) {
+        log.debug("Starting deployment");
         final DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest();
         describeInstancesRequest.withInstanceIds(instanceId);
         final DescribeInstancesResult describeInstancesResult = awsOpsWorksClient.describeInstances(describeInstancesRequest);

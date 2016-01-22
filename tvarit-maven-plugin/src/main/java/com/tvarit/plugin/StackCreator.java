@@ -7,9 +7,9 @@ import com.amazonaws.services.opsworks.model.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StackCreator  {
+public class StackCreator {
     public String create(AWSOpsWorksClient awsOpsWorksClient, String baseName, TvaritMojo tvaritMojo, String roleArn, String instanceProfileArn, String vpcId, String subnetId) {
-        String stackName=baseName+"-stack";
+        String stackName = baseName + "-stack";
         DescribeStacksRequest describeStacksRequest = new DescribeStacksRequest();
         DescribeStacksResult describeStacksResult = awsOpsWorksClient.describeStacks(describeStacksRequest);
         List<String> stacksFound = describeStacksResult.getStacks().stream().map(Stack::getName).collect(Collectors.toList());
@@ -40,10 +40,11 @@ public class StackCreator  {
                             "  \"opsworks_berkshelf\": { \n" +
                             "      \"debug\" : true  \n" +
                             "  }\n" +
-                            "}")
+                            "}").
+                    withUseOpsworksSecurityGroups(false)
             ;
             CreateStackResult createStackResult = awsOpsWorksClient.createStack(createStackRequest);
-            tvaritMojo.getLog().debug("Created stack! "  + createStackResult.getStackId());
+            tvaritMojo.getLog().debug("Created stack! " + createStackResult.getStackId());
             return createStackResult.getStackId();
         } else {
             tvaritMojo.getLog().debug("Found stacks: " + stacksFound.toString());

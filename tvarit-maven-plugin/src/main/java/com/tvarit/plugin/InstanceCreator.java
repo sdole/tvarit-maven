@@ -25,8 +25,17 @@ public class InstanceCreator {
                 withSubnetId(infrastructureIds.getSubnetId()).
                 withBlockDeviceMappings(blockDeviceMapping)
         ;
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         final CreateInstanceResult createInstanceResult = awsOpsWorksClient.createInstance(createInstanceRequest);
-        tvaritMojo.getLog().debug("started instance with id: " + createInstanceResult.getInstanceId());
-        return createInstanceResult.getInstanceId();
+        AssociateElasticIpRequest associateElasticIpRequest = new AssociateElasticIpRequest();
+        final String instanceId = createInstanceResult.getInstanceId();
+        associateElasticIpRequest.withElasticIp(infrastructureIds.getIpAddress()).withInstanceId(instanceId);
+        awsOpsWorksClient.associateElasticIp(associateElasticIpRequest);
+        tvaritMojo.getLog().debug("started instance with id: " + instanceId);
+        return instanceId;
     }
 }

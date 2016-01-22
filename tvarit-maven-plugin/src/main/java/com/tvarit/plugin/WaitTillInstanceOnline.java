@@ -4,11 +4,13 @@ import com.amazonaws.services.opsworks.AWSOpsWorksClient;
 import com.amazonaws.services.opsworks.model.DescribeInstancesRequest;
 import com.amazonaws.services.opsworks.model.DescribeInstancesResult;
 
+import java.time.Duration;
+
 /**
  * Created by sachi_000 on 10/27/2015.
  */
 public class WaitTillInstanceOnline {
-    private static final int WAIT_BETWEEN_STATUS_CHECK = 120000;
+    private static final long WAIT_BETWEEN_STATUS_CHECK = Duration.ofMinutes(2).toMillis();
 
     public void waitTillInstanceOnline(AWSOpsWorksClient awsOpsWorksClient, String instanceId) {
         boolean isInstanceOnline = false;

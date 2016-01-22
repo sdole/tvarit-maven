@@ -68,7 +68,7 @@
             </plugin>
             <plugin>
                 <groupId>tvarit</groupId>
-                <artifacTvatId>tvarit-maven-plugin</artifacTvatId>
+                <artifactId>tvarit-maven-plugin</artifactId>
                 <executions>
                     <execution>
                         <goals>

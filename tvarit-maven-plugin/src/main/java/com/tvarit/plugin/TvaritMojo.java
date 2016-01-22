@@ -34,6 +34,8 @@ public class TvaritMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+
+
         getLog().debug("Starting " + this.getClass().getSimpleName() + " execution ");
         final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
         AWSOpsWorksClient awsOpsWorksClient = new AWSOpsWorksClient(awsCredentials);
