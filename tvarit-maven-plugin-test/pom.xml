@@ -72,7 +72,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>hello</goal>
+                            <goal>deploy-app</goal>
                         </goals>
                         <configuration>
                             <baseName>test</baseName>

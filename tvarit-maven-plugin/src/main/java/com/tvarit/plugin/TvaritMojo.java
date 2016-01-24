@@ -12,7 +12,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-@Mojo(name = "hello", defaultPhase = LifecyclePhase.DEPLOY)
+@Mojo(name = "deploy-app", defaultPhase = LifecyclePhase.DEPLOY)
 public class TvaritMojo extends AbstractMojo {
 
     @Parameter(required = true)
