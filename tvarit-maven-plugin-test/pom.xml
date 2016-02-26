@@ -52,7 +52,7 @@
                 <plugin>
                     <groupId>io.tvarit</groupId>
                     <artifactId>tvarit-maven-plugin</artifactId>
-                    <version>0.0.0-SNAPSHOT</version>
+                    <version>0.0.1-SNAPSHOT</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -72,12 +72,12 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>deploy-app</goal>
+                            <goal>make-infra</goal>
                         </goals>
+                        <phase>compile</phase>
                         <configuration>
-                            <baseName>test</baseName>
-                            <roleArn>arn:aws:iam::085224677438:role/tvarit-opsworks-role</roleArn>
-                            <instanceProfileArn>arn:aws:iam::085224677438:instance-profile/tvarit-instance-profile</instanceProfileArn>
+                            <templateUrl>https://s3.amazonaws.com/tvarit-cfn-templates/tvarit-vpc</templateUrl>
+                            <stackName>tvarit-infra-test</stackName>
                         </configuration>
                     </execution>
                 </executions>
