@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -20,7 +21,8 @@ public class HelloWorldServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final PrintWriter responseWriter = response.getWriter();
-        responseWriter.write("<div>cookies</div>");
+        responseWriter.println("<div>" + InetAddress.getLocalHost().getHostName() + "</div>");
+        responseWriter.println("<div>cookies</div>");
         final Cookie[] cookies = request.getCookies();
         responseWriter.println("<table border=''>");
         responseWriter.println(
