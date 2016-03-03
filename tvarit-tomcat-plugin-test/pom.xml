@@ -36,8 +36,27 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>webapp1</finalName>
         <plugins>
+            <plugin>
+                <groupId>io.tvarit</groupId>
+                <artifactId>tvarit-maven-plugin</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+
+                <goals>
+
+                    <goal>deploy-tomcat-ui-app</goal>
+                </goals>
+                <executions>
+                    <execution>
+                        <id>deploy</id>
+                        <goals><goal>deploy-tomcat-ui-app</goal></goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <bucketName>tvarit-deployables</bucketName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

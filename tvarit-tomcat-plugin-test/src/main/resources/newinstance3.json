@@ -1,0 +1,139 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "VpcIPAssoc": {
+      "Type": "AWS::EC2::EIPAssociation",
+      "Properties": {
+        "InstanceId": {
+          "Ref": "AppServer"
+        },
+        "AllocationId": "eipalloc-27787743"
+      }
+    },
+    "AppServer": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-0d61c466",
+        "InstanceType": "t2.micro",
+        "SubnetId": "subnet-3366e845",
+        "KeyName": "trelair",
+        "IamInstanceProfile": "tvarit-mvn",
+        "SecurityGroupIds": [
+          "sg-180bd060"
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -v\n",
+                "/opt/aws/bin/cfn-init -v -s ",
+                {
+                  "Ref": "AWS::StackName"
+                },
+				" --region us-east-1 ",
+                " --role ",
+                " tvarit-mvn ",
+                " -r ",
+                " AppServer ",
+                " -c ",
+                " main ",
+                "\n",
+                "/opt/aws/bin/cfn-signal -e 0 -r \"AppServer setup complete\"",
+                "\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "87161bad-9eaa-44ae-a5bd-fecbcfec37fd"
+        },
+        "AWS::CloudFormation::Authentication": {
+          "S3AccessCreds": {
+            "type": "S3",
+            "buckets": ["tvarit-deployables"],
+			"roleName":"tvarit-mvn"
+         } 
+        },
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "main": [
+              "makeLogDir",
+              "downloadWar",
+              "startTomcat"
+            ]
+          },
+          "makeLogDir": {
+            "commands": {
+              "01": {
+                "command": [
+                  "mkdir",
+                  "/var/log/tomcat8"
+                ]
+              },
+              "02": {
+                "command": [
+                  "chown",
+                  "tomcat:tomcat",
+                  "/var/log/tomcat8"
+                ]
+              }
+            }
+          },
+          "downloadWar": {
+            "files": {
+              "/var/lib/tomcat8/webapps/tvarit.war": {
+                "source": "https://s3.amazonaws.com/tvarit-deployables/war/tvarit/tvarit-tomcat-plugin-test/1.0.0-SNAPSHOT/tvarit-tomcat-plugin-test-1.0.0-SNAPSHOT.war",
+                "owner": "tomcat",
+                "group": "tomcat",
+                "mode": "000755",
+                "authentication": "S3AccessCreds"
+              }
+            }
+          },
+          "startTomcat": {
+            "commands": {
+              "03": {
+                "command": [
+                  "/etc/init.d/tomcat8",
+                  "start"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Description": "",
+  "Metadata": {
+    "AWS::CloudFormation::Designer": {
+      "2f76a794-6086-49e0-82dc-f2e1c0f816b4": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 60,
+          "y": 90
+        },
+        "z": 1,
+        "embeds": []
+      },
+      "87161bad-9eaa-44ae-a5bd-fecbcfec37fd": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 60,
+          "y": 90
+        },
+        "z": 1,
+        "embeds": []
+      }
+    }
+  }
+}
