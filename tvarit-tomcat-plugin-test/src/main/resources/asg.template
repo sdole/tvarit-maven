@@ -1,0 +1,138 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "asgtvaritasg": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": [
+          "us-east-1d"
+        ],
+        "Cooldown": "300",
+        "DesiredCapacity": "0",
+        "HealthCheckGracePeriod": "300",
+        "HealthCheckType": "EC2",
+        "MaxSize": "0",
+        "MinSize": "0",
+        "VPCZoneIdentifier": [
+          "subnet-3366e845"
+        ],
+        "LaunchConfigurationName": {
+          "Ref": "lclc"
+        },
+        "MetricsCollection": [
+          {
+            "Metrics": ["GroupTerminatingInstances"],
+            "Granularity":
+            "1Minute"
+
+          },
+          {
+            "Metrics": ["GroupMinSize"],
+            "Granularity":
+            "1Minute"
+
+          },
+          {
+            "Metrics": ["GroupMaxSize"],
+            "Granularity":
+            "1Minute"
+
+          },
+          {
+            "Metrics": ["GroupPendingInstances"],
+            "Granularity":
+            "1Minute"
+
+          },
+          {
+            "Metrics": ["GroupInServiceInstances"],
+            "Granularity":
+            "1Minute"
+
+          },
+          {
+            "Metrics": ["GroupTotalInstances"],
+            "Granularity":
+            "1Minute"
+
+          },
+          {
+            "Metrics": ["GroupDesiredCapacity"],
+            "Granularity":
+            "1Minute"
+
+          }
+        ],
+        "TerminationPolicies": [
+          "Default"
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "da4d2f75-a235-4875-ae8f-7d969386171d"
+        }
+      }
+    },
+    "lclc": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "ImageId": "ami-0c6f5f64",
+        "InstanceType": "t2.micro",
+        "KeyName": "trelair",
+        "IamInstanceProfile": "tvarit-role",
+        "InstanceMonitoring": "true",
+        "SecurityGroups": [
+          "sg-180bd060"
+        ],
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeSize": 10
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "34c14151-0a3b-4235-af8b-a8035ecc9107"
+        }
+      }
+    }
+  },
+  "Description": "",
+  "Metadata": {
+    "AWS::CloudFormation::Designer": {
+      "34c14151-0a3b-4235-af8b-a8035ecc9107": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 60,
+          "y": 90
+        },
+        "z": 1,
+        "embeds": []
+      },
+      "da4d2f75-a235-4875-ae8f-7d969386171d": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 180,
+          "y": 90
+        },
+        "z": 1,
+        "embeds": [],
+        "isassociatedwith": [
+          "34c14151-0a3b-4235-af8b-a8035ecc9107"
+        ]
+      }
+    }
+  }
+}
+
+
+
