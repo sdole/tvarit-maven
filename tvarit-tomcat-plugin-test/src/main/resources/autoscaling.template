@@ -1,17 +1,26 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "elbtvaritelb": {
+    "tvaritElb": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
-        "Subnets": [
-          "subnet-60d47e38",
-          "subnet-8fbc1ca5"
-        ],
+        "Subnets": {
+          "Ref": "publicSubnets"
+        },
         "HealthCheck": {
           "HealthyThreshold": "10",
           "Interval": "30",
-          "Target": "HTTP:8080/health.html",
+          "Target": {
+            "Fn::Join": [
+              "",
+              [
+                "HTTP:8080",
+                {
+                  "Ref": "healthCheckAbsoluteUrl"
+                }
+              ]
+            ]
+          },
           "Timeout": "5",
           "UnhealthyThreshold": "2"
         },
@@ -25,7 +34,7 @@
         "CrossZone": "true",
         "SecurityGroups": [
           {
-            "Ref": "sgtvaritelb"
+            "Ref": "sgTvaritElb"
           }
         ],
         "Listeners": [
@@ -38,29 +47,27 @@
         ]
       }
     },
-    "asgasdfasdf": {
+    "tvaritAutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
-        "AvailabilityZones": [
-          "us-east-1a",
-          "us-east-1e"
-        ],
+        "AvailabilityZones": {
+          "Ref": "availabilityZones"
+        },
         "Cooldown": "300",
         "DesiredCapacity": "0",
         "HealthCheckGracePeriod": "300",
         "HealthCheckType": "ELB",
         "MaxSize": "0",
         "MinSize": "0",
-        "VPCZoneIdentifier": [
-          "subnet-8fbc1ca5",
-          "subnet-60d47e38"
-        ],
+        "VPCZoneIdentifier": {
+          "Ref": "publicSubnets"
+        },
         "LaunchConfigurationName": {
           "Ref": "lctvaritlc"
         },
         "LoadBalancerNames": [
           {
-            "Ref": "elbtvaritelb"
+            "Ref": "tvaritElb"
           }
         ],
         "TerminationPolicies": [
@@ -94,23 +101,27 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "sg for tvarit app servers",
-        "VpcId": "vpc-5a0f243e"
+        "VpcId": {
+          "Ref": "vpc"
+        }
       }
     },
-    "sgtvaritelb": {
+    "sgTvaritElb": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "tvarit elb security group",
-        "VpcId": "vpc-5a0f243e"
+        "VpcId": {
+          "Ref": "vpc"
+        }
       }
     },
     "scalingDecreaseGroupSize": {
       "Type": "AWS::AutoScaling::ScalingPolicy",
       "Properties": {
         "AdjustmentType": "ChangeInCapacity",
-        "ScalingAdjustment":"-1",
+        "ScalingAdjustment": "-1",
         "AutoScalingGroupName": {
-          "Ref": "asgasdfasdf"
+          "Ref": "tvaritAutoScalingGroup"
         }
       }
     },
@@ -118,9 +129,9 @@
       "Type": "AWS::AutoScaling::ScalingPolicy",
       "Properties": {
         "AdjustmentType": "ChangeInCapacity",
-        "ScalingAdjustment":"1",
+        "ScalingAdjustment": "1",
         "AutoScalingGroupName": {
-          "Ref": "asgasdfasdf"
+          "Ref": "tvaritAutoScalingGroup"
         }
       }
     },
@@ -182,7 +193,7 @@
         "FromPort": "8080",
         "ToPort": "8080",
         "SourceSecurityGroupId": {
-          "Ref": "sgtvaritelb"
+          "Ref": "sgTvaritElb"
         },
         "SourceSecurityGroupOwnerId": "085224677438"
       }
@@ -191,7 +202,7 @@
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "GroupId": {
-          "Ref": "sgtvaritelb"
+          "Ref": "sgTvaritElb"
         },
         "IpProtocol": "tcp",
         "FromPort": "80",
@@ -213,11 +224,35 @@
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
-          "Ref": "sgtvaritelb"
+          "Ref": "sgTvaritElb"
         },
         "IpProtocol": "-1",
         "CidrIp": "0.0.0.0/0"
       }
+    }
+  },
+  "Parameters": {
+    "projectName": {
+      "Type": "String",
+      "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
+      "AllowedPattern": "[A-Za-z]*",
+      "MinLength": "1"
+    },
+    "publicSubnets": {
+      "Type": "CommaDelimitedList",
+      "Description": "Enter exactly 2 subnet ids that are publicly accessible. ELBs and app servers will be placed in these two subnets."
+    },
+    "healthCheckAbsoluteUrl": {
+      "Type": "String",
+      "Description": "Enter the health check absolute url for the app servers. "
+    },
+    "availabilityZones": {
+      "Type": "CommaDelimitedList",
+      "Description": "Enter exactly 2 availability zone ids where the ELBs and app servers will be deployed."
+    },
+    "vpc": {
+      "Type": "String",
+      "Description": "Enter the vpc id where app will be deployed."
     }
   },
   "Description": ""

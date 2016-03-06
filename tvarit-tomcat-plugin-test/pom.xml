@@ -38,27 +38,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>io.tvarit</groupId>
-                <artifactId>tvarit-maven-plugin</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-                <goals>
-                    <goal>deploy-tomcat-ui-app</goal>
-                </goals>
-                <executions>
-                    <execution>
-                        <id>deploy</id>
-                        <goals>
-                            <goal>make-infra</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                        <configuration>
-                            <projectName>cricclubs</projectName>
-                            <domainName>crictvarit.nl</domainName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
@@ -75,4 +54,55 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>makeinfra</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.tvarit</groupId>
+                        <artifactId>tvarit-maven-plugin</artifactId>
+                        <version>0.0.1-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <goals>
+                                    <goal>make-infra</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <projectName>cricclubs</projectName>
+                                    <domainName>cricclubs.io</domainName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>makeasg</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.tvarit</groupId>
+                        <artifactId>tvarit-maven-plugin</artifactId>
+                        <version>0.0.1-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <goals>
+                                    <goal>setup-autoscaling</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <projectName>cricclubs</projectName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -10,6 +10,10 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 @Mojo(name = "make-infra")
 public class InfrastructureMojo extends AbstractMojo {
     @Parameter(required = true, readonly = true, property = "mySecretKey")
@@ -30,14 +34,23 @@ public class InfrastructureMojo extends AbstractMojo {
         AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
         final com.amazonaws.services.cloudformation.model.Parameter domainNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("domainName").withParameterValue(this.domainName);
         final com.amazonaws.services.cloudformation.model.Parameter projectNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("projectName").withParameterValue(this.projectName);
-        final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(projectName).withParameters(domainNameParameter,projectNameParameter);
-        if (templateUrl==null){
-            String templateBody = new VpcInfraTemplateBody().decode();
-            createStackRequest.withTemplateBody(templateBody);
-        }else{
+        final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(projectName).withParameters(domainNameParameter, projectNameParameter);
+        if (templateUrl == null) {
+            final BufferedReader templateStream = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/vpc-infra.template")));
+            StringBuilder sb = new StringBuilder();
+            try {
+                String line;
+                while ((line = templateStream.readLine()) != null) {
+                    sb.append(line);
+                }
+            } catch (IOException e) {
+                throw new MojoFailureException("Could not read vpc infra template.", e);
+            }
+            createStackRequest.withTemplateBody(sb.toString());
+        } else {
             createStackRequest.withTemplateURL(templateUrl);
         }
-        new StackMaker().makeStack(createStackRequest,amazonCloudFormationClient,getLog());
+        new StackMaker().makeStack(createStackRequest, amazonCloudFormationClient, getLog());
         getLog().info("Finished completing stack");
 
     }
