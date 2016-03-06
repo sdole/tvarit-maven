@@ -1,52 +1,127 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "zonetvaritio": {
-      "Type": "AWS::Route53::HostedZone",
+    "tvaritRole": {
+      "Type": "AWS::IAM::Role",
       "Properties": {
-        "Name": "tvarit.io.",
-        "HostedZoneConfig": {
-          "Comment": "HostedZone created by Route53 Registrar"
+        "AssumeRolePolicyDocument": {
+          "Version": "2008-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/"
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "7a1f5705-5958-42cc-9897-6fa9ffc4c442"
         }
       }
     },
-    "dnsautotvaritio": {
-      "Type": "AWS::Route53::RecordSetGroup",
+    "tvaritRolePolicy": {
+      "Type": "AWS::IAM::Policy",
       "Properties": {
-        "HostedZoneId": {
-          "Ref": "zonetvaritio"
+        "PolicyName": {"Fn::Join":["",[{"Ref":"projectName"},"-policy"]]},
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "Stmt1457233272000",
+              "Effect": "Allow",
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectAcl",
+                "s3:ListBucket",
+                "s3:PutObject"
+              ],
+              "Resource": [
+                "arn:aws:s3:::tvarit/*"
+              ]
+            },
+            {
+              "Sid": "Stmt1457233341000",
+              "Effect": "Allow",
+              "Action": [
+                "cloudformation:CreateStack",
+                "cloudformation:DescribeStackResource",
+                "cloudformation:DescribeStackResources",
+                "cloudformation:ListStackResources",
+                "cloudformation:SignalResource",
+                "cloudformation:UpdateStack",
+                "cloudformation:ValidateTemplate"
+              ],
+              "Resource": [
+                "*"
+              ]
+            },
+            {
+              "Sid": "Stmt1457233476000",
+              "Effect": "Allow",
+              "Action": [
+                "ec2:AllocateAddress",
+                "ec2:AssignPrivateIpAddresses",
+                "ec2:AssociateAddress",
+                "ec2:AttachVolume",
+                "ec2:DescribeInstanceStatus",
+                "ec2:DescribeInstances",
+                "ec2:DescribeTags",
+                "ec2:RunInstances",
+                "ec2:StartInstances",
+                "ec2:StopInstances",
+                "ec2:TerminateInstances"
+              ],
+              "Resource": [
+                "arn:aws:ec2:us-east-1::*/*"
+              ]
+            },
+            {
+              "Sid": "Stmt1457233833000",
+              "Effect": "Allow",
+              "Action": [
+                "autoscaling:AttachInstances",
+                "autoscaling:CompleteLifecycleAction",
+                "autoscaling:CreateOrUpdateTags",
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:DetachInstances",
+                "autoscaling:EnterStandby",
+                "autoscaling:ExitStandby",
+                "autoscaling:PutScalingPolicy",
+                "autoscaling:ResumeProcesses",
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:SuspendProcesses",
+                "autoscaling:TerminateInstanceInAutoScalingGroup"
+              ],
+              "Resource": [
+                "*"
+              ]
+            }
+          ]
         },
-        "RecordSets": [
+        "Roles": [
           {
-            "Name": "auto.tvarit.io.",
-            "Type": "A",
-            "TTL": "300",
-            "ResourceRecords": [
-              "52.72.134.40"
-            ]
+            "Ref": "tvaritRole"
           }
         ]
       }
     },
-    "dnswwwtvaritio": {
-      "Type": "AWS::Route53::RecordSetGroup",
+    "domainNameHostedZone": {
+      "Type": "AWS::Route53::HostedZone",
       "Properties": {
-        "HostedZoneId": {
-          "Ref": "zonetvaritio"
-        },
-        "RecordSets": [
-          {
-            "Name": "www.tvarit.io.",
-            "Type": "CNAME",
-            "TTL": "300",
-            "ResourceRecords": [
-              "sdole.github.io"
-            ]
-          }
-        ]
+        "Name": {"Fn::Join":["",[{"Ref":"domainName"}]]},
+        "HostedZoneConfig": {
+          "Comment": "HostedZone created by Tvarit"
+        }
       }
     },
-    "vpc284e654c": {
+    "tvaritVpc": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
         "CidrBlock": "10.0.0.0/16",
@@ -56,91 +131,87 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "tvarit-vpc"
-          },
-          {
-            "Key": "tvarit:vpc",
-            "Value": "main"
+            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-vpc"]]}
           }
         ]
       }
     },
-    "subnet04bbcf39": {
+    "dbASubnet": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.10.0/24",
         "AvailabilityZone": "us-east-1c",
         "VpcId": {
-          "Ref": "vpc284e654c"
+          "Ref": "tvaritVpc"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "tvarit-db-a"
+            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-db-a"]]}
           }
         ]
       }
     },
-    "subnet65ed473d": {
+    "pubAppSubnetA": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.1.0/24",
         "AvailabilityZone": "us-east-1a",
         "VpcId": {
-          "Ref": "vpc284e654c"
+          "Ref": "tvaritVpc"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "tvarit-pub-a"
+            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-pub-a"]]}
           }
         ]
       }
     },
-    "subnet8b9506fd": {
+    "dbSubnetB": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.20.0/24",
         "AvailabilityZone": "us-east-1d",
         "VpcId": {
-          "Ref": "vpc284e654c"
+          "Ref": "tvaritVpc"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "tvarit-db-b"
+            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-db-b"]]}
           }
         ]
       }
     },
-    "subnet58c46472": {
+    "pubAppSubnetB": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.2.0/24",
         "AvailabilityZone": "us-east-1e",
         "VpcId": {
-          "Ref": "vpc284e654c"
+          "Ref": "tvaritVpc"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "tvarit-pub-b"
+            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-pub-b"]]}
           }
         ]
       }
     },
-    "igw0a65cc6e": {
+    "publicSubnetIg": {
       "Type": "AWS::EC2::InternetGateway",
       "Properties": {
         "Tags": [
           {
             "Key": "Name",
-            "Value": "tvarit-ig"
+            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-ig"]]}
           }
         ]
       }
     },
-    "doptbebc47db": {
+    "tvaritVpcDhcpOpts": {
       "Type": "AWS::EC2::DHCPOptions",
       "Properties": {
         "DomainName": "ec2.internal",
@@ -149,55 +220,56 @@
         ]
       }
     },
-    "acl313b3b55": {
+    "defaultTvaritVpcAcl": {
       "Type": "AWS::EC2::NetworkAcl",
       "Properties": {
         "VpcId": {
-          "Ref": "vpc284e654c"
+          "Ref": "tvaritVpc"
         }
       }
     },
-    "rtbc414e8a3": {
+    "publicSubnetRouteTable": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "vpc284e654c"
+          "Ref": "tvaritVpc"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "tvarit-pub-internet-rt"
+            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-pub-internet-rt"]]}
           }
         ]
       }
     },
-    "rtb9b1be7fc": {
+    "tvaritVpcDefaultRouteTable": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "vpc284e654c"
+          "Ref": "tvaritVpc"
         }
       }
     },
-    "s3tvarit": {
+    "tvaritS3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "AccessControl": "Private",
         "VersioningConfiguration": {
           "Status": "Suspended"
-        }
+        },
+        "BucketName":"tvarit"
       }
     },
-    "sgdefault": {
+    "sgDefault": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "default VPC security group",
         "VpcId": {
-          "Ref": "vpc284e654c"
+          "Ref": "tvaritVpc"
         }
       }
     },
-    "acl1": {
+    "defaultAclDefaultRule1": {
       "Type": "AWS::EC2::NetworkAclEntry",
       "Properties": {
         "CidrBlock": "0.0.0.0/0",
@@ -206,11 +278,11 @@
         "RuleAction": "allow",
         "RuleNumber": "100",
         "NetworkAclId": {
-          "Ref": "acl313b3b55"
+          "Ref": "defaultTvaritVpcAcl"
         }
       }
     },
-    "acl2": {
+    "defaultAclDefaultRule2": {
       "Type": "AWS::EC2::NetworkAclEntry",
       "Properties": {
         "CidrBlock": "0.0.0.0/0",
@@ -218,142 +290,181 @@
         "RuleAction": "allow",
         "RuleNumber": "100",
         "NetworkAclId": {
-          "Ref": "acl313b3b55"
+          "Ref": "defaultTvaritVpcAcl"
         }
       }
     },
-    "subnetacl1": {
+    "defaultAclToPubSubnetBAssociation": {
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
-          "Ref": "acl313b3b55"
+          "Ref": "defaultTvaritVpcAcl"
         },
         "SubnetId": {
-          "Ref": "subnet58c46472"
+          "Ref": "pubAppSubnetB"
         }
       }
     },
-    "subnetacl2": {
+    "defaultAclToDbSubnetBAssociation": {
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
-          "Ref": "acl313b3b55"
+          "Ref": "defaultTvaritVpcAcl"
         },
         "SubnetId": {
-          "Ref": "subnet8b9506fd"
+          "Ref": "dbSubnetB"
         }
       }
     },
-    "subnetacl3": {
+    "defaultAclToSubnetAAssociation": {
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
-          "Ref": "acl313b3b55"
+          "Ref": "defaultTvaritVpcAcl"
         },
         "SubnetId": {
-          "Ref": "subnet04bbcf39"
+          "Ref": "dbASubnet"
         }
       }
     },
-    "subnetacl4": {
+    "defaultAclToPubSubnetAAssociation": {
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
-          "Ref": "acl313b3b55"
+          "Ref": "defaultTvaritVpcAcl"
         },
         "SubnetId": {
-          "Ref": "subnet65ed473d"
+          "Ref": "pubAppSubnetA"
         }
       }
     },
-    "gw1": {
+    "pubSubnetInternetGateway": {
       "Type": "AWS::EC2::VPCGatewayAttachment",
       "Properties": {
         "VpcId": {
-          "Ref": "vpc284e654c"
+          "Ref": "tvaritVpc"
         },
         "InternetGatewayId": {
-          "Ref": "igw0a65cc6e"
+          "Ref": "publicSubnetIg"
         }
       }
     },
-    "subnetroute1": {
+    "pubAppSubnetAToLocalRouteTable": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "rtbc414e8a3"
+          "Ref": "publicSubnetRouteTable"
         },
         "SubnetId": {
-          "Ref": "subnet65ed473d"
+          "Ref": "pubAppSubnetA"
         }
       }
     },
-    "subnetroute2": {
+    "pubAppSubnetBToLocalRouteTable": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "rtbc414e8a3"
+          "Ref": "publicSubnetRouteTable"
         },
         "SubnetId": {
-          "Ref": "subnet58c46472"
+          "Ref": "pubAppSubnetB"
         }
       }
     },
-    "route1": {
+    "pubAppSubnetAToInternetGatewayRoute": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "RouteTableId": {
-          "Ref": "rtbc414e8a3"
+          "Ref": "publicSubnetRouteTable"
         },
         "GatewayId": {
-          "Ref": "igw0a65cc6e"
+          "Ref": "publicSubnetIg"
         }
       },
-      "DependsOn": "gw1"
+      "DependsOn": "pubSubnetInternetGateway"
     },
-    "route2": {
-      "Type": "AWS::EC2::Route",
+    "S3Endpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
       "Properties": {
-        "RouteTableId": {
-          "Ref": "rtbc414e8a3"
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "*",
+              "Effect": "Allow",
+              "Resource": "*",
+              "Principal": "*"
+            }
+          ]
         },
-        "GatewayId": "vpce-9a37c7f3"
+        "RouteTableIds": [
+          {
+            "Ref": "publicSubnetRouteTable"
+          }
+        ],
+        "ServiceName": {
+          "Fn::Join": [
+            "",
+            [
+              "com.amazonaws.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".s3"
+            ]
+          ]
+        },
+        "VpcId": {
+          "Ref": "tvaritVpc"
+        }
       }
     },
-    "dchpassoc1": {
+    "dhcpAssociation": {
       "Type": "AWS::EC2::VPCDHCPOptionsAssociation",
       "Properties": {
         "VpcId": {
-          "Ref": "vpc284e654c"
+          "Ref": "tvaritVpc"
         },
         "DhcpOptionsId": {
-          "Ref": "doptbebc47db"
+          "Ref": "tvaritVpcDhcpOpts"
         }
       }
     },
-    "ingress1": {
+    "defaultSgInRule": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "GroupId": {
-          "Ref": "sgdefault"
+          "Ref": "sgDefault"
         },
         "IpProtocol": "-1",
         "SourceSecurityGroupId": {
-          "Ref": "sgdefault"
+          "Ref": "sgDefault"
         },
         "SourceSecurityGroupOwnerId": "085224677438"
       }
     },
-    "egress1": {
+    "defaultSgOutRule": {
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
-          "Ref": "sgdefault"
+          "Ref": "sgDefault"
         },
         "IpProtocol": "-1",
         "CidrIp": "0.0.0.0/0"
       }
+    }
+  },
+  "Parameters": {
+    "projectName": {
+      "Type": "String",
+      "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
+      "AllowedPattern":"[A-Za-z]*",
+      "MinLength" : "1"
+    },
+    "domainName": {
+      "Type": "String",
+      "Description": "Enter a name for the domain name for which a new hosted zone will be created.",
+      "MinLength" : "1"
     }
   },
   "Description": ""
