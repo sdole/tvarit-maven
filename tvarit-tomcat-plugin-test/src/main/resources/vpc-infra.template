@@ -17,17 +17,33 @@
           ]
         },
         "Path": "/"
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "7a1f5705-5958-42cc-9897-6fa9ffc4c442"
-        }
+      }
+    },
+    "tvaritInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "tvaritRole"
+          }
+        ]
       }
     },
     "tvaritRolePolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": {"Fn::Join":["",[{"Ref":"projectName"},"-policy"]]},
+        "PolicyName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "projectName"
+              },
+              "-policy"
+            ]
+          ]
+        },
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -115,7 +131,16 @@
     "domainNameHostedZone": {
       "Type": "AWS::Route53::HostedZone",
       "Properties": {
-        "Name": {"Fn::Join":["",[{"Ref":"domainName"}]]},
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "domainName"
+              }
+            ]
+          ]
+        },
         "HostedZoneConfig": {
           "Comment": "HostedZone created by Tvarit"
         }
@@ -131,7 +156,17 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-vpc"]]}
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  "-vpc"
+                ]
+              ]
+            }
           }
         ]
       }
@@ -147,7 +182,17 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-db-a"]]}
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  "-db-a"
+                ]
+              ]
+            }
           }
         ]
       }
@@ -163,7 +208,17 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-pub-a"]]}
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  "-pub-a"
+                ]
+              ]
+            }
           }
         ]
       }
@@ -179,7 +234,17 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-db-b"]]}
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  "-db-b"
+                ]
+              ]
+            }
           }
         ]
       }
@@ -195,7 +260,17 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-pub-b"]]}
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  "-pub-b"
+                ]
+              ]
+            }
           }
         ]
       }
@@ -206,7 +281,17 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-ig"]]}
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  "-ig"
+                ]
+              ]
+            }
           }
         ]
       }
@@ -237,7 +322,17 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": {"Fn::Join":["",[{"Ref":"projectName"},"-pub-internet-rt"]]}
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  "-pub-internet-rt"
+                ]
+              ]
+            }
           }
         ]
       }
@@ -257,7 +352,7 @@
         "VersioningConfiguration": {
           "Status": "Suspended"
         },
-        "BucketName":"tvarit"
+        "BucketName": "tvarit"
       }
     },
     "sgDefault": {
@@ -386,13 +481,16 @@
     },
     "S3Endpoint": {
       "Type": "AWS::EC2::VPCEndpoint",
+      "DependsOn": [
+        "tvaritS3Bucket"
+      ],
       "Properties": {
         "PolicyDocument": {
           "Statement": [
             {
               "Action": "*",
               "Effect": "Allow",
-              "Resource": "*",
+              "Resource": "arn:aws:s3:::tvarit/*",
               "Principal": "*"
             }
           ]
@@ -458,13 +556,13 @@
     "projectName": {
       "Type": "String",
       "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
-      "AllowedPattern":"[A-Za-z]*",
-      "MinLength" : "1"
+      "AllowedPattern": "[A-Za-z]*",
+      "MinLength": "1"
     },
     "domainName": {
       "Type": "String",
       "Description": "Enter a name for the domain name for which a new hosted zone will be created.",
-      "MinLength" : "1"
+      "MinLength": "1"
     }
   },
   "Description": ""
