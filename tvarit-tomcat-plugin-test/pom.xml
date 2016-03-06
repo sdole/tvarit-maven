@@ -41,18 +41,19 @@
                 <groupId>io.tvarit</groupId>
                 <artifactId>tvarit-maven-plugin</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
-
                 <goals>
-
                     <goal>deploy-tomcat-ui-app</goal>
                 </goals>
                 <executions>
                     <execution>
                         <id>deploy</id>
-                        <goals><goal>deploy-tomcat-ui-app</goal></goals>
+                        <goals>
+                            <goal>make-infra</goal>
+                        </goals>
                         <phase>deploy</phase>
                         <configuration>
-                            <bucketName>tvarit-deployables</bucketName>
+                            <projectName>cricclubs</projectName>
+                            <domainName>crictvarit.nl</domainName>
                         </configuration>
                     </execution>
                 </executions>
