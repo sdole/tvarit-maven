@@ -193,6 +193,10 @@
                 ]
               ]
             }
+          },
+          {
+            "Key": "tvarit:db",
+            "Value": ""
           }
         ]
       }
@@ -219,6 +223,10 @@
                 ]
               ]
             }
+          },
+          {
+            "Key": "tvarit:app",
+            "Value": ""
           }
         ]
       }
@@ -232,6 +240,10 @@
           "Ref": "tvaritVpc"
         },
         "Tags": [
+          {
+            "Key": "tvarit:db",
+            "Value": ""
+          },
           {
             "Key": "Name",
             "Value": {
@@ -258,6 +270,10 @@
           "Ref": "tvaritVpc"
         },
         "Tags": [
+          {
+            "Key": "tvarit:app",
+            "Value": ""
+          },
           {
             "Key": "Name",
             "Value": {

@@ -2,8 +2,8 @@ package com.tvarit.plugin;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
-import com.amazonaws.services.cloudformation.model.*;
-import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.cloudformation.model.Capability;
+import com.amazonaws.services.cloudformation.model.CreateStackRequest;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -27,7 +27,6 @@ public class InfrastructureMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().debug("Starting " + this.getClass().getSimpleName() + " execution ");
         final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
-        final AmazonEC2Client amazonEc2Client = new AmazonEC2Client(awsCredentials);
         AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
         final com.amazonaws.services.cloudformation.model.Parameter domainNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("domainName").withParameterValue(this.domainName);
         final com.amazonaws.services.cloudformation.model.Parameter projectNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("projectName").withParameterValue(this.projectName);
@@ -38,22 +37,7 @@ public class InfrastructureMojo extends AbstractMojo {
         }else{
             createStackRequest.withTemplateURL(templateUrl);
         }
-        final CreateStackResult stack = amazonCloudFormationClient.createStack(createStackRequest);
-        DescribeStacksResult describeStacksResult = amazonCloudFormationClient.describeStacks(new DescribeStacksRequest().withStackName(projectName));
-        while (describeStacksResult.getStacks().get(0).getStackStatus().equals(StackStatus.CREATE_IN_PROGRESS.toString())) {
-            try {
-                getLog().info("Awaiting stack create completion!");
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                getLog().error(e);
-                throw new RuntimeException(e);
-            }
-            describeStacksResult = amazonCloudFormationClient.describeStacks(new DescribeStacksRequest().withStackName(projectName));
-        }
-        final String stackStatus = describeStacksResult.getStacks().get(0).getStackStatus();
-        if (!stackStatus.equals(StackStatus.CREATE_COMPLETE.toString())){
-            throw new MojoFailureException("Could not create infrastructure. Stack Status is: "+ stackStatus+". Please review details on the AWS console and open a new github issue on https://github.com/sdole/tvarit-maven/issues/new that is needed.");
-        }
+        new StackMaker().makeStack(createStackRequest,amazonCloudFormationClient,getLog());
         getLog().info("Finished completing stack");
 
     }
