@@ -1,0 +1,1 @@
+aws cloudformation create-stack --stack-name tvarit-autoscale --template-body 'file://C://Users//sachi_000//dev//Projects//tvarit-Project//tvarit-maven//tvarit-tomcat-plugin-test//src//main//resources//autoscaling.template'
