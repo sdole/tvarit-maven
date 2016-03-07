@@ -55,6 +55,7 @@ Do this only once. This will create a cloudformation stack in your account.
 
 
 ###Create an autoscaling group in EC2 for app servers
+Go to your AWS console and obtain the IAM instance profile, IAM role and bucket ARN that were created in the step above. Use those here.
 ```xml
    <profile>
               <id>makeasg</id>
@@ -72,10 +73,10 @@ Do this only once. This will create a cloudformation stack in your account.
                                   </goals>
                                   <phase>deploy</phase>
                                   <configuration>
-                                      <projectName>jamesbond</projectName>
-                                      <tvaritInstanceProfile>jamesbond-infra-tvaritInstanceProfile-1GTE4MDYQDWQ1</tvaritInstanceProfile>
-                                      <bucketName>tvarit-jamesbond-automation</bucketName>
-                                      <tvaritRoleArn>arn:aws:iam::085224677438:role/jamesbond-infra-tvaritRole-HUMRQBCNG1K5</tvaritRoleArn>
+                                      <projectName>mycoolproject</projectName>
+                                      <tvaritInstanceProfile>IAM instance profile</tvaritInstanceProfile>
+                                      <bucketName>Bucket Name</bucketName>
+                                      <tvaritRoleArn>IAM role</tvaritRoleArn>
                                   </configuration>
                               </execution>
                           </executions>
@@ -85,7 +86,7 @@ Do this only once. This will create a cloudformation stack in your account.
           </profile>
 ```
 
-###Deploy app and launch servers - work in progress!
+###Deploy app and launch servers into the auto scaling group- work in progress!
 ```xml
 <profile>
             <id>deploy-app</id>
@@ -103,7 +104,7 @@ Do this only once. This will create a cloudformation stack in your account.
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <bucketName>tvarit-jamesbond-automation</bucketName>
+                                    <bucketName>Bucket name</bucketName>
                                 </configuration>
                             </execution>
                         </executions>
