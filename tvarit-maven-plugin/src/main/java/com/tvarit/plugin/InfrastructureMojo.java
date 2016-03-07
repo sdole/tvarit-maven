@@ -30,7 +30,7 @@ public class InfrastructureMojo extends AbstractMojo {
         AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
         final com.amazonaws.services.cloudformation.model.Parameter domainNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("domainName").withParameterValue(this.domainName);
         final com.amazonaws.services.cloudformation.model.Parameter projectNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("projectName").withParameterValue(this.projectName);
-        final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(projectName).withParameters(domainNameParameter, projectNameParameter);
+        final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(projectName+"-infra").withParameters(domainNameParameter, projectNameParameter);
         if (templateUrl == null) {
             final String template = new TemplateReader().readTemplate("/vpc-infra.template");
             createStackRequest.withTemplateBody(template);
