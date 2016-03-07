@@ -4,6 +4,10 @@
     "tvaritElb": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
+        "AppCookieStickinessPolicy": {
+          "CookieName": "STICKY_INST",
+          "PolicyName": "SessionStickPolicy"
+        },
         "Subnets": {
           "Ref": "publicSubnets"
         },
@@ -42,7 +46,10 @@
             "InstancePort": "8080",
             "LoadBalancerPort": "80",
             "Protocol": "HTTP",
-            "InstanceProtocol": "HTTP"
+            "InstanceProtocol": "HTTP",
+            "PolicyNames": [
+              "SessionStickPolicy"
+            ]
           }
         ]
       }
