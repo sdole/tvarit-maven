@@ -125,4 +125,6 @@ The Automaton user is the user who runs the maven plugin. In a developer worksta
 <li>CloudFormation, S3, read</li>
 </ul>
 Additionally, the following trust relationships will be needed:
-CloudFormation assume role
+<ul>
+<li>CloudFormation assume role</li>
+</ul>
