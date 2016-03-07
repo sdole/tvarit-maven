@@ -26,7 +26,7 @@ public class AutoScalingMojo extends AbstractMojo {
     @Parameter(required = true)
     private String projectName;
     @Parameter(required = true)
-    private String tvaritRoleName;
+    private String tvaritInstanceProfile;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -51,14 +51,14 @@ public class AutoScalingMojo extends AbstractMojo {
             publicSubnetIdBuilder.append(eachSubnet.getSubnetId()).append(",");
         });
         final String publicSubnets = publicSubnetIdBuilder.deleteCharAt(publicSubnetIdBuilder.length() - 1).toString();
-        final String publicSubnetAzs = publicSubnetIdBuilder.deleteCharAt(publicSubnetAzsBuilder.length() - 1).toString();
+        final String publicSubnetAzs = publicSubnetAzsBuilder.deleteCharAt(publicSubnetAzsBuilder.length() - 1).toString();
         AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
         final com.amazonaws.services.cloudformation.model.Parameter projectNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("projectName").withParameterValue(this.projectName);
         final com.amazonaws.services.cloudformation.model.Parameter publicSubnetsParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("publicSubnets").withParameterValue(publicSubnets);
         final com.amazonaws.services.cloudformation.model.Parameter availabilityZonesParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("availabilityZones").withParameterValue(publicSubnetAzs);
         final com.amazonaws.services.cloudformation.model.Parameter vpcParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("vpc").withParameterValue(describeVpcResult.getVpcs().get(0).getVpcId());
         final com.amazonaws.services.cloudformation.model.Parameter healthCheckAbsoluteUrlParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("healthCheckAbsoluteUrl").withParameterValue("/healthCheck.html");
-        final com.amazonaws.services.cloudformation.model.Parameter tvaritRoleNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritRole").withParameterValue(tvaritRoleName);
+        final com.amazonaws.services.cloudformation.model.Parameter tvaritRoleNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritInstanceProfile").withParameterValue(tvaritInstanceProfile);
         final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(projectName + "-asg").withParameters(projectNameParameter, availabilityZonesParameter, publicSubnetsParameter, vpcParameter, healthCheckAbsoluteUrlParameter,tvaritRoleNameParameter);
         if (templateUrl == null) {
             String templateBody = new TemplateReader().readTemplate("/autoscaling.template");

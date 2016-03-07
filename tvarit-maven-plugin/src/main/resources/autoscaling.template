@@ -82,7 +82,7 @@
         "InstanceType": "t2.micro",
         "KeyName": "trelair",
         "IamInstanceProfile": {
-          "Ref": "tvaritRole"
+          "Ref": "tvaritInstanceProfile"
         },
         "SecurityGroups": [
           {
@@ -256,7 +256,7 @@
       "Type": "String",
       "Description": "Enter the vpc id where app will be deployed."
     },
-    "tvaritRole": {
+    "tvaritInstanceProfile": {
       "Type": "String",
       "Description": "The IAM role that will be used for all tvarit instances."
     }
