@@ -117,10 +117,12 @@ This execution configuration can optionally take a parameter named templateUrl p
 ```
 ##Automaton Permissions
 The Automaton user is the user who runs the maven plugin. In a developer workstation, that will be the developer. On a continuous integration server, such as Teamcity or Jenkins, it may be a new IAM user created for automation purposes. This user will need a wide range of permissions including at least the following.
-*S3 Buckets, Objects, create, read 
-*Lambda, Functions, create
-*IAM, role, instance profile, policy, trusts, create.
-*EC2/Autoscaling, launch configurations, auto scaling groups, ELB, create, read
-*CloudFormation, S3, read
+<ul>
+<li>S3 Buckets, Objects, create, read </li>
+<li>Lambda, Functions, create</li>
+<li>IAM, role, instance profile, policy, trusts, create.</li>
+<li>EC2/Autoscaling, launch configurations, auto scaling groups, ELB, create, read</li>
+<li>CloudFormation, S3, read</li>
+</ul>
 Additionally, the following trust relationships will be needed:
-*CloudFormation assume role
+CloudFormation assume role
