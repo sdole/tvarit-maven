@@ -22,7 +22,7 @@ Make access id and secret key available in environment as
 ```
 Configure the Maven plugin.
 ###Step 1: Create all infrastructure needed in AWS
-Do this only once. This will create a cloudformation stack in your account.
+Do this only once. This will create a cloudformation stack consisting of a VPC and other resources in your account. If you already have required setup or plan to create this manually, skip this step. Please see https://github.com/sdole/tvarit-maven/blob/master/tvarit-maven-plugin/src/main/resources/vpc-infra.template for resources you will need.
 ```xml
   <profile>
             <id>makeinfra</id>
