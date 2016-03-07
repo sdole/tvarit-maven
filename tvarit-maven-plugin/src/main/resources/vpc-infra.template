@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "tvaritRoleArn": {
+    "tvaritRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -596,7 +596,7 @@
         "SourceSecurityGroupId": {
           "Ref": "sgDefault"
         },
-        "SourceSecurityGroupOwnerId": "085224677438"
+        "SourceSecurityGroupOwnerId": { "Ref" : "AWS::AccountId" }
       }
     },
     "defaultSgOutRule": {

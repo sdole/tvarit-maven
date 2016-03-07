@@ -197,7 +197,9 @@
         "SourceSecurityGroupId": {
           "Ref": "sgTvaritElb"
         },
-        "SourceSecurityGroupOwnerId": "085224677438"
+        "SourceSecurityGroupOwnerId": {
+          "Ref": "AWS::AccountId"
+        }
       }
     },
     "ingress2": {
@@ -245,6 +247,22 @@
         "Runtime": "python2.7",
         "Role": {
           "Ref": "tvaritRoleArn"
+        }
+      }
+    },
+    "permissionForS3ToInvokeLamnda": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "autoDeployLambda",
+            "Arn"
+          ]
+        },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": {
+          "Ref": "AWS::AccountId"
         }
       }
     }
