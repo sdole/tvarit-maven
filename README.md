@@ -3,8 +3,26 @@
 Tvarit is an dev ops automation project for continuous delivery of JEE apps using Maven and AWS platforms. 
 
 ##Usage
+Make access id and secret key available in environment as 
+```xml
+  <profiles>
+		<profile>
+			<id>default</id>
+			<properties>
+				<myAccessKey>accessKey</myAccessKey>
+				<mySecretKey>secretKey</mySecretKey>
+				
+			</properties>
+			
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile> 
+	</profiles>
+```
 Configure the Maven plugin.
-###Create all infrastructure needed in AWS
+###Step 1: Create all infrastructure needed in AWS
+Do this only once. This will create a cloudformation stack in your account.
 ```xml
   <profile>
             <id>makeinfra</id>
