@@ -231,6 +231,32 @@
         "IpProtocol": "-1",
         "CidrIp": "0.0.0.0/0"
       }
+    },
+    "autoDeployLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "bucketName"
+          },
+          "S3Key": "lambda/deployNewWar.zip"
+        },
+        "Handler": "deployNewWar.deployNewWar",
+        "Runtime": "python2.7",
+        "Role": {
+          "Ref": "tvaritRoleArn"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "LambdaFunctionArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "autoDeployLambda",
+          "Arn"
+        ]
+      }
     }
   },
   "Parameters": {
@@ -259,6 +285,14 @@
     "tvaritInstanceProfile": {
       "Type": "String",
       "Description": "The IAM role that will be used for all tvarit instances."
+    },
+    "bucketName": {
+      "Type": "String",
+      "Description": "The bucket where code, config and lambda will be stored."
+    },
+    "tvaritRoleArn": {
+      "Type": "String",
+      "Description": "The IAM role arn that will be used for lambda."
     }
   },
   "Description": ""

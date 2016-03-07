@@ -71,9 +71,9 @@
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <projectName>cricclubs</projectName>
-                                    <domainName>cricclubs.io</domainName>
-                                    <bucketName>cricclubs-automation</bucketName>
+                                    <projectName>jamesbond</projectName>
+                                    <domainName>jamesbond.io</domainName>
+                                    <bucketName>jamesbond-automation</bucketName>
                                 </configuration>
                             </execution>
                         </executions>
@@ -97,8 +97,10 @@
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <projectName>cricclubs</projectName>
-                                    <tvaritInstanceProfile>cricclubs-tvaritInstanceProfile-2D7M2QOV0N2U</tvaritInstanceProfile>
+                                    <projectName>jamesbond</projectName>
+                                    <tvaritInstanceProfile>jamesbond-infra-tvaritInstanceProfile-1GTE4MDYQDWQ1</tvaritInstanceProfile>
+                                    <bucketName>tvarit-jamesbond-automation</bucketName>
+                                    <tvaritRoleArn>arn:aws:iam::085224677438:role/jamesbond-infra-tvaritRole-HUMRQBCNG1K5</tvaritRoleArn>
                                 </configuration>
                             </execution>
                         </executions>
@@ -122,7 +124,7 @@
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <bucketName>tvarit</bucketName>
+                                    <bucketName>tvarit-jamesbond-automation</bucketName>
                                 </configuration>
                             </execution>
                         </executions>

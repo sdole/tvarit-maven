@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "tvaritRole": {
+    "tvaritRoleArn": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -393,6 +393,7 @@
         }
       }
     },
+
     "tvaritS3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -401,8 +402,9 @@
           "Status": "Suspended"
         },
         "BucketName": {
-          "Ref": "tvaritBucketName"
+          "Ref": "bucketName"
         },
+
         "Tags": [
           {
             "Key": "tvarit:bucket",
