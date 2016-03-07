@@ -88,7 +88,7 @@ This execution configuration can optionally take a parameter named templateUrl p
           </profile>
 ```
 
-####Deploy app and launch servers into the auto scaling group- [work in progress](#13)!
+####Deploy app and launch servers into the auto scaling group - work in progress #13
 ```xml
 <profile>
             <id>deploy-app</id>
