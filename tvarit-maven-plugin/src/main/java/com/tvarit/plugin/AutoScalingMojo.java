@@ -54,9 +54,10 @@ public class AutoScalingMojo extends AbstractMojo {
         final com.amazonaws.services.cloudformation.model.Parameter publicSubnetsParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("publicSubnets").withParameterValue(publicSubnets);
         final com.amazonaws.services.cloudformation.model.Parameter availabilityZonesParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("availabilityZones").withParameterValue(publicSubnetAzs);
         final com.amazonaws.services.cloudformation.model.Parameter vpcParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("vpc").withParameterValue(describeVpcResult.getVpcs().get(0).getVpcId());
-        final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(projectName).withParameters(projectNameParameter, availabilityZonesParameter, publicSubnetsParameter);
+        final com.amazonaws.services.cloudformation.model.Parameter healthCheckAbsoluteUrlParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("healthCheckAbsoluteUrl").withParameterValue("/healthCheck.html");
+        final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(projectName + "-asg").withParameters(projectNameParameter, availabilityZonesParameter, publicSubnetsParameter, vpcParameter, healthCheckAbsoluteUrlParameter);
         if (templateUrl == null) {
-            String templateBody = new VpcInfraTemplateBody().decode();
+            String templateBody = new TemplateReader().readTemplate("/autoscaling.template");
             createStackRequest.withTemplateBody(templateBody);
         } else {
             createStackRequest.withTemplateURL(templateUrl);
