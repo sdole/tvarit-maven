@@ -55,7 +55,7 @@ Do this only once. This will create a cloudformation stack consisting of a VPC a
 
 
 ###Create an autoscaling group in EC2 for app servers
-Go to your AWS console and obtain the IAM instance profile, IAM role and bucket ARN that were created in the step above. Use those here.
+Do this only once. Go to your AWS console and obtain the IAM instance profile, IAM role and bucket ARN that were created in the step above. Use those here. Please see https://github.com/sdole/tvarit-maven/blob/master/tvarit-maven-plugin/src/main/resources/autoscaling.template for resources needed in this step.
 ```xml
    <profile>
               <id>makeasg</id>
