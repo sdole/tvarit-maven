@@ -3,7 +3,7 @@
 Tvarit is an dev ops automation project for continuous delivery of JEE apps using Maven and AWS platforms. 
 
 ##Usage
-Make access id and secret key available in environment as. This access id should be allowed all [IAM permissions](Automaton_Permissions.md) to run the plugin.
+Make access id and secret key available in environment as. This access id should be allowed all [IAM permissions](README.MD#) to run the plugin.
 ```xml
   <profiles>
 		<profile>
@@ -115,3 +115,12 @@ This execution configuration can optionally take a parameter named templateUrl p
             </build>
         </profile>
 ```
+##Automaton Permissions
+The Automaton user is the user who runs the maven plugin. In a developer workstation, that will be the developer. On a continuous integration server, such as Teamcity or Jenkins, it may be a new IAM user created for automation purposes. This user will need a wide range of permissions including at least the following.
+*S3 Buckets, Objects, create, read 
+*Lambda, Functions, create
+*IAM, role, instance profile, policy, trusts, create.
+*EC2/Autoscaling, launch configurations, auto scaling groups, ELB, create, read
+*CloudFormation, S3, read
+Additionally, the following trust relationships will be needed:
+*CloudFormation assume role
