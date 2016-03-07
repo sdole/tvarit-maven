@@ -81,7 +81,9 @@
         "ImageId": "ami-0c6f5f64",
         "InstanceType": "t2.micro",
         "KeyName": "trelair",
-        "IamInstanceProfile": "tvarit-test-tvaritInstanceProfile-1JOG0M5KKDPJW",
+        "IamInstanceProfile": {
+          "Ref": "tvaritRole"
+        },
         "SecurityGroups": [
           {
             "Ref": "sgtvaritappserver"
@@ -253,6 +255,10 @@
     "vpc": {
       "Type": "String",
       "Description": "Enter the vpc id where app will be deployed."
+    },
+    "tvaritRole": {
+      "Type": "String",
+      "Description": "The IAM role that will be used for all tvarit instances."
     }
   },
   "Description": ""

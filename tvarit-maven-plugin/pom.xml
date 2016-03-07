@@ -66,6 +66,11 @@
             </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-iam</artifactId>
+                <version>${version.aws.sdk}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
                 <version>${version.aws.sdk}</version>
                 <type>pom</type>

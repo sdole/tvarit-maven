@@ -25,6 +25,8 @@ public class AutoScalingMojo extends AbstractMojo {
     private String templateUrl;
     @Parameter(required = true)
     private String projectName;
+    @Parameter(required = true)
+    private String tvaritRoleName;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -32,6 +34,7 @@ public class AutoScalingMojo extends AbstractMojo {
 
 
         final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+
 
         AmazonEC2Client amazonEC2Client = new AmazonEC2Client(awsCredentials);
         final DescribeSubnetsRequest describeAppSubnetsRequest = new DescribeSubnetsRequest();
@@ -55,7 +58,8 @@ public class AutoScalingMojo extends AbstractMojo {
         final com.amazonaws.services.cloudformation.model.Parameter availabilityZonesParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("availabilityZones").withParameterValue(publicSubnetAzs);
         final com.amazonaws.services.cloudformation.model.Parameter vpcParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("vpc").withParameterValue(describeVpcResult.getVpcs().get(0).getVpcId());
         final com.amazonaws.services.cloudformation.model.Parameter healthCheckAbsoluteUrlParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("healthCheckAbsoluteUrl").withParameterValue("/healthCheck.html");
-        final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(projectName + "-asg").withParameters(projectNameParameter, availabilityZonesParameter, publicSubnetsParameter, vpcParameter, healthCheckAbsoluteUrlParameter);
+        final com.amazonaws.services.cloudformation.model.Parameter tvaritRoleNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritRole").withParameterValue(tvaritRoleName);
+        final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(projectName + "-asg").withParameters(projectNameParameter, availabilityZonesParameter, publicSubnetsParameter, vpcParameter, healthCheckAbsoluteUrlParameter,tvaritRoleNameParameter);
         if (templateUrl == null) {
             String templateBody = new TemplateReader().readTemplate("/autoscaling.template");
             createStackRequest.withTemplateBody(templateBody);
