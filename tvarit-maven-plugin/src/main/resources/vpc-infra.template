@@ -372,7 +372,15 @@
         "VersioningConfiguration": {
           "Status": "Suspended"
         },
-        "BucketName": "tvarit"
+        "BucketName": {
+          "Ref": "tvaritBucketName"
+        },
+        "Tags": [
+          {
+            "Key": "tvarit:bucket",
+            "Value": ""
+          }
+        ]
       }
     },
     "sgDefault": {
@@ -582,6 +590,11 @@
     "domainName": {
       "Type": "String",
       "Description": "Enter a name for the domain name for which a new hosted zone will be created.",
+      "MinLength": "1"
+    },
+    "bucketName": {
+      "Type": "String",
+      "Description": "Enter a name for a new S3 bucket where that will be created for deployment via tvarit.",
       "MinLength": "1"
     }
   },

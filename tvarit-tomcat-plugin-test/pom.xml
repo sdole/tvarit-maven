@@ -65,7 +65,7 @@
                         <version>0.0.1-SNAPSHOT</version>
                         <executions>
                             <execution>
-                                <id>deploy</id>
+                                <id>make-infra</id>
                                 <goals>
                                     <goal>make-infra</goal>
                                 </goals>
@@ -73,6 +73,7 @@
                                 <configuration>
                                     <projectName>cricclubs</projectName>
                                     <domainName>cricclubs.io</domainName>
+                                    <bucketName>cricclubs-automation</bucketName>
                                 </configuration>
                             </execution>
                         </executions>
@@ -90,7 +91,7 @@
                         <version>0.0.1-SNAPSHOT</version>
                         <executions>
                             <execution>
-                                <id>deploy</id>
+                                <id>setup-as</id>
                                 <goals>
                                     <goal>setup-autoscaling</goal>
                                 </goals>
@@ -98,6 +99,30 @@
                                 <configuration>
                                     <projectName>cricclubs</projectName>
                                     <tvaritInstanceProfile>cricclubs-tvaritInstanceProfile-2D7M2QOV0N2U</tvaritInstanceProfile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>deploy-app</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.tvarit</groupId>
+                        <artifactId>tvarit-maven-plugin</artifactId>
+                        <version>0.0.1-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <goals>
+                                    <goal>deploy-tomcat-ui-app</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <bucketName>tvarit</bucketName>
                                 </configuration>
                             </execution>
                         </executions>
