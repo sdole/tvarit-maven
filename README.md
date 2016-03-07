@@ -3,7 +3,7 @@
 Tvarit is an dev ops automation project for continuous delivery of JEE apps using Maven and AWS platforms. 
 
 ##Usage
-Make access id and secret key available in environment as. This access id should be allowed all [IAM permissions](README.MD#) to run the plugin.
+Make access id and secret key available in environment as. This access id should be allowed all [IAM permissions](README.MD#automaton-permissions) to run the plugin.
 ```xml
   <profiles>
 		<profile>
