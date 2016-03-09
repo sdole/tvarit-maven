@@ -5,8 +5,8 @@ Tvarit is a dev ops automation project for continuous delivery of JEE apps using
 ##Goals
 <ol>
 <li>Provide a completely automatic path to take code from every code commit to production and further on to retirement or rollback</li>
-<li>Support application dependencies (with contracts) in every environment<li>
-<li>Be automatically scalable, available and cost effective<li>
+<li>Support application dependencies (with contracts) in every environment</li>
+<li>Be automatically scalable, available and cost effective</li>
 </ol>
 
 ##Current status
