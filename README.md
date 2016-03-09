@@ -1,4 +1,5 @@
 #Tvarit
+[![Build Status](https://travis-ci.org/sdole/tvarit-maven.svg?branch=master)](https://travis-ci.org/sdole/tvarit-maven)
 ##About
 Tvarit is a dev ops automation project for continuous delivery of JEE apps using Maven and AWS platforms.
  
