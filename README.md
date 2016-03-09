@@ -1,8 +1,21 @@
 #Tvarit
 ##About
-Tvarit is an dev ops automation project for continuous delivery of JEE apps using Maven and AWS platforms. 
+Tvarit is a dev ops automation project for continuous delivery of JEE apps using Maven and AWS platforms.
+ 
+##Goals
+<ol>
+<li>Provide a completely automatic path to take code from every code commit to production and further on to retirement or rollback</li>
+<li>Support application dependencies (with contracts) in every environment<li>
+<li>Be automatically scalable, available and cost effective<li>
+</ol>
+
+##Current status
+This plugin can be used as it is today to deploy a standalone webapp (WAR) to an automatically scalable environment in AWS. Actual capabilities of the environment can be customized by customizing the underlying AWS CloudFormation templates.
+
 
 ##Usage
+Tvarit Maven Plugin is available in Maven Central
+###AWS Credentials
 Make access id and secret key available in environment as. This access id should be allowed all [IAM permissions](#automaton-permissions) to run the plugin.
 ```xml
   <profiles>
@@ -11,9 +24,7 @@ Make access id and secret key available in environment as. This access id should
 			<properties>
 				<myAccessKey>accessKey</myAccessKey>
 				<mySecretKey>secretKey</mySecretKey>
-				
 			</properties>
-			
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -24,6 +35,10 @@ Make access id and secret key available in environment as. This access id should
 ####Step 1: Create all infrastructure needed in AWS
 Do this only once. This will create a cloudformation stack consisting of a VPC and other resources in your account. If you already have required setup or plan to create this manually, skip this step. Please see [vpc infrastructure template](/tvarit-maven-plugin/src/main/resources/vpc-infra.template) for resources you will need.
 This execution configuration can optionally take a parameter named templateUrl pointing to an S3 hosted cloudformation template. If set, resources specified in that template will be created instead.
+To run this goal:
+```
+mvn -P makeinfra tvarit:make-infra@make-infra     <-- To use this syntax, you'll need at least ver 3.3.3 of Maven
+```
 ```xml
   <profile>
             <id>makeinfra</id>
@@ -39,7 +54,6 @@ This execution configuration can optionally take a parameter named templateUrl p
                                 <goals>
                                     <goal>make-infra</goal>
                                 </goals>
-                                <phase>deploy</phase>
                                 <configuration>
                                     <projectName>mycoolproject</projectName>
                                     <domainName>mycooldomainname.io</domainName>
@@ -58,6 +72,10 @@ This execution configuration can optionally take a parameter named templateUrl p
 ####Create an autoscaling group in EC2 for app servers
 Do this only once. Go to your AWS console and obtain the IAM instance profile, IAM role and bucket ARN that were created in the step above. Use those here. Please see [autoscaling template](https://github.com/sdole/tvarit-maven/blob/master/tvarit-maven-plugin/src/main/resources/autoscaling.template) for resources needed in this step.
 This execution configuration can optionally take a parameter named templateUrl pointing to an S3 hosted cloudformation template. If set, resources specified in that template will be created instead.
+To run this goal:
+```
+mvn -P makeasg tvarit:setup-autoscaling@setup-as     <-- To use this syntax, you'll need at least ver 3.3.3 of Maven
+```
 ```xml
    <profile>
               <id>makeasg</id>
@@ -73,7 +91,6 @@ This execution configuration can optionally take a parameter named templateUrl p
                                   <goals>
                                       <goal>setup-autoscaling</goal>
                                   </goals>
-                                  <phase>deploy</phase>
                                   <configuration>
                                       <projectName>mycoolproject</projectName>
                                       <tvaritInstanceProfile>IAM instance profile</tvaritInstanceProfile>
@@ -89,6 +106,11 @@ This execution configuration can optionally take a parameter named templateUrl p
 ```
 
 ####Deploy app and launch servers into the auto scaling group - [work in progress](https://github.com/sdole/tvarit-maven/issues/13)
+To run this goal:
+```
+mvn -P deploy-app deploy 
+```
+
 ```xml
 <profile>
             <id>deploy-app</id>

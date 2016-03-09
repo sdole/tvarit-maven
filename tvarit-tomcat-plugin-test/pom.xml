@@ -69,7 +69,6 @@
                                 <goals>
                                     <goal>make-infra</goal>
                                 </goals>
-                                <phase>deploy</phase>
                                 <configuration>
                                     <projectName>jamesbond</projectName>
                                     <domainName>jamesbond.io</domainName>
@@ -95,7 +94,6 @@
                                 <goals>
                                     <goal>setup-autoscaling</goal>
                                 </goals>
-                                <phase>deploy</phase>
                                 <configuration>
                                     <projectName>jamesbond</projectName>
                                     <tvaritInstanceProfile>jamesbond-infra-tvaritInstanceProfile-1GTE4MDYQDWQ1</tvaritInstanceProfile>
