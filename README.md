@@ -150,3 +150,6 @@ Additionally, the following trust relationships will be needed:
 <ul>
 <li>CloudFormation assume role</li>
 </ul>
+
+##License
+Tvarit is licensed under [GPLv3](https://www.gnu.org/licenses/gpl.txt)
