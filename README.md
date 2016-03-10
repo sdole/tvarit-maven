@@ -13,7 +13,6 @@ Tvarit is a dev ops automation project for continuous delivery of JEE apps using
 ##Current status
 This plugin can be used to deploy a standalone webapp (WAR) to an automatically scalable environment in AWS. Actual capabilities of the environment can be customized by customizing the underlying AWS CloudFormation templates.
 
-
 ##Usage
 Tvarit Maven Plugin is available in Maven Central
 ###AWS Credentials
