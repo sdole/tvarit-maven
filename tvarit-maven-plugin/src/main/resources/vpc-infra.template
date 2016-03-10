@@ -100,7 +100,7 @@
                 "ec2:TerminateInstances"
               ],
               "Resource": [
-                "arn:aws:ec2:us-east-1::*/*"
+                "*"
               ]
             },
             {
@@ -393,7 +393,6 @@
         }
       }
     },
-
     "tvaritS3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -404,7 +403,6 @@
         "BucketName": {
           "Ref": "bucketName"
         },
-
         "Tags": [
           {
             "Key": "tvarit:bucket",
@@ -596,7 +594,9 @@
         "SourceSecurityGroupId": {
           "Ref": "sgDefault"
         },
-        "SourceSecurityGroupOwnerId": { "Ref" : "AWS::AccountId" }
+        "SourceSecurityGroupOwnerId": {
+          "Ref": "AWS::AccountId"
+        }
       }
     },
     "defaultSgOutRule": {
