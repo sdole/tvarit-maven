@@ -64,7 +64,18 @@
                 "s3:PutObject"
               ],
               "Resource": [
-                "arn:aws:s3:::tvarit/*"
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "bucketName"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
               ]
             },
             {

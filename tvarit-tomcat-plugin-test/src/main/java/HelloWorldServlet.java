@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -21,7 +22,15 @@ public class HelloWorldServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final PrintWriter responseWriter = response.getWriter();
-        responseWriter.println("<div>" + InetAddress.getLocalHost().getHostName() + "</div>");
+        String hostName;
+        final InetAddress localHost;
+        try {
+            localHost = InetAddress.getLocalHost();
+            hostName = localHost.getHostName();
+        } catch (UnknownHostException e) {
+            hostName = "Unkonwn";
+        }
+        responseWriter.println("<div>" + hostName + "</div>");
         responseWriter.println("<div>cookies</div>");
         final Cookie[] cookies = request.getCookies();
         responseWriter.println("<table border=''>");
