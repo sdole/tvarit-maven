@@ -20,8 +20,11 @@
 package com.tvarit.plugin;
 
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
+import com.amazonaws.services.autoscaling.model.AttachInstancesRequest;
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 import com.amazonaws.services.cloudformation.model.CreateStackRequest;
+import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -56,6 +59,8 @@ public class TvaritTomcatDeployerMojo extends AbstractMojo {
     private String instanceSecurityGroupId;
     @Parameter(required = true)
     private String sshKeyName;
+    @Parameter (required = true)
+    private String autoScalingGroupName;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -83,6 +88,11 @@ public class TvaritTomcatDeployerMojo extends AbstractMojo {
         } else {
             createStackRequest.withTemplateURL(templateUrl);
         }
-        new StackMaker().makeStack(createStackRequest,amazonCloudFormationClient,getLog());
+        createStackRequest.withDisableRollback(true);
+        final Stack stack = new StackMaker().makeStack(createStackRequest, amazonCloudFormationClient, getLog());
+        AmazonAutoScalingClient amazonAutoScalingClient = new AmazonAutoScalingClient(awsCredentials);
+        final AttachInstancesRequest attachInstancesRequest = new AttachInstancesRequest();
+        attachInstancesRequest.withInstanceIds(stack.getOutputs().get(0).getOutputValue(),stack.getOutputs().get(1).getOutputValue()).withAutoScalingGroupName(autoScalingGroupName);
+        amazonAutoScalingClient.attachInstances(attachInstancesRequest);
     }
 }

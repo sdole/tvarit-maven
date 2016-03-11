@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>tvarit</groupId>
     <artifactId>tvarit-tomcat-plugin-test</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <distributionManagement>
         <repository>
@@ -135,6 +135,7 @@
                                     <commaSeparatedSubnetIds>subnet-988c2fb2,subnet-14b3064c</commaSeparatedSubnetIds>
                                     <instanceSecurityGroupId>sg-f77dce8f</instanceSecurityGroupId>
                                     <sshKeyName>trelair</sshKeyName>
+                                    <autoScalingGroupName>jamesbond-asg-tvaritAutoScalingGroup-14RZVLA8H6PBN</autoScalingGroupName>
                                 </configuration>
                             </execution>
                         </executions>
