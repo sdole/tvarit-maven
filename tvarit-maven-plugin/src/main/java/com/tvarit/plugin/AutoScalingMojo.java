@@ -30,12 +30,15 @@ import com.amazonaws.services.ec2.model.*;
 import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.json.JSONUtils;
+import com.amazonaws.util.json.JSONWriter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -106,6 +109,8 @@ public class AutoScalingMojo extends AbstractMojo {
 
         final ObjectMetadata autoscalingNewInstanceTemplateS3ObjMetadata = new ObjectMetadata();
         amazonS3Client.putObject(new PutObjectRequest(bucketName, "config/autoscaling/newinstance.template", this.getClass().getResourceAsStream("/newinstance.template"), autoscalingNewInstanceTemplateS3ObjMetadata));
+        new JSONWriter(new StringWriter()).object().key("")
+        amazonS3Client.putObject(new PutObjectRequest(bucketName,"config/autoscaling/config.json"));
         final BucketNotificationConfiguration notificationConfiguration = new BucketNotificationConfiguration();
         final HashMap<String, NotificationConfiguration> configurations = new HashMap<>();
         final LambdaConfiguration lambdaConfiguration = new LambdaConfiguration(lambdaFunctionArn);
