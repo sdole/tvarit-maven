@@ -1,22 +1,18 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "VpcIPAssoc": {
-      "Type": "AWS::EC2::EIPAssociation",
-      "Properties": {
-        "InstanceId": {
-          "Ref": "AppServer"
-        },
-        "AllocationId": "eipalloc-27787743"
-      }
-    },
     "AppServer": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "ImageId": "ami-0d61c466",
         "InstanceType": "t2.micro",
         "SubnetId": {
-          "Ref": "subnetId"
+          "Fn::Select": [
+            0,
+            {
+              "Ref": "publicSubnets"
+            }
+          ]
         },
         "KeyName": {
           "Ref": "keyName"
@@ -132,11 +128,9 @@
       "AllowedPattern": "[A-Za-z]*",
       "MinLength": "1"
     },
-    "subnetId": {
-      "Type": "String",
-      "Description": "Subnet where app server should be started.",
-      "AllowedPattern": "[A-Za-z]*",
-      "MinLength": "1"
+    "publicSubnets": {
+      "Type": "CommaDelimitedList",
+      "Description": "Two Subnets where app server should be started."
     },
     "bucketName": {
       "Type": "String",

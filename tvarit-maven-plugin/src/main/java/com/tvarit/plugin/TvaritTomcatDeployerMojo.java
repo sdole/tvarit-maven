@@ -46,6 +46,16 @@ public class TvaritTomcatDeployerMojo extends AbstractMojo {
     private String projectName;
     @Parameter
     private String templateUrl;
+    @Parameter(required = true)
+    private String commaSeparatedSubnetIds;
+    @Parameter(required = true)
+    private String tvaritRole;
+    @Parameter(required = true)
+    private String tvaritInstanceProfile;
+    @Parameter(required = true)
+    private String instanceSecurityGroupId;
+    @Parameter(required = true)
+    private String sshKeyName;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -56,14 +66,23 @@ public class TvaritTomcatDeployerMojo extends AbstractMojo {
         final String key = "war/" + project.getGroupId() + "/" + project.getArtifactId() + "/" + project.getVersion() + "/" + warFile.getName();
         final PutObjectResult putObjectResult = s3Client.putObject(new PutObjectRequest(bucketName, key, warFile));
         AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
+        final com.amazonaws.services.cloudformation.model.Parameter projectNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("projectName").withParameterValue(this.projectName);
+        final com.amazonaws.services.cloudformation.model.Parameter publicSubnetsParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("publicSubnets").withParameterValue(commaSeparatedSubnetIds);
+        final com.amazonaws.services.cloudformation.model.Parameter tvaritRoleParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritRole").withParameterValue(tvaritRole);
+        final com.amazonaws.services.cloudformation.model.Parameter tvaritInstanceProfileParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritInstanceProfile").withParameterValue(this.tvaritInstanceProfile);
+        final com.amazonaws.services.cloudformation.model.Parameter tvaritBucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue(this.bucketName);
+        final com.amazonaws.services.cloudformation.model.Parameter instanceSecurityGroupIdParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("sgId").withParameterValue(this.instanceSecurityGroupId);
+        final com.amazonaws.services.cloudformation.model.Parameter sshKeyNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("keyName").withParameterValue(this.sshKeyName);
+        final String warFileUrl = s3Client.getUrl(bucketName,key).toString();
+        final com.amazonaws.services.cloudformation.model.Parameter warFileUrlParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("warFileUrl").withParameterValue(warFileUrl);
         final CreateStackRequest createStackRequest = new CreateStackRequest();
-        createStackRequest.withStackName(projectName + "-instance-" + project.getVersion());
+        createStackRequest.withStackName(projectName + "-instance-" + project.getVersion().replace(".","-")).withParameters(projectNameParameter, publicSubnetsParameter, tvaritInstanceProfileParameter, tvaritRoleParameter, tvaritBucketNameParameter, instanceSecurityGroupIdParameter,warFileUrlParameter,sshKeyNameParameter);
         if (templateUrl == null) {
             String templateBody = new TemplateReader().readTemplate("/newinstance.template");
             createStackRequest.withTemplateBody(templateBody);
         } else {
             createStackRequest.withTemplateURL(templateUrl);
         }
-        amazonCloudFormationClient.createStack(createStackRequest);
+        new StackMaker().makeStack(createStackRequest,amazonCloudFormationClient,getLog());
     }
 }

@@ -53,11 +53,11 @@ public class AutoScalingMojo extends AbstractMojo {
     @Parameter(required = true)
     private String projectName;
     @Parameter(required = true)
-    private String tvaritInstanceProfile;
-    @Parameter(required = true)
     private String bucketName;
     @Parameter(required = true)
     private String tvaritRoleArn;
+    @Parameter(required = true)
+    private String tvaritInstanceProfile;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {

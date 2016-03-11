@@ -53,6 +53,15 @@
                 <version>2.6</version>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.tvarit</groupId>
+                    <artifactId>tvarit-maven-plugin</artifactId>
+                    <version>0.1.1-SNAPSHOT</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
     <profiles>
         <profile>
@@ -62,7 +71,6 @@
                     <plugin>
                         <groupId>io.tvarit</groupId>
                         <artifactId>tvarit-maven-plugin</artifactId>
-                        <version>0.0.1-SNAPSHOT</version>
                         <executions>
                             <execution>
                                 <id>make-infra</id>
@@ -87,7 +95,6 @@
                     <plugin>
                         <groupId>io.tvarit</groupId>
                         <artifactId>tvarit-maven-plugin</artifactId>
-                        <version>0.0.1-SNAPSHOT</version>
                         <executions>
                             <execution>
                                 <id>setup-as</id>
@@ -113,7 +120,6 @@
                     <plugin>
                         <groupId>io.tvarit</groupId>
                         <artifactId>tvarit-maven-plugin</artifactId>
-                        <version>0.0.1-SNAPSHOT</version>
                         <executions>
                             <execution>
                                 <id>deploy</id>
@@ -123,6 +129,12 @@
                                 <phase>deploy</phase>
                                 <configuration>
                                     <bucketName>tvarit-jamesbond-automation</bucketName>
+                                    <projectName>jamesbond</projectName>
+                                    <tvaritInstanceProfile>jamesbond-infra-tvaritInstanceProfile-1GTE4MDYQDWQ1</tvaritInstanceProfile>
+                                    <tvaritRole>jamesbond-infra-tvaritRole-HUMRQBCNG1K5</tvaritRole>
+                                    <commaSeparatedSubnetIds>subnet-988c2fb2,subnet-14b3064c</commaSeparatedSubnetIds>
+                                    <instanceSecurityGroupId>sg-f77dce8f</instanceSecurityGroupId>
+                                    <sshKeyName>trelair</sshKeyName>
                                 </configuration>
                             </execution>
                         </executions>
