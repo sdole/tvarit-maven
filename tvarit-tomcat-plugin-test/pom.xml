@@ -78,9 +78,9 @@
                                     <goal>make-infra</goal>
                                 </goals>
                                 <configuration>
-                                    <projectName>jamesbond</projectName>
-                                    <domainName>jamesbond.io</domainName>
-                                    <bucketName>jamesbond-automation</bucketName>
+                                    <projectName>tvaritAuto</projectName>
+                                    <domainName>tvarit2.io</domainName>
+                                    <bucketName>tvarirt2-automation</bucketName>
                                 </configuration>
                             </execution>
                         </executions>

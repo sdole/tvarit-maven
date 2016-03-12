@@ -279,10 +279,11 @@
             }
           },
           {
-            "Key": "tvarit:app",
+            "Key": "tvarit:appSubnet",
             "Value": ""
           }
-        ]
+        ],
+        "MapPublicIpOnLaunch": true
       }
     },
     "dbSubnetB": {
@@ -325,7 +326,7 @@
         },
         "Tags": [
           {
-            "Key": "tvarit:app",
+            "Key": "tvarit:appSubnet",
             "Value": ""
           },
           {
@@ -342,7 +343,8 @@
               ]
             }
           }
-        ]
+        ],
+        "MapPublicIpOnLaunch": true
       }
     },
     "publicSubnetIg": {
@@ -563,16 +565,6 @@
         "tvaritS3Bucket"
       ],
       "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "*",
-              "Effect": "Allow",
-              "Resource": "arn:aws:s3:::tvarit/*",
-              "Principal": "*"
-            }
-          ]
-        },
         "RouteTableIds": [
           {
             "Ref": "publicSubnetRouteTable"
