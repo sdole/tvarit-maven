@@ -4,9 +4,8 @@
     "tvaritElb": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
-        "AppCookieStickinessPolicy": {
-          "CookieName": "STICKY_INST",
-          "PolicyName": "SessionStickPolicy"
+        "LBCookieStickinessPolicy": {
+          "PolicyName": "StickyLb"
         },
         "Subnets": {
           "Ref": "publicSubnets"
@@ -48,7 +47,7 @@
             "Protocol": "HTTP",
             "InstanceProtocol": "HTTP",
             "PolicyNames": [
-              "SessionStickPolicy"
+              "StickyLb"
             ]
           }
         ]
