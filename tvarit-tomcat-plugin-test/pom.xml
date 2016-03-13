@@ -128,14 +128,14 @@
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <bucketName>tvarit-jamesbond-automation</bucketName>
-                                    <projectName>jamesbond</projectName>
-                                    <tvaritInstanceProfile>jamesbond-infra-tvaritInstanceProfile-1GTE4MDYQDWQ1</tvaritInstanceProfile>
-                                    <tvaritRole>jamesbond-infra-tvaritRole-HUMRQBCNG1K5</tvaritRole>
-                                    <commaSeparatedSubnetIds>subnet-988c2fb2,subnet-14b3064c</commaSeparatedSubnetIds>
-                                    <instanceSecurityGroupId>sg-f77dce8f</instanceSecurityGroupId>
+                                    <bucketName>tvarit-tvarirt2-automation</bucketName>
+                                    <projectName>tvaritAuto</projectName>
+                                    <tvaritInstanceProfile>tvaritAuto-infra-tvaritInstanceProfile-15XY0377X7CM8</tvaritInstanceProfile>
+                                    <tvaritRole>tvaritAuto-infra-tvaritRole-1THX1CV5IEZZB</tvaritRole>
+                                    <commaSeparatedSubnetIds>subnet-beeb58e6,subnet-a679d08c</commaSeparatedSubnetIds>
+                                    <instanceSecurityGroupId>sg-10d15368</instanceSecurityGroupId>
                                     <sshKeyName>trelair</sshKeyName>
-                                    <autoScalingGroupName>jamesbond-asg-tvaritAutoScalingGroup-14RZVLA8H6PBN</autoScalingGroupName>
+                                    <autoScalingGroupName>tvaritAuto-asg-tvaritAutoScalingGroup-19LL97OFCCF7C</autoScalingGroupName>
                                 </configuration>
                             </execution>
                         </executions>

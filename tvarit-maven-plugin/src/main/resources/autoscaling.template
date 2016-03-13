@@ -65,7 +65,7 @@
         "DesiredCapacity": "0",
         "HealthCheckGracePeriod": "300",
         "HealthCheckType": "ELB",
-        "MaxSize": "0",
+        "MaxSize": "6",
         "MinSize": "0",
         "VPCZoneIdentifier": {
           "Ref": "publicSubnets"
