@@ -227,7 +227,17 @@
             }
           },
           {
-            "Key": "tvarit:vpc",
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  ":vpc"
+                ]
+              ]
+            },
             "Value": ""
           }
         ]
@@ -257,7 +267,17 @@
             }
           },
           {
-            "Key": "tvarit:db",
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  ":db"
+                ]
+              ]
+            },
             "Value": ""
           }
         ]
@@ -287,7 +307,17 @@
             }
           },
           {
-            "Key": "tvarit:appSubnet",
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  ":appSubnet"
+                ]
+              ]
+            },
             "Value": ""
           }
         ],
@@ -304,7 +334,17 @@
         },
         "Tags": [
           {
-            "Key": "tvarit:db",
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  ":db"
+                ]
+              ]
+            },
             "Value": ""
           },
           {
@@ -334,7 +374,17 @@
         },
         "Tags": [
           {
-            "Key": "tvarit:appSubnet",
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  ":appSubnet"
+                ]
+              ]
+            },
             "Value": ""
           },
           {
@@ -437,7 +487,17 @@
         },
         "Tags": [
           {
-            "Key": "tvarit:bucket",
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  ":bucket"
+                ]
+              ]
+            },
             "Value": ""
           }
         ]

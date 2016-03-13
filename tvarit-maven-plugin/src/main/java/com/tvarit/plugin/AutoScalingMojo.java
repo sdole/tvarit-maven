@@ -69,10 +69,10 @@ public class AutoScalingMojo extends AbstractMojo {
 
         AmazonEC2Client amazonEC2Client = new AmazonEC2Client(awsCredentials);
         final DescribeSubnetsRequest describeAppSubnetsRequest = new DescribeSubnetsRequest();
-        final Filter filter = new Filter().withName("tag-key").withValues("tvarit:app");
-        describeAppSubnetsRequest.withFilters(filter);
+        final Filter subnetFilter = new Filter().withName("tag-key").withValues(projectName + ":appSubnet");
+        describeAppSubnetsRequest.withFilters(subnetFilter);
         final DescribeVpcsRequest describeVpcsRequest = new DescribeVpcsRequest();
-        describeVpcsRequest.withFilters(new Filter("tag-key", Collections.singletonList("tvarit:vpc")));
+        describeVpcsRequest.withFilters(new Filter("tag-key", Collections.singletonList(projectName + ":vpc")));
         final DescribeVpcsResult describeVpcResult = amazonEC2Client.describeVpcs(describeVpcsRequest);
         final DescribeSubnetsResult describeSubnetsResult = amazonEC2Client.describeSubnets(describeAppSubnetsRequest);
         StringBuilder publicSubnetAzsBuilder = new StringBuilder();

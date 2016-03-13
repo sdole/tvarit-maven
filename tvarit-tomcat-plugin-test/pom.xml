@@ -102,10 +102,10 @@
                                     <goal>setup-autoscaling</goal>
                                 </goals>
                                 <configuration>
-                                    <projectName>jamesbond</projectName>
-                                    <tvaritInstanceProfile>jamesbond-infra-tvaritInstanceProfile-1GTE4MDYQDWQ1</tvaritInstanceProfile>
-                                    <bucketName>tvarit-jamesbond-automation</bucketName>
-                                    <tvaritRoleArn>arn:aws:iam::085224677438:role/jamesbond-infra-tvaritRole-HUMRQBCNG1K5</tvaritRoleArn>
+                                    <projectName>tvaritAuto</projectName>
+                                    <tvaritInstanceProfile>arn:aws:iam::085224677438:instance-profile/tvaritAuto-infra-tvaritInstanceProfile-15XY0377X7CM8</tvaritInstanceProfile>
+                                    <bucketName>tvarit-tvarirt2-automation</bucketName>
+                                    <tvaritRoleArn>arn:aws:iam::085224677438:role/tvaritAuto-infra-tvaritRole-1THX1CV5IEZZB</tvaritRoleArn>
                                 </configuration>
                             </execution>
                         </executions>

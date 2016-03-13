@@ -5,7 +5,7 @@
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "AvailabilityZones": [
-          "us-east-1d"
+          "us-EAST-1d"
         ],
         "Cooldown": "300",
         "DesiredCapacity": "0",

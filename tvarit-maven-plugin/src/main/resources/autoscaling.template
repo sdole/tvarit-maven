@@ -4,9 +4,11 @@
     "tvaritElb": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
-        "LBCookieStickinessPolicy": {
-          "PolicyName": "StickyLb"
-        },
+        "LBCookieStickinessPolicy": [
+          {
+            "PolicyName": "StickyLb"
+          }
+        ],
         "Subnets": {
           "Ref": "publicSubnets"
         },
