@@ -73,14 +73,14 @@
                         <artifactId>tvarit-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>make-infra</id>
+                                <id>make-infrastructure</id>
                                 <goals>
-                                    <goal>make-infra</goal>
+                                    <goal>make-infrastructure</goal>
                                 </goals>
                                 <configuration>
-                                    <projectName>tvaritAuto</projectName>
-                                    <domainName>tvarit2.io</domainName>
-                                    <bucketName>tvarirt2-automation</bucketName>
+                                    <projectName>tvaritAutoTwo</projectName>
+                                    <domainName>tvarit3.io</domainName>
+                                    <bucketName>tvarit3-automation</bucketName>
                                 </configuration>
                             </execution>
                         </executions>
