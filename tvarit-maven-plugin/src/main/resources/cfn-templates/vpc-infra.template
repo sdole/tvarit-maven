@@ -710,5 +710,25 @@
       "MinLength": "1"
     }
   },
+  "Outputs": {
+    "TvaritRole": {
+      "Description": "",
+      "Value": {
+        "Fn::GetAtt": [
+          "tvaritRole",
+          "Arn"
+        ]
+      }
+    },
+    "TvaritInstanceProfile": {
+      "Description": "",
+      "Value": {
+        "Fn::GetAtt": [
+          "tvaritInstanceProfile",
+          "Arn"
+        ]
+      }
+    }
+  },
   "Description": ""
 }

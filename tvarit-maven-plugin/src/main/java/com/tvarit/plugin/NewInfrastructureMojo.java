@@ -55,7 +55,6 @@ public class NewInfrastructureMojo extends AbstractMojo {
         AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
         final com.amazonaws.services.cloudformation.model.Parameter domainNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("domainName").withParameterValue(this.domainName);
         final com.amazonaws.services.cloudformation.model.Parameter projectNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("projectName").withParameterValue(this.projectName);
-        this.bucketName = "tvarit-" + this.bucketName;
         final com.amazonaws.services.cloudformation.model.Parameter bucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue(this.bucketName);
         final String template;
         final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
