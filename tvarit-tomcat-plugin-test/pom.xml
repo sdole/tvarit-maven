@@ -78,7 +78,7 @@
                                     <goal>make-infrastructure</goal>
                                 </goals>
                                 <configuration>
-                                    <projectName>tvaritAutoTwo</projectName>
+                                    <projectName>tvaritAutoThree</projectName>
                                     <domainName>tvarit3.io</domainName>
                                     <bucketName>tvarit3-automation</bucketName>
                                 </configuration>

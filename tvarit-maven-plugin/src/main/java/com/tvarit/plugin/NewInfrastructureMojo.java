@@ -24,9 +24,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 import com.amazonaws.services.cloudformation.model.Capability;
 import com.amazonaws.services.cloudformation.model.CreateStackRequest;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -34,7 +31,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import java.io.InputStream;
+import java.net.MalformedURLException;
 
 @Mojo(name = "make-infrastructure")
 public class NewInfrastructureMojo extends AbstractMojo {
@@ -43,7 +40,7 @@ public class NewInfrastructureMojo extends AbstractMojo {
     @Parameter(required = true, readonly = true, property = "myAccessKey")
     private String accessKey;
     @Parameter
-    private String templateBodyFile;
+    private String templateUrl;
     @Parameter(required = true)
     private String projectName;
     @Parameter(required = true)
@@ -61,35 +58,24 @@ public class NewInfrastructureMojo extends AbstractMojo {
         this.bucketName = "tvarit-" + this.bucketName;
         final com.amazonaws.services.cloudformation.model.Parameter bucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue(this.bucketName);
         final String template;
+        final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
 
-        if (templateBodyFile == null) templateBodyFile = "/vpc-infra.template";
-        else if (!templateBodyFile.startsWith("/")) templateBodyFile = "/" + templateBodyFile;
-
-        template = new TemplateReader().readTemplate(templateBodyFile);
+        if (templateUrl == null) {
+            try {
+                templateUrl  = new TemplateUrlMaker().makeUrl(project,"vpc-infra.template").toString();
+            } catch (MalformedURLException e) {
+                throw new MojoExecutionException("Could not create default url for templates. Please open an issue on github.",e);
+            }
+        }
         final CreateStackRequest createStackRequest =
                 new CreateStackRequest().
                         withCapabilities(Capability.CAPABILITY_IAM).
                         withStackName(projectName + "-infra").
                         withParameters(domainNameParameter, projectNameParameter, bucketNameParameter).
-                        withTemplateBody(template);
+                        withTemplateURL(templateUrl);
         new StackMaker().makeStack(createStackRequest, amazonCloudFormationClient, getLog());
-        AmazonS3Client s3Client = new AmazonS3Client(awsCredentials);
-        final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
-        this.uploadInfrastructureTemplate(s3Client, project, "/infrastructure.template", templateBodyFile);
-        this.uploadInfrastructureTemplate(s3Client, project, "/autoscaling.template", "/autoscaling.template");
-        this.uploadInfrastructureTemplate(s3Client, project, "/newinstance.template", "/newinstance.template");
         getLog().info("Finished completing stack");
 
     }
 
-
-    private void uploadInfrastructureTemplate(AmazonS3Client s3Client, MavenProject project, String fileName, String templateBodyFileName) {
-        final ObjectMetadata infraTemplateMetadata = new ObjectMetadata();
-        infraTemplateMetadata.setContentType("application/json");
-        final String infraTemplateKeyName = "cfn-templates/" + project.getGroupId() + "/" + project.getArtifactId() + "/" + project.getVersion() + fileName;
-        final InputStream infraTemplateInputStream = this.getClass().getResourceAsStream(templateBodyFileName);
-        final PutObjectRequest putObjectRequest = new PutObjectRequest(this.bucketName, infraTemplateKeyName, infraTemplateInputStream, infraTemplateMetadata);
-        s3Client.putObject(putObjectRequest);
-
-    }
 }

@@ -60,7 +60,7 @@ public class InfrastructureMojo extends AbstractMojo {
         final com.amazonaws.services.cloudformation.model.Parameter bucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue("tvarit-" + this.bucketName);
         final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(projectName + "-infra").withParameters(domainNameParameter, projectNameParameter, bucketNameParameter);
         if (templateUrl == null) {
-            final String template = new TemplateReader().readTemplate("/vpc-infra.template");
+            final String template = new TemplateReader().readTemplate("/cfn-templates/vpc-infra.template");
             createStackRequest.withTemplateBody(template);
         } else {
             createStackRequest.withTemplateURL(templateUrl);

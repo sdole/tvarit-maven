@@ -36,6 +36,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
+import java.net.MalformedURLException;
 
 @Mojo(name = "deploy-tomcat-ui-app")
 public class TvaritTomcatDeployerMojo extends AbstractMojo {
@@ -59,7 +60,7 @@ public class TvaritTomcatDeployerMojo extends AbstractMojo {
     private String instanceSecurityGroupId;
     @Parameter(required = true)
     private String sshKeyName;
-    @Parameter (required = true)
+    @Parameter(required = true)
     private String autoScalingGroupName;
 
     @Override
@@ -78,21 +79,35 @@ public class TvaritTomcatDeployerMojo extends AbstractMojo {
         final com.amazonaws.services.cloudformation.model.Parameter tvaritBucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue(this.bucketName);
         final com.amazonaws.services.cloudformation.model.Parameter instanceSecurityGroupIdParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("sgId").withParameterValue(this.instanceSecurityGroupId);
         final com.amazonaws.services.cloudformation.model.Parameter sshKeyNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("keyName").withParameterValue(this.sshKeyName);
-        final String warFileUrl = s3Client.getUrl(bucketName,key).toString();
+        final String warFileUrl = s3Client.getUrl(bucketName, key).toString();
         final com.amazonaws.services.cloudformation.model.Parameter warFileUrlParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("warFileUrl").withParameterValue(warFileUrl);
         final CreateStackRequest createStackRequest = new CreateStackRequest();
-        createStackRequest.withStackName(projectName + "-instance-" + project.getVersion().replace(".","-")).withParameters(projectNameParameter, publicSubnetsParameter, tvaritInstanceProfileParameter, tvaritRoleParameter, tvaritBucketNameParameter, instanceSecurityGroupIdParameter,warFileUrlParameter,sshKeyNameParameter);
         if (templateUrl == null) {
-            String templateBody = new TemplateReader().readTemplate("/newinstance.template");
-            createStackRequest.withTemplateBody(templateBody);
-        } else {
-            createStackRequest.withTemplateURL(templateUrl);
+            try {
+                templateUrl = new TemplateUrlMaker().makeUrl(project, "newinstance.template").toString();
+            } catch (MalformedURLException e) {
+                throw new MojoExecutionException("Could not create default url for templates. Please open an issue on github.", e);
+            }
         }
+        createStackRequest.
+                withStackName(projectName + "-instance-" + project.getVersion().replace(".", "-")).
+                withParameters(
+                        projectNameParameter,
+                        publicSubnetsParameter,
+                        tvaritInstanceProfileParameter,
+                        tvaritRoleParameter,
+                        tvaritBucketNameParameter,
+                        instanceSecurityGroupIdParameter,
+                        warFileUrlParameter,
+                        sshKeyNameParameter
+                ).
+                withDisableRollback(true).
+                withTemplateURL(templateUrl);
         createStackRequest.withDisableRollback(true);
         final Stack stack = new StackMaker().makeStack(createStackRequest, amazonCloudFormationClient, getLog());
         AmazonAutoScalingClient amazonAutoScalingClient = new AmazonAutoScalingClient(awsCredentials);
         final AttachInstancesRequest attachInstancesRequest = new AttachInstancesRequest();
-        attachInstancesRequest.withInstanceIds(stack.getOutputs().get(0).getOutputValue(),stack.getOutputs().get(1).getOutputValue()).withAutoScalingGroupName(autoScalingGroupName);
+        attachInstancesRequest.withInstanceIds(stack.getOutputs().get(0).getOutputValue(), stack.getOutputs().get(1).getOutputValue()).withAutoScalingGroupName(autoScalingGroupName);
         amazonAutoScalingClient.attachInstances(attachInstancesRequest);
     }
 }

@@ -27,7 +27,10 @@ import java.io.InputStreamReader;
 
 /**
  * Created by sachi_000 on 3/6/2016.
+ *
+ * @deprecated Not needed anymore as we do not read templates from local file system
  */
+@Deprecated
 public class TemplateReader {
     public String readTemplate(String templateFileName) throws MojoFailureException {
         final BufferedReader templateStream = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(templateFileName)));

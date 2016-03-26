@@ -35,7 +35,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -93,19 +95,32 @@ public class AutoScalingMojo extends AbstractMojo {
         final com.amazonaws.services.cloudformation.model.Parameter tvaritInstanceProfileParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritInstanceProfile").withParameterValue(this.tvaritInstanceProfile);
         final com.amazonaws.services.cloudformation.model.Parameter tvaritBucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue(this.bucketName);
         final String stackName = projectName + "-asg";
-        final CreateStackRequest createStackRequest = new CreateStackRequest().withCapabilities(Capability.CAPABILITY_IAM).withStackName(stackName).withParameters(projectNameParameter, availabilityZonesParameter, publicSubnetsParameter, vpcParameter, healthCheckAbsoluteUrlParameter, tvaritInstanceProfileParameter, tvaritRoleParameter, tvaritBucketNameParameter);
-        if (templateUrl == null) {
-            String templateBody = new TemplateReader().readTemplate("/autoscaling.template");
-            createStackRequest.withTemplateBody(templateBody);
-        } else {
-            createStackRequest.withTemplateURL(templateUrl);
-        }
+        final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
+        if (templateUrl == null)
+            try {
+                templateUrl = new TemplateUrlMaker().makeUrl(project, "autoscaling.template").toString();
+            } catch (MalformedURLException e) {
+                throw new MojoExecutionException("Could not create default url for templates. Please open an issue on github.", e);
+            }
+        final CreateStackRequest createStackRequest =
+                new CreateStackRequest().
+                        withCapabilities(Capability.CAPABILITY_IAM).
+                        withStackName(stackName).
+                        withParameters(
+                                projectNameParameter,
+                                availabilityZonesParameter,
+                                publicSubnetsParameter,
+                                vpcParameter,
+                                healthCheckAbsoluteUrlParameter,
+                                tvaritInstanceProfileParameter,
+                                tvaritRoleParameter,
+                                tvaritBucketNameParameter
+                        ).
+                        withTemplateURL(templateUrl);
         final Stack stack = new StackMaker().makeStack(createStackRequest, amazonCloudFormationClient, getLog());
         final List<Output> outputs = stack.getOutputs();
         final String lambdaFunctionArn = outputs.stream().filter(output -> output.getOutputKey().equals("LambdaFunctionArn")).findFirst().get().getOutputValue();
 
-        final ObjectMetadata autoscalingNewInstanceTemplateS3ObjMetadata = new ObjectMetadata();
-        amazonS3Client.putObject(new PutObjectRequest(bucketName, "config/autoscaling/newinstance.template", this.getClass().getResourceAsStream("/newinstance.template"), autoscalingNewInstanceTemplateS3ObjMetadata));
         final BucketNotificationConfiguration notificationConfiguration = new BucketNotificationConfiguration();
         final HashMap<String, NotificationConfiguration> configurations = new HashMap<>();
         final LambdaConfiguration lambdaConfiguration = new LambdaConfiguration(lambdaFunctionArn);

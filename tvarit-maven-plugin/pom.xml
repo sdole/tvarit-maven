@@ -130,6 +130,15 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>cfn-templates/**/*.template</exclude>
+                    <exclude>lambda/**/*.*</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -171,12 +180,35 @@
                     <artifactId>sisu-maven-plugin</artifactId>
                     <version>1.4</version>
                 </plugin>
+                <plugin>
+                    <groupId>com.bazaarvoice.maven.plugins</groupId>
+                    <artifactId>s3-upload-maven-plugin</artifactId>
+                    <version>1.3</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.bazaarvoice.maven.plugins</groupId>
+                <artifactId>s3-upload-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>upload-templates</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>s3-upload</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <bucketName>tvarit</bucketName>
+                    <source>src/main/resources/cfn-templates</source>
+                    <destination>templates/default/${project.groupId}/${project.artifactId}/${project.version}</destination>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
