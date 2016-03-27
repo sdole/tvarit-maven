@@ -101,13 +101,7 @@
               "Sid": "Stmt1457233341000",
               "Effect": "Allow",
               "Action": [
-                "cloudformation:CreateStack",
-                "cloudformation:DescribeStackResource",
-                "cloudformation:DescribeStackResources",
-                "cloudformation:ListStackResources",
-                "cloudformation:SignalResource",
-                "cloudformation:UpdateStack",
-                "cloudformation:ValidateTemplate"
+                "cloudformation:*"
               ],
               "Resource": [
                 "*"

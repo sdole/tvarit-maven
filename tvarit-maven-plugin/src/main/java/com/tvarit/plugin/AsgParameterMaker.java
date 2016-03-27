@@ -40,12 +40,18 @@ public class AsgParameterMaker {
         String vpcId = new VpcFinder().find(amazonEC2Client, projectName);
         StringBuilder publicSubnetIdBuilder = new StringBuilder();
         StringBuilder publicSubnetAzsBuilder = new StringBuilder();
-        new PublicSubnetFinder().find(project, amazonEC2Client, projectName, publicSubnetIdBuilder, publicSubnetAzsBuilder);
+        new SubnetFinder().find(project, amazonEC2Client, projectName, publicSubnetIdBuilder, publicSubnetAzsBuilder, "appSubnet");
         final String publicSubnets = publicSubnetIdBuilder.toString();
         final String publicSubnetAzs = publicSubnetAzsBuilder.toString();
+        StringBuilder privateSubnetIdBuilder = new StringBuilder();
+        StringBuilder privateSubnetAzsBuilder = new StringBuilder();
+        new SubnetFinder().find(project, amazonEC2Client, projectName, privateSubnetIdBuilder, privateSubnetAzsBuilder, "db");
+        final String privateSubnets = privateSubnetIdBuilder.toString();
+        final String privateSubnetAzs = privateSubnetAzsBuilder.toString();
 
         final com.amazonaws.services.cloudformation.model.Parameter projectNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("projectName").withParameterValue(projectName);
         final com.amazonaws.services.cloudformation.model.Parameter publicSubnetsParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("publicSubnets").withParameterValue(publicSubnets);
+        final com.amazonaws.services.cloudformation.model.Parameter privateSubnetsParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("privateSubnets").withParameterValue(privateSubnets);
         final com.amazonaws.services.cloudformation.model.Parameter availabilityZonesParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("availabilityZones").withParameterValue(publicSubnetAzs);
         final com.amazonaws.services.cloudformation.model.Parameter vpcParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("vpc").withParameterValue(vpcId);
         final com.amazonaws.services.cloudformation.model.Parameter healthCheckAbsoluteUrlParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("healthCheckAbsoluteUrl").withParameterValue("/tvarit/healthCheck.html");
@@ -54,6 +60,6 @@ public class AsgParameterMaker {
         final com.amazonaws.services.cloudformation.model.Parameter tvaritBucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue(bucketName);
         final com.amazonaws.services.cloudformation.model.Parameter tvaritLambdaCodeS3KeyParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("lambdaCodeS3Key").withParameterValue(lambdaCodeS3Key);
         final com.amazonaws.services.cloudformation.model.Parameter tvaritLambdaCodeS3BucketParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("lambdaCodeS3Bucket").withParameterValue(lambdaCodeS3Bucket);
-        return Arrays.asList(projectNameParameter, publicSubnetsParameter, availabilityZonesParameter, vpcParameter, healthCheckAbsoluteUrlParameter, tvaritRoleParameter, tvaritInstanceProfileParameter, tvaritBucketNameParameter, tvaritLambdaCodeS3KeyParameter, tvaritLambdaCodeS3BucketParameter);
+        return Arrays.asList(projectNameParameter, publicSubnetsParameter, privateSubnetsParameter, availabilityZonesParameter, vpcParameter, healthCheckAbsoluteUrlParameter, tvaritRoleParameter, tvaritInstanceProfileParameter, tvaritBucketNameParameter, tvaritLambdaCodeS3KeyParameter, tvaritLambdaCodeS3BucketParameter);
     }
 }

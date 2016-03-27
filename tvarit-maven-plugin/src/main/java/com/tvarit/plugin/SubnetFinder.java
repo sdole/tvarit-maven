@@ -29,12 +29,12 @@ import org.apache.maven.project.MavenProject;
 /**
  * Created by Sachin Dole on 3/27/2016.
  */
-public class PublicSubnetFinder {
-    public void find(MavenProject project, AmazonEC2Client amazonEC2Client, String projectName, final StringBuilder publicSubnetIdBuilder, final StringBuilder publicSubnetAzsBuilder) {
+public class SubnetFinder {
+    public void find(MavenProject project, AmazonEC2Client amazonEC2Client, String projectName, final StringBuilder publicSubnetIdBuilder, final StringBuilder publicSubnetAzsBuilder,final String subnetType) {
 
 
         final DescribeSubnetsRequest describeAppSubnetsRequest = new DescribeSubnetsRequest();
-        final Filter subnetFilter = new Filter().withName("tag-key").withValues(projectName + ":appSubnet");
+        final Filter subnetFilter = new Filter().withName("tag-key").withValues(projectName + ":"+subnetType);
         describeAppSubnetsRequest.withFilters(subnetFilter);
         final DescribeSubnetsResult describeSubnetsResult = amazonEC2Client.describeSubnets(describeAppSubnetsRequest);
         describeSubnetsResult.getSubnets().stream().forEach(eachSubnet -> {

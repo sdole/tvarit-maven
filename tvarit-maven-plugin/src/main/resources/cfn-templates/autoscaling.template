@@ -116,6 +116,15 @@
         }
       }
     },
+    "sgTvaritLambda": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "sg for tvarit app servers",
+        "VpcId": {
+          "Ref": "vpc"
+        }
+      }
+    },
     "sgTvaritElb": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -210,6 +219,27 @@
         }
       }
     },
+    "tvaritLambdaSgIngress1": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgTvaritLambda"
+        },
+        "IpProtocol": "-1",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "tvaritLambdaSgEgress1": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgTvaritLambda"
+        },
+        "IpProtocol": "-1",
+        "CidrIp": "0.0.0.0/0"
+
+      }
+    },
     "ingress2": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
@@ -259,8 +289,14 @@
           "Ref": "tvaritRoleArn"
         },
         "VpcConfig": {
-          "SecurityGroupIds": ["sg-403e4e38"],
-          "SubnetIds": ["subnet-54adc522","subnet-eafebbd7"]
+          "SecurityGroupIds": [
+            {
+              "Ref": "sgTvaritLambda"
+            }
+          ],
+          "SubnetIds": {
+            "Ref": "privateSubnets"
+          }
         }
       }
     },
@@ -299,6 +335,10 @@
       "MinLength": "1"
     },
     "publicSubnets": {
+      "Type": "CommaDelimitedList",
+      "Description": "Enter exactly 2 subnet ids that are publicly accessible. ELBs and app servers will be placed in these two subnets."
+    },
+    "privateSubnets": {
       "Type": "CommaDelimitedList",
       "Description": "Enter exactly 2 subnet ids that are publicly accessible. ELBs and app servers will be placed in these two subnets."
     },
