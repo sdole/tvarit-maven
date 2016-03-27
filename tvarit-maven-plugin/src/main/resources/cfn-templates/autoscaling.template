@@ -257,6 +257,10 @@
         "Runtime": "python2.7",
         "Role": {
           "Ref": "tvaritRoleArn"
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": ["sg-403e4e38"],
+          "SubnetIds": ["subnet-54adc522","subnet-eafebbd7"]
         }
       }
     },

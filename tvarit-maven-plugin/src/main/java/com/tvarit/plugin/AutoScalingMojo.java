@@ -81,7 +81,7 @@ public class AutoScalingMojo extends AbstractMojo {
                         withParameters(allParams).
                         withTemplateURL(templateUrl);
         final Stack stack = new StackMaker().makeStack(createStackRequest, amazonCloudFormationClient, getLog());
-        new LambdaMaker().make(amazonS3Client, bucketName, stack);
+        new S3WarUploadEventToInvokeLambdaMaker().make(amazonS3Client, bucketName, stack);
         getLog().info("Finished completing stack");
 
     }

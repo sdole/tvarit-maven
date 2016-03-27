@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Created by Sachin Dole on 3/27/2016.
  */
-public class LambdaMaker {
+public class S3WarUploadEventToInvokeLambdaMaker {
     public void make(AmazonS3Client amazonS3Client, String bucketName, Stack stack) {
         final List<Output> outputs = stack.getOutputs();
         final String lambdaFunctionArn = outputs.stream().filter(output -> output.getOutputKey().equals("LambdaFunctionArn")).findFirst().get().getOutputValue();
@@ -45,7 +45,10 @@ public class LambdaMaker {
         final com.amazonaws.services.s3.model.Filter notificationFilter = new com.amazonaws.services.s3.model.Filter();
         final S3KeyFilter s3KeyFilter = new S3KeyFilter();
         notificationFilter.withS3KeyFilter(s3KeyFilter);
-        s3KeyFilter.withFilterRules(new FilterRule().withName("prefix").withValue("config/autoscale.json"));
+        s3KeyFilter.withFilterRules(
+                new FilterRule().withName("suffix").withValue(".war"),
+                new FilterRule().withName("prefix").withValue("deployables")
+                );
         lambdaConfiguration.setFilter(notificationFilter);
         configurations.put("warUploaded", lambdaConfiguration);
         notificationConfiguration.setConfigurations(configurations);

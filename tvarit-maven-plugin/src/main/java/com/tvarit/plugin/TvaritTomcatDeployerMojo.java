@@ -69,7 +69,7 @@ public class TvaritTomcatDeployerMojo extends AbstractMojo {
         AmazonS3Client s3Client = new AmazonS3Client(awsCredentials);
         final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
         final File warFile = project.getArtifact().getFile();
-        final String key = "war/" + project.getGroupId() + "/" + project.getArtifactId() + "/" + project.getVersion() + "/" + warFile.getName();
+        final String key = "deployables/" + project.getGroupId() + "/" + project.getArtifactId() + "/" + project.getVersion() + "/" + warFile.getName();
         final PutObjectResult putObjectResult = s3Client.putObject(new PutObjectRequest(bucketName, key, warFile));
         AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
         final com.amazonaws.services.cloudformation.model.Parameter projectNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("projectName").withParameterValue(this.projectName);
