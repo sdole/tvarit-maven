@@ -206,8 +206,9 @@
                 </executions>
                 <configuration>
                     <bucketName>tvarit</bucketName>
-                    <source>src/main/resources/cfn-templates</source>
-                    <destination>templates/default/${project.groupId}/${project.artifactId}/${project.version}</destination>
+                    <source>src/main/resources</source>
+                    <recursive>true</recursive>
+                    <destination>default/${project.groupId}/${project.artifactId}/${project.version}</destination>
                 </configuration>
             </plugin>
             <plugin>

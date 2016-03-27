@@ -18,7 +18,7 @@
         </snapshotRepository>
     </distributionManagement>
     <properties>
-        <tvarit-project-name>testProject</tvarit-project-name>
+        <tvarit-project-name>testProjectTwo</tvarit-project-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>

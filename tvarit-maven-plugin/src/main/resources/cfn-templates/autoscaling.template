@@ -247,9 +247,11 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "bucketName"
+            "Ref": "lambdaCodeS3Bucket"
           },
-          "S3Key": "lambda/deployNewWar.zip"
+          "S3Key": {
+            "Ref": "lambdaCodeS3Key"
+          }
         },
         "Handler": "deployNewWar.deployNewWar",
         "Runtime": "python2.7",
@@ -319,6 +321,14 @@
     "tvaritRoleArn": {
       "Type": "String",
       "Description": "The IAM role arn that will be used for lambda."
+    },
+    "lambdaCodeS3Key": {
+      "Type": "String",
+      "Description": "The S3 key name of the lambda code package."
+    },
+    "lambdaCodeS3Bucket": {
+      "Type": "String",
+      "Description": "The S3 bucket name where lambda code package is stored."
     }
   },
   "Description": ""

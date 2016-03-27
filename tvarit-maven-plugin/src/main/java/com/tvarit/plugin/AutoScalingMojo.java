@@ -27,6 +27,7 @@ import com.amazonaws.services.ec2.model.*;
 import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -54,21 +55,31 @@ public class AutoScalingMojo extends AbstractMojo {
     private String projectName;
     @Parameter(required = true)
     private String bucketName;
+    private String lambdaCodeS3Key;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().debug("Starting " + this.getClass().getSimpleName() + " execution ");
         final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
         AmazonS3Client amazonS3Client = new AmazonS3Client(awsCredentials);
-        amazonS3Client.putObject(new PutObjectRequest(bucketName, "lambda/deployNewWar.zip", this.getClass().getResourceAsStream("/lambda/deployNewWar.zip"), new ObjectMetadata()));
+        final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
+        String lambdaCodeS3Bucket = this.bucketName;
+        if (lambdaCodeS3Key == null) {
+            Plugin tvaritMavenPlugin = project.getPluginManagement().getPluginsAsMap().get("io.tvarit:tvarit-maven-plugin");
+            if (tvaritMavenPlugin == null)
+                tvaritMavenPlugin = (Plugin) project.getPluginArtifactMap().get("io.tvarit:tvarit-maven-plugin");
+            final String groupId = tvaritMavenPlugin.getGroupId();
+            final String artifactId = tvaritMavenPlugin.getArtifactId();
+            final String version = tvaritMavenPlugin.getVersion();
+            lambdaCodeS3Key = "default/" + groupId + "/" + artifactId + "/" + version + "/lambda/" + "deployNewWar.zip";
+            lambdaCodeS3Bucket = "tvarit";
+        }
         final DescribeStacksRequest describeStacksRequest = new DescribeStacksRequest();
         describeStacksRequest.withStackName(projectName + "-infra");
         AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
         final DescribeStacksResult describeStacksResult = amazonCloudFormationClient.describeStacks(describeStacksRequest);
         final String tvaritRoleOutput = describeStacksResult.getStacks().get(0).getOutputs().stream().filter(output -> "TvaritRole".equals(output.getOutputKey())).collect(Collectors.toList()).get(0).getOutputValue();
         final String tvaritInstanceProfileOutput = describeStacksResult.getStacks().get(0).getOutputs().stream().filter(output -> "TvaritInstanceProfile".equals(output.getOutputKey())).collect(Collectors.toList()).get(0).getOutputValue();
-
-
         AmazonEC2Client amazonEC2Client = new AmazonEC2Client(awsCredentials);
         final DescribeSubnetsRequest describeAppSubnetsRequest = new DescribeSubnetsRequest();
         final Filter subnetFilter = new Filter().withName("tag-key").withValues(projectName + ":appSubnet");
@@ -94,8 +105,9 @@ public class AutoScalingMojo extends AbstractMojo {
         final com.amazonaws.services.cloudformation.model.Parameter tvaritRoleParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritRoleArn").withParameterValue(tvaritRoleOutput);
         final com.amazonaws.services.cloudformation.model.Parameter tvaritInstanceProfileParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritInstanceProfile").withParameterValue(tvaritInstanceProfileOutput);
         final com.amazonaws.services.cloudformation.model.Parameter tvaritBucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue(this.bucketName);
+        final com.amazonaws.services.cloudformation.model.Parameter tvaritLambdaCodeS3KeyParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("lambdaCodeS3Key").withParameterValue(lambdaCodeS3Key);
+        final com.amazonaws.services.cloudformation.model.Parameter tvaritLambdaCodeS3BucketParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("lambdaCodeS3Bucket").withParameterValue(lambdaCodeS3Bucket);
         final String stackName = projectName + "-asg";
-        final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
         if (templateUrl == null)
             try {
                 templateUrl = new TemplateUrlMaker().makeUrl(project, "autoscaling.template").toString();
@@ -114,7 +126,9 @@ public class AutoScalingMojo extends AbstractMojo {
                                 healthCheckAbsoluteUrlParameter,
                                 tvaritInstanceProfileParameter,
                                 tvaritRoleParameter,
-                                tvaritBucketNameParameter
+                                tvaritBucketNameParameter,
+                                tvaritLambdaCodeS3KeyParameter,
+                                tvaritLambdaCodeS3BucketParameter
                         ).
                         withTemplateURL(templateUrl);
         final Stack stack = new StackMaker().makeStack(createStackRequest, amazonCloudFormationClient, getLog());
