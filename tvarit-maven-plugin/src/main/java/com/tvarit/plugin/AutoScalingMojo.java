@@ -21,13 +21,11 @@ package com.tvarit.plugin;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
-import com.amazonaws.services.cloudformation.model.*;
+import com.amazonaws.services.cloudformation.model.Capability;
+import com.amazonaws.services.cloudformation.model.CreateStackRequest;
+import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.*;
-import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.*;
-import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -36,11 +34,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.net.MalformedURLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mojo(name = "setup-autoscaling")
 public class AutoScalingMojo extends AbstractMojo {
@@ -66,48 +60,13 @@ public class AutoScalingMojo extends AbstractMojo {
         final MavenProject project = (MavenProject) this.getPluginContext().getOrDefault("project", null);
         String lambdaCodeS3Bucket = this.bucketName;
         if (lambdaCodeS3Key == null) {
-            Plugin tvaritMavenPlugin = project.getPluginManagement().getPluginsAsMap().get("io.tvarit:tvarit-maven-plugin");
-            if (tvaritMavenPlugin == null)
-                tvaritMavenPlugin = (Plugin) project.getPluginArtifactMap().get("io.tvarit:tvarit-maven-plugin");
-            final String groupId = tvaritMavenPlugin.getGroupId();
-            final String artifactId = tvaritMavenPlugin.getArtifactId();
-            final String version = tvaritMavenPlugin.getVersion();
-            lambdaCodeS3Key = "default/" + groupId + "/" + artifactId + "/" + version + "/lambda/" + "deployNewWar.zip";
+            lambdaCodeS3Key = new LambdaS3BucketKeyMaker().makeKey(project);
             lambdaCodeS3Bucket = "tvarit";
         }
-        final DescribeStacksRequest describeStacksRequest = new DescribeStacksRequest();
-        describeStacksRequest.withStackName(projectName + "-infra");
         AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
-        final DescribeStacksResult describeStacksResult = amazonCloudFormationClient.describeStacks(describeStacksRequest);
-        final String tvaritRoleOutput = describeStacksResult.getStacks().get(0).getOutputs().stream().filter(output -> "TvaritRole".equals(output.getOutputKey())).collect(Collectors.toList()).get(0).getOutputValue();
-        final String tvaritInstanceProfileOutput = describeStacksResult.getStacks().get(0).getOutputs().stream().filter(output -> "TvaritInstanceProfile".equals(output.getOutputKey())).collect(Collectors.toList()).get(0).getOutputValue();
         AmazonEC2Client amazonEC2Client = new AmazonEC2Client(awsCredentials);
-        final DescribeSubnetsRequest describeAppSubnetsRequest = new DescribeSubnetsRequest();
-        final Filter subnetFilter = new Filter().withName("tag-key").withValues(projectName + ":appSubnet");
-        describeAppSubnetsRequest.withFilters(subnetFilter);
-        final DescribeVpcsRequest describeVpcsRequest = new DescribeVpcsRequest();
-        describeVpcsRequest.withFilters(new Filter("tag-key", Collections.singletonList(projectName + ":vpc")));
-        final DescribeVpcsResult describeVpcResult = amazonEC2Client.describeVpcs(describeVpcsRequest);
-        final DescribeSubnetsResult describeSubnetsResult = amazonEC2Client.describeSubnets(describeAppSubnetsRequest);
-        StringBuilder publicSubnetAzsBuilder = new StringBuilder();
-        StringBuilder publicSubnetIdBuilder = new StringBuilder();
-        describeSubnetsResult.getSubnets().stream().forEach(eachSubnet -> {
-            publicSubnetAzsBuilder.append(eachSubnet.getAvailabilityZone()).append(",");
-            publicSubnetIdBuilder.append(eachSubnet.getSubnetId()).append(",");
-        });
-        final String publicSubnets = publicSubnetIdBuilder.deleteCharAt(publicSubnetIdBuilder.length() - 1).toString();
-        final String publicSubnetAzs = publicSubnetAzsBuilder.deleteCharAt(publicSubnetAzsBuilder.length() - 1).toString();
-
-        final com.amazonaws.services.cloudformation.model.Parameter projectNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("projectName").withParameterValue(this.projectName);
-        final com.amazonaws.services.cloudformation.model.Parameter publicSubnetsParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("publicSubnets").withParameterValue(publicSubnets);
-        final com.amazonaws.services.cloudformation.model.Parameter availabilityZonesParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("availabilityZones").withParameterValue(publicSubnetAzs);
-        final com.amazonaws.services.cloudformation.model.Parameter vpcParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("vpc").withParameterValue(describeVpcResult.getVpcs().get(0).getVpcId());
-        final com.amazonaws.services.cloudformation.model.Parameter healthCheckAbsoluteUrlParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("healthCheckAbsoluteUrl").withParameterValue("/tvarit/healthCheck.html");
-        final com.amazonaws.services.cloudformation.model.Parameter tvaritRoleParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritRoleArn").withParameterValue(tvaritRoleOutput);
-        final com.amazonaws.services.cloudformation.model.Parameter tvaritInstanceProfileParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritInstanceProfile").withParameterValue(tvaritInstanceProfileOutput);
-        final com.amazonaws.services.cloudformation.model.Parameter tvaritBucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue(this.bucketName);
-        final com.amazonaws.services.cloudformation.model.Parameter tvaritLambdaCodeS3KeyParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("lambdaCodeS3Key").withParameterValue(lambdaCodeS3Key);
-        final com.amazonaws.services.cloudformation.model.Parameter tvaritLambdaCodeS3BucketParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("lambdaCodeS3Bucket").withParameterValue(lambdaCodeS3Bucket);
+        List<com.amazonaws.services.cloudformation.model.Parameter>
+                allParams = new AsgParameterMaker().make(amazonEC2Client, amazonCloudFormationClient, project, projectName, bucketName, lambdaCodeS3Key, lambdaCodeS3Bucket);
         final String stackName = projectName + "-asg";
         if (templateUrl == null)
             try {
@@ -119,38 +78,10 @@ public class AutoScalingMojo extends AbstractMojo {
                 new CreateStackRequest().
                         withCapabilities(Capability.CAPABILITY_IAM).
                         withStackName(stackName).
-                        withParameters(
-                                projectNameParameter,
-                                availabilityZonesParameter,
-                                publicSubnetsParameter,
-                                vpcParameter,
-                                healthCheckAbsoluteUrlParameter,
-                                tvaritInstanceProfileParameter,
-                                tvaritRoleParameter,
-                                tvaritBucketNameParameter,
-                                tvaritLambdaCodeS3KeyParameter,
-                                tvaritLambdaCodeS3BucketParameter
-                        ).
+                        withParameters(allParams).
                         withTemplateURL(templateUrl);
         final Stack stack = new StackMaker().makeStack(createStackRequest, amazonCloudFormationClient, getLog());
-        final List<Output> outputs = stack.getOutputs();
-        final String lambdaFunctionArn = outputs.stream().filter(output -> output.getOutputKey().equals("LambdaFunctionArn")).findFirst().get().getOutputValue();
-
-        final BucketNotificationConfiguration notificationConfiguration = new BucketNotificationConfiguration();
-        final HashMap<String, NotificationConfiguration> configurations = new HashMap<>();
-        final LambdaConfiguration lambdaConfiguration = new LambdaConfiguration(lambdaFunctionArn);
-        final HashSet<String> events = new HashSet<>();
-        events.add("s3:ObjectCreated:*");
-        lambdaConfiguration.setEvents(events);
-        final com.amazonaws.services.s3.model.Filter notificationFilter = new com.amazonaws.services.s3.model.Filter();
-        final S3KeyFilter s3KeyFilter = new S3KeyFilter();
-        notificationFilter.withS3KeyFilter(s3KeyFilter);
-        s3KeyFilter.withFilterRules(new FilterRule().withName("prefix").withValue("config/autoscale.json"));
-        lambdaConfiguration.setFilter(notificationFilter);
-        configurations.put("warUploaded", lambdaConfiguration);
-        notificationConfiguration.setConfigurations(configurations);
-        final SetBucketNotificationConfigurationRequest setBucketNotificationConfigurationRequest = new SetBucketNotificationConfigurationRequest(bucketName, notificationConfiguration);
-        amazonS3Client.setBucketNotificationConfiguration(setBucketNotificationConfigurationRequest);
+        new LambdaMaker().make(amazonS3Client, bucketName, stack);
         getLog().info("Finished completing stack");
 
     }
