@@ -113,7 +113,37 @@
         "GroupDescription": "sg for tvarit app servers",
         "VpcId": {
           "Ref": "vpc"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  "-appSg"
+                ]
+              ]
+            }
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  ":appSg"
+                ]
+              ]
+            },
+            "Value": ""
+          }
+        ]
       }
     },
     "sgTvaritLambda": {
@@ -237,7 +267,6 @@
         },
         "IpProtocol": "-1",
         "CidrIp": "0.0.0.0/0"
-
       }
     },
     "ingress2": {

@@ -283,12 +283,6 @@
     }
   },
   "Parameters": {
-    "projectName": {
-      "Type": "String",
-      "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
-      "AllowedPattern": "[A-Za-z]*",
-      "MinLength": "1"
-    },
     "publicSubnets": {
       "Type": "CommaDelimitedList",
       "Description": "Two Subnets where app server should be started."

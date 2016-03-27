@@ -80,7 +80,8 @@
                 "s3:GetObject",
                 "s3:GetObjectAcl",
                 "s3:ListBucket",
-                "s3:PutObject"
+                "s3:PutObject",
+                "s3:GetBucketLocation"
               ],
               "Resource": [
                 {
@@ -689,6 +690,9 @@
         "RouteTableIds": [
           {
             "Ref": "publicSubnetRouteTable"
+          },
+          {
+            "Ref": "dbSubnetRouteTable"
           }
         ],
         "ServiceName": {
