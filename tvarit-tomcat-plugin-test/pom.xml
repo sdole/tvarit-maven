@@ -18,7 +18,8 @@
         </snapshotRepository>
     </distributionManagement>
     <properties>
-        <tvarit-project-name>testProjectTwo</tvarit-project-name>
+        <tvarit-project-name>testFive</tvarit-project-name>
+        <tvarit-bucket-name>tvarit-automation-five</tvarit-bucket-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -81,7 +82,7 @@
                                 <configuration>
                                     <projectName>${tvarit-project-name}</projectName>
                                     <domainName>tvarit3.io</domainName>
-                                    <bucketName>tvarit3-automation</bucketName>
+                                    <bucketName>${tvarit-bucket-name}</bucketName>
                                 </configuration>
                             </execution>
                         </executions>
@@ -104,7 +105,7 @@
                                 </goals>
                                 <configuration>
                                     <projectName>${tvarit-project-name}</projectName>
-                                    <bucketName>tvarit3-automation</bucketName>
+                                    <bucketName>${tvarit-bucket-name}</bucketName>
                                 </configuration>
                             </execution>
                         </executions>
@@ -127,7 +128,7 @@
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <bucketName>tvarit-tvarirt2-automation</bucketName>
+                                    <bucketName>${tvarit-bucket-name}</bucketName>
                                     <projectName>${tvarit-project-name}</projectName>
                                     <tvaritInstanceProfile>tvaritAuto-infra-tvaritInstanceProfile-15XY0377X7CM8</tvaritInstanceProfile>
                                     <tvaritRole>tvaritAuto-infra-tvaritRole-1THX1CV5IEZZB</tvaritRole>

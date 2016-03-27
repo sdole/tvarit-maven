@@ -243,7 +243,7 @@
         ]
       }
     },
-    "dbASubnet": {
+    "dbSubnetA": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.10.0/24",
@@ -467,6 +467,30 @@
         ]
       }
     },
+    "dbSubnetRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "tvaritVpc"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  "-db-internet-rt"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
     "tvaritVpcDefaultRouteTable": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
@@ -566,7 +590,7 @@
           "Ref": "defaultTvaritVpcAcl"
         },
         "SubnetId": {
-          "Ref": "dbASubnet"
+          "Ref": "dbSubnetA"
         }
       }
     },
@@ -592,7 +616,7 @@
         }
       }
     },
-    "pubAppSubnetAToLocalRouteTable": {
+    "pubAppSubnetARouteTableAssociation": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -603,7 +627,7 @@
         }
       }
     },
-    "pubAppSubnetBToLocalRouteTable": {
+    "pubAppSubnetBRouteTableAssociation": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -611,6 +635,28 @@
         },
         "SubnetId": {
           "Ref": "pubAppSubnetB"
+        }
+      }
+    },
+    "dbAppSubnetARouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "dbSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "dbSubnetA"
+        }
+      }
+    },
+    "dbAppSubnetBRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "dbSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "dbSubnetB"
         }
       }
     },
@@ -626,6 +672,19 @@
         }
       },
       "DependsOn": "pubSubnetInternetGateway"
+    },
+    "dbSubnetBToNatRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "RouteTableId": {
+          "Ref": "dbSubnetRouteTable"
+        },
+        "NatGatewayId": {
+          "Ref": "natForLambda"
+        }
+      },
+      "DependsOn": "natForLambda"
     },
     "S3Endpoint": {
       "Type": "AWS::EC2::VPCEndpoint",
@@ -690,6 +749,27 @@
         "IpProtocol": "-1",
         "CidrIp": "0.0.0.0/0"
       }
+    },
+    "ipForNat": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "natForLambda": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "ipForNat",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "pubAppSubnetA"
+        }
+      },
+      "DependsOn": "ipForNat"
     }
   },
   "Parameters": {
