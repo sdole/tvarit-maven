@@ -55,6 +55,7 @@ public class AutoScalingMojo extends AbstractMojo {
     private String projectName;
     @Parameter(required = true)
     private String bucketName;
+    @Parameter
     private String lambdaCodeS3Key;
 
     @Override
