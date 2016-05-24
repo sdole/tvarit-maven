@@ -528,7 +528,23 @@
         "GroupDescription": "default VPC security group",
         "VpcId": {
           "Ref": "tvaritVpc"
-        }
+        },
+        "Tags": [
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "projectName"
+                  },
+                  ":appSg"
+                ]
+              ]
+            },
+            "Value": ""
+          }
+        ]
       }
     },
     "defaultAclDefaultRule1": {
