@@ -104,4 +104,3 @@ def deployNewWar(event, context):
 
     print(createNewInstanceResponse)
 
-find_tvarit_roles("testFive")
