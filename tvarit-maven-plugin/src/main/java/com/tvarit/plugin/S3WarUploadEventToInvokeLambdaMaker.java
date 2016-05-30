@@ -31,9 +31,10 @@ import java.util.List;
 
 /**
  * Created by Sachin Dole on 3/27/2016.
+ * To create S3 event to execute lambda
  */
-public class S3WarUploadEventToInvokeLambdaMaker {
-    public void make(AmazonS3Client amazonS3Client, String bucketName, Stack stack) {
+class S3WarUploadEventToInvokeLambdaMaker {
+    void make(AmazonS3Client amazonS3Client, String bucketName, Stack stack) {
         final List<Output> outputs = stack.getOutputs();
         final String lambdaFunctionArn = outputs.stream().filter(output -> output.getOutputKey().equals("LambdaFunctionArn")).findFirst().get().getOutputValue();
         final BucketNotificationConfiguration notificationConfiguration = new BucketNotificationConfiguration();
@@ -48,7 +49,7 @@ public class S3WarUploadEventToInvokeLambdaMaker {
         s3KeyFilter.withFilterRules(
                 new FilterRule().withName("suffix").withValue(".war"),
                 new FilterRule().withName("prefix").withValue("deployables")
-                );
+        );
         lambdaConfiguration.setFilter(notificationFilter);
         configurations.put("warUploaded", lambdaConfiguration);
         notificationConfiguration.setConfigurations(configurations);

@@ -66,7 +66,7 @@ public class AutoScalingMojo extends AbstractMojo {
         AmazonCloudFormationClient amazonCloudFormationClient = new AmazonCloudFormationClient(awsCredentials);
         AmazonEC2Client amazonEC2Client = new AmazonEC2Client(awsCredentials);
         List<com.amazonaws.services.cloudformation.model.Parameter>
-                allParams = new AsgParameterMaker().make(amazonEC2Client, amazonCloudFormationClient, project, projectName, bucketName, lambdaCodeS3Key, lambdaCodeS3Bucket);
+                allParams = new AsgParameterMaker().make(amazonEC2Client, amazonCloudFormationClient, project, projectName, lambdaCodeS3Key, lambdaCodeS3Bucket);
         final String stackName = projectName + "-asg";
         if (templateUrl == null)
             try {

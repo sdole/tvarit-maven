@@ -112,17 +112,9 @@
               "Sid": "Stmt1457233476000",
               "Effect": "Allow",
               "Action": [
-                "ec2:AllocateAddress",
-                "ec2:AssignPrivateIpAddresses",
-                "ec2:AssociateAddress",
-                "ec2:AttachVolume",
-                "ec2:DescribeInstanceStatus",
-                "ec2:DescribeInstances",
-                "ec2:DescribeTags",
-                "ec2:RunInstances",
-                "ec2:StartInstances",
-                "ec2:StopInstances",
-                "ec2:TerminateInstances"
+                "iam:PassRole",
+                "iam:ListInstanceProfiles",
+                "ec2:*"
               ],
               "Resource": [
                 "*"
@@ -165,10 +157,7 @@
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DeleteNetworkInterface"
+                "logs:PutLogEvents"
               ],
               "Resource": "*"
             }

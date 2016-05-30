@@ -1,8 +1,18 @@
 from __future__ import print_function
 
 import boto3
+import logging
 
-print('Loading function')
+logger = logging.getLogger("Tvarit")
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('[%(levelname)s] : %(filename)s.%(funcName)s : %(message)s')
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+
+
+logger.debug('Loading function')
 cfn = boto3.client('cloudformation')
 s3 = boto3.client('s3')
 ec2Client = boto3.client('ec2')
@@ -10,7 +20,7 @@ ec2Client = boto3.client('ec2')
 
 
 def find_app_subnets(projectName):
-    print(projectName)
+    logger.debug(projectName)
     subnets = ec2Client.describe_subnets(
         Filters=[{
             'Name': 'tag-key',
@@ -30,44 +40,48 @@ def find_app_sg(projectName):
             ]
         }]
     )
-    print(security_groups['SecurityGroups'][0]['GroupId'])
+    logger.debug(security_groups['SecurityGroups'][0]['GroupId'])
     return security_groups['SecurityGroups'][0]['GroupId']
 
 def find_tvarit_roles(projectName):
     infraStack = cfn.describe_stacks(
         StackName=projectName+'-infra'
     )
-    print(infraStack['Stacks'][0])
-    return [infraStack['Stacks'][0]['Outputs'][0]['OutputValue'],infraStack['Stacks'][0]['Outputs'][1]['OutputValue']]
+    logger.debug(infraStack['Stacks'][0])
+    role = infraStack['Stacks'][0]['Outputs'][0]['OutputValue'].split("/")[1]
+    instance_profile = infraStack['Stacks'][0]['Outputs'][1]['OutputValue'].split("/")[1]
+    logger.debug(role)
+    logger.debug(instance_profile)
+    return [role, instance_profile]
 
 
 def deployNewWar(event, context):
-    print(event)
-    print("Starting...")
+    logger.debug(event)
+    logger.debug("Starting...")
 
     bucketName = event["Records"][0]["s3"]["bucket"]["name"]
     keyName = event["Records"][0]["s3"]["object"]["key"]
 
-    print(bucketName)
-    print(keyName)
-    s3ObjectResponse = s3.head_object(
+    logger.debug(bucketName)
+    logger.debug(keyName)
+    s3_object_response = s3.head_object(
         Bucket=bucketName,
         Key=keyName
     )
-    print(s3ObjectResponse)
-    print(s3ObjectResponse["Metadata"])
-    projectName = s3ObjectResponse["Metadata"]["project_name"]
-    stackTemplateUrl = s3ObjectResponse["Metadata"]["stack_template_url"]
-    private_key_name = s3ObjectResponse["Metadata"]["private_key_name"]
-    print("project name: " + projectName)
-    print("stack_template_url" + stackTemplateUrl)
-    warFileUrl = "https://s3.amazonaws.com/"+bucketName+"/"+keyName
-    print(warFileUrl)
-    subnets = find_app_subnets(projectName)
-    print (subnets)
-    createNewInstanceResponse = cfn.create_stack(
-        StackName=projectName+"-new-instance",
-        TemplateURL=stackTemplateUrl,
+    logger.debug(s3_object_response)
+    logger.debug(s3_object_response["Metadata"])
+    project_name = s3_object_response["Metadata"]["project_name"]
+    stack_template_url = s3_object_response["Metadata"]["stack_template_url"]
+    private_key_name = s3_object_response["Metadata"]["private_key_name"]
+    logger.debug("project name: " + project_name)
+    logger.debug("stack_template_url" + stack_template_url)
+    war_file_url = "https://s3.amazonaws.com/"+bucketName+"/"+keyName
+    logger.debug(war_file_url)
+    subnets = find_app_subnets(project_name)
+    logger.debug(subnets)
+    create_new_instance_response = cfn.create_stack(
+        StackName=project_name+"-new-instance",
+        TemplateURL=stack_template_url,
         Parameters=[
              {
                 'ParameterKey': 'publicSubnets',
@@ -75,11 +89,11 @@ def deployNewWar(event, context):
             },
             {
                 'ParameterKey': 'tvaritRole',
-                'ParameterValue': find_tvarit_roles(projectName)[0]
+                'ParameterValue': find_tvarit_roles(project_name)[0]
             },
             {
                 'ParameterKey': 'tvaritInstanceProfile',
-                'ParameterValue': find_tvarit_roles(projectName)[1]
+                'ParameterValue': find_tvarit_roles(project_name)[1]
             },
             {
                 'ParameterKey': 'bucketName',
@@ -87,7 +101,7 @@ def deployNewWar(event, context):
             },
             {
                 'ParameterKey': 'sgId',
-                'ParameterValue': find_app_sg(projectName)
+                'ParameterValue': find_app_sg(project_name)
             },
             {
                 'ParameterKey': 'keyName',
@@ -95,12 +109,12 @@ def deployNewWar(event, context):
             },
             {
                 'ParameterKey': 'warFileUrl',
-                'ParameterValue': warFileUrl
+                'ParameterValue': war_file_url
             }
         ],
         DisableRollback=True,
         TimeoutInMinutes=10
     )
 
-    print(createNewInstanceResponse)
+    logger.debug(create_new_instance_response)
 

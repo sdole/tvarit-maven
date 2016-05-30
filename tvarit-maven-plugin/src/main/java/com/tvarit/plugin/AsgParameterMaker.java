@@ -32,7 +32,7 @@ import java.util.List;
  * Created by Sachin Dole on 3/27/2016.
  */
 public class AsgParameterMaker {
-    public List<Parameter> make(AmazonEC2Client amazonEC2Client, AmazonCloudFormationClient amazonCloudFormationClient, MavenProject project, String projectName, String bucketName, String lambdaCodeS3Key, String lambdaCodeS3Bucket) {
+    public List<Parameter> make(AmazonEC2Client amazonEC2Client, AmazonCloudFormationClient amazonCloudFormationClient, MavenProject project, String projectName, String lambdaCodeS3Key, String lambdaCodeS3Bucket) {
         final RolesFinder rolesFinder = new RolesFinder(projectName, amazonCloudFormationClient);
         final String tvaritRoleOutput = rolesFinder.findRoleArn();
         final String tvaritInstanceProfileOutput = rolesFinder.findInstanceProfileArn();
@@ -57,7 +57,7 @@ public class AsgParameterMaker {
         final com.amazonaws.services.cloudformation.model.Parameter healthCheckAbsoluteUrlParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("healthCheckAbsoluteUrl").withParameterValue("/tvarit/healthCheck.html");
         final com.amazonaws.services.cloudformation.model.Parameter tvaritRoleParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritRoleArn").withParameterValue(tvaritRoleOutput);
         final com.amazonaws.services.cloudformation.model.Parameter tvaritInstanceProfileParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("tvaritInstanceProfile").withParameterValue(tvaritInstanceProfileOutput);
-        final com.amazonaws.services.cloudformation.model.Parameter tvaritBucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue(bucketName);
+        final com.amazonaws.services.cloudformation.model.Parameter tvaritBucketNameParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("bucketName").withParameterValue("tvarit");
         final com.amazonaws.services.cloudformation.model.Parameter tvaritLambdaCodeS3KeyParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("lambdaCodeS3Key").withParameterValue(lambdaCodeS3Key);
         final com.amazonaws.services.cloudformation.model.Parameter tvaritLambdaCodeS3BucketParameter = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("lambdaCodeS3Bucket").withParameterValue(lambdaCodeS3Bucket);
         return Arrays.asList(projectNameParameter, publicSubnetsParameter, privateSubnetsParameter, availabilityZonesParameter, vpcParameter, healthCheckAbsoluteUrlParameter, tvaritRoleParameter, tvaritInstanceProfileParameter, tvaritBucketNameParameter, tvaritLambdaCodeS3KeyParameter, tvaritLambdaCodeS3BucketParameter);
