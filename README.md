@@ -1,22 +1,28 @@
 #Tvarit
 [![Build Status](https://travis-ci.org/sdole/tvarit-maven.svg?branch=master)](https://travis-ci.org/sdole/tvarit-maven)
 ##About
-Tvarit is a dev ops automation project for continuous delivery of JEE apps using Maven and AWS platforms.
+Tvarit is a dev ops automation maven plugin project for continuous delivery of JEE apps using Maven and AWS platforms.
  
 ##Goals
 <ol>
 <li>Provide a completely automatic path to take code from every code commit to production and further on to retirement or rollback</li>
-<li>Support application dependencies (with contracts) in every environment</li>
+<li>Support application integration and dependencies (with API contracts) in every environment</li>
 <li>Be automatically scalable, available and cost effective</li>
 </ol>
 
+## Non-goals
+<ol>
+<li>Supporting non-Jee deployments</li>
+</ol>
+
 ##Current status
-This plugin can be used to deploy a standalone webapp (WAR) to an automatically scalable environment in AWS. Actual capabilities of the environment can be customized by customizing the underlying AWS CloudFormation templates.
+This maven plugin can be used to deploy a standalone webapp (WAR) to an automatically scalable environment in AWS. Actual capabilities of the environment can be customized by customizing the underlying AWS CloudFormation templates.
 
 ##Usage
-Tvarit Maven Plugin is available in Maven Central
+Tvarit Maven Plugin is available in Maven Central. Followed below are instructions on how to use it within your Maven WAR project. Default cloudformation templates used in this maven plugin are in GitHub. All maven goals accept a template url parameter for using an alternate cloudformation template. Running any of these maven goals will likely incur costs on AWS.
+ 
 ###AWS Credentials
-Make access id and secret key available in environment as. This access id should be allowed all [IAM permissions](#automaton-permissions) to run the plugin.
+Make access id and secret key available in environment as. This access id should be allowed all required [IAM permissions](#automaton-permissions) to run the plugin.
 ```xml
   <profiles>
 		<profile>
@@ -138,7 +144,7 @@ mvn -P deploy-app deploy
         </profile>
 ```
 ##Automaton Permissions
-The Automaton user is the user who runs the maven plugin. In a developer workstation, that will be the developer. On a continuous integration server, such as Teamcity or Jenkins, it may be a new IAM user created for automation purposes. This user will need a wide range of permissions including at least the following.
+The Automaton user is the user who runs the maven plugin. In a developer workstation, that will be the developer. On a continuous integration server, such as Teamcity or Jenkins, it may be a new IAM role created for automation purposes. This role will need a wide range of permissions including at least the following. For all specific permissions required, please see the [cloudformation template](tvarit-maven-plugin/src/main/resources/cfn-templates/vpc-infra.template) that sets up all infrastructure.
 <ul>
 <li>S3 Buckets, Objects, create, read </li>
 <li>Lambda, Functions, create</li>
@@ -152,7 +158,12 @@ Additionally, the following trust relationships will be needed:
 </ul>
 
 ## Basic schematic diagram
-![Basic schematic diagram](https://raw.githubusercontent.com/sdole/tvarit-maven/master/docs/Schematic.png)
+Default cloudformation template will create resources shown in this diagram. ![Basic schematic diagram](https://raw.githubusercontent.com/sdole/tvarit-maven/master/docs/Schematic.png)
+
+## Tagging
+Resources are tagged with a single tag of the following format.
+Key: `project name:purpose`
+Value: `empty`
 
 
 ##License
