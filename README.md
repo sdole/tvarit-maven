@@ -151,5 +151,9 @@ Additionally, the following trust relationships will be needed:
 <li>CloudFormation assume role</li>
 </ul>
 
+## Basic schematic diagram
+![Basic schematic diagram](https://raw.githubusercontent.com/sdole/tvarit-maven/master/docs/Schematic.png)
+
+
 ##License
 Tvarit is licensed under [GPLv3](https://www.gnu.org/licenses/gpl.txt)
