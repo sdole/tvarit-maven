@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger("Tvarit")
 logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter('[%(levelname)s] : %(filename)s.%(funcName)s : %(message)s')
+formatter = logging.Formatter('[%(levelname)s] %(asctime) %(filename)s.%(funcName)s %(message)s')
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 logger.addHandler(handler)
