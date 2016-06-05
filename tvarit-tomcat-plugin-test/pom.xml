@@ -18,8 +18,8 @@
         </snapshotRepository>
     </distributionManagement>
     <properties>
-        <tvarit-project-name>testFive</tvarit-project-name>
-        <tvarit-bucket-name>tvarit-automation-five</tvarit-bucket-name>
+        <tvarit-project-name>cccdemo</tvarit-project-name>
+        <tvarit-bucket-name>tvarit-automation</tvarit-bucket-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -130,12 +130,7 @@
                                 <configuration>
                                     <bucketName>${tvarit-bucket-name}</bucketName>
                                     <projectName>${tvarit-project-name}</projectName>
-                                    <tvaritInstanceProfile>tvaritAuto-infra-tvaritInstanceProfile-15XY0377X7CM8</tvaritInstanceProfile>
-                                    <tvaritRole>tvaritAuto-infra-tvaritRole-1THX1CV5IEZZB</tvaritRole>
-                                    <commaSeparatedSubnetIds>subnet-beeb58e6,subnet-a679d08c</commaSeparatedSubnetIds>
-                                    <instanceSecurityGroupId>sg-10d15368</instanceSecurityGroupId>
                                     <sshKeyName>trelair</sshKeyName>
-                                    <autoScalingGroupName>tvaritAuto-asg-tvaritAutoScalingGroup-19LL97OFCCF7C</autoScalingGroupName>
                                 </configuration>
                             </execution>
                         </executions>
