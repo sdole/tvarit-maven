@@ -23,11 +23,8 @@ package com.tvarit.plugin;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
 
-/**
- * Created by Sachin Dole on 3/27/2016.
- */
-public class LambdaS3BucketKeyMaker {
-    public String makeKey(MavenProject project) {
+class LambdaS3BucketKeyMaker {
+    String makeKey(MavenProject project) {
         Plugin tvaritMavenPlugin = project.getPluginManagement().getPluginsAsMap().get("io.tvarit:tvarit-maven-plugin");
         if (tvaritMavenPlugin == null)
             tvaritMavenPlugin = (Plugin) project.getPluginArtifactMap().get("io.tvarit:tvarit-maven-plugin");

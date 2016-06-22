@@ -1,193 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "tvaritRole": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2008-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ec2.amazonaws.com"
-              },
-              "Action": "sts:AssumeRole"
-            },
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              },
-              "Action": "sts:AssumeRole"
-            },
-            {
-              "Sid": "",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "vpc-flow-logs.amazonaws.com"
-              },
-              "Action": "sts:AssumeRole"
-            }
-          ]
-        },
-        "Path": "/"
-      }
-    },
-    "tvaritInstanceProfile": {
-      "Type": "AWS::IAM::InstanceProfile",
-      "Properties": {
-        "Path": "/",
-        "Roles": [
-          {
-            "Ref": "tvaritRole"
-          }
-        ]
-      }
-    },
-    "tvaritRolePolicy": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyName": {
-          "Fn::Join": [
-            "",
-            [
-              {
-                "Ref": "projectName"
-              },
-              "-policy"
-            ]
-          ]
-        },
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:DescribeLogGroups",
-                "logs:DescribeLogStreams",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Sid": "Stmt1457233272000",
-              "Effect": "Allow",
-              "Action": [
-                "s3:GetObject",
-                "s3:GetObjectAcl",
-                "s3:ListBucket",
-                "s3:PutObject",
-                "s3:GetBucketLocation"
-              ],
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:aws:s3:::",
-                      {
-                        "Ref": "bucketName"
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Sid": "Stmt1457233341000",
-              "Effect": "Allow",
-              "Action": [
-                "cloudformation:*"
-              ],
-              "Resource": [
-                "*"
-              ]
-            },
-            {
-              "Sid": "Stmt1457233476000",
-              "Effect": "Allow",
-              "Action": [
-                "iam:PassRole",
-                "iam:ListInstanceProfiles",
-                "ec2:*"
-              ],
-              "Resource": [
-                "*"
-              ]
-            },
-            {
-              "Sid": "Stmt1457233833000",
-              "Effect": "Allow",
-              "Action": [
-                "autoscaling:AttachInstances",
-                "autoscaling:CompleteLifecycleAction",
-                "autoscaling:CreateOrUpdateTags",
-                "autoscaling:DescribeAutoScalingGroups",
-                "autoscaling:DescribeAutoScalingInstances",
-                "autoscaling:DescribeLaunchConfigurations",
-                "autoscaling:DetachInstances",
-                "autoscaling:EnterStandby",
-                "autoscaling:ExitStandby",
-                "autoscaling:PutScalingPolicy",
-                "autoscaling:ResumeProcesses",
-                "autoscaling:SetDesiredCapacity",
-                "autoscaling:SuspendProcesses",
-                "autoscaling:TerminateInstanceInAutoScalingGroup"
-              ],
-              "Resource": [
-                "*"
-              ]
-            },
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": "arn:aws:logs:*:*:*"
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Resource": "*"
-            }
-          ]
-        },
-        "Roles": [
-          {
-            "Ref": "tvaritRole"
-          }
-        ]
-      }
-    },
-    "domainNameHostedZone": {
-      "Type": "AWS::Route53::HostedZone",
-      "Properties": {
-        "Name": {
-          "Fn::Join": [
-            "",
-            [
-              {
-                "Ref": "domainName"
-              }
-            ]
-          ]
-        },
-        "HostedZoneConfig": {
-          "Comment": "HostedZone created by Tvarit"
-        }
-      }
-    },
     "TvaritVpc": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
@@ -203,7 +16,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   "-vpc"
                 ]
@@ -216,7 +29,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   ":vpc"
                 ]
@@ -233,7 +46,7 @@
         "CidrBlock": "10.0.10.0/24",
         "AvailabilityZone": "us-east-1c",
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         },
         "Tags": [
           {
@@ -243,7 +56,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   "-db-a"
                 ]
@@ -256,7 +69,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   ":db"
                 ]
@@ -273,7 +86,7 @@
         "CidrBlock": "10.0.1.0/24",
         "AvailabilityZone": "us-east-1a",
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         },
         "Tags": [
           {
@@ -283,7 +96,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   "-pub-a"
                 ]
@@ -296,7 +109,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   ":appSubnet"
                 ]
@@ -304,8 +117,7 @@
             },
             "Value": ""
           }
-        ],
-        "MapPublicIpOnLaunch": true
+        ]
       }
     },
     "DbSubnetB": {
@@ -314,7 +126,7 @@
         "CidrBlock": "10.0.20.0/24",
         "AvailabilityZone": "us-east-1d",
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         },
         "Tags": [
           {
@@ -323,7 +135,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   ":db"
                 ]
@@ -338,7 +150,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   "-db-b"
                 ]
@@ -354,7 +166,7 @@
         "CidrBlock": "10.0.2.0/24",
         "AvailabilityZone": "us-east-1e",
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         },
         "Tags": [
           {
@@ -363,7 +175,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   ":appSubnet"
                 ]
@@ -378,15 +190,14 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   "-pub-b"
                 ]
               ]
             }
           }
-        ],
-        "MapPublicIpOnLaunch": true
+        ]
       }
     },
     "IgForVpc": {
@@ -400,7 +211,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   "-ig"
                 ]
@@ -423,7 +234,7 @@
       "Type": "AWS::EC2::NetworkAcl",
       "Properties": {
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         }
       }
     },
@@ -431,7 +242,7 @@
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         },
         "Tags": [
           {
@@ -441,9 +252,9 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
-                  "-pub-internet-rt"
+                  "-app-internet-rt"
                 ]
               ]
             }
@@ -455,7 +266,7 @@
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         },
         "Tags": [
           {
@@ -465,7 +276,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   "-db-internet-rt"
                 ]
@@ -479,7 +290,7 @@
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         }
       }
     },
@@ -491,7 +302,7 @@
           "Status": "Suspended"
         },
         "BucketName": {
-          "Ref": "bucketName"
+          "Ref": "TvaritBucketNameParm"
         },
         "Tags": [
           {
@@ -500,7 +311,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   ":bucket"
                 ]
@@ -516,7 +327,7 @@
       "Properties": {
         "GroupDescription": "default VPC security group",
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         },
         "Tags": [
           {
@@ -525,7 +336,7 @@
                 "",
                 [
                   {
-                    "Ref": "projectName"
+                    "Ref": "ProjectNameParm"
                   },
                   ":appSg"
                 ]
@@ -545,7 +356,7 @@
         "RuleAction": "allow",
         "RuleNumber": "100",
         "NetworkAclId": {
-          "Ref": "defaultTvaritVpcAcl"
+          "Ref": "DefaultTvaritVpcNacl"
         }
       }
     },
@@ -557,7 +368,7 @@
         "RuleAction": "allow",
         "RuleNumber": "100",
         "NetworkAclId": {
-          "Ref": "defaultTvaritVpcAcl"
+          "Ref": "DefaultTvaritVpcNacl"
         }
       }
     },
@@ -565,10 +376,10 @@
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
-          "Ref": "defaultTvaritVpcAcl"
+          "Ref": "DefaultTvaritVpcNacl"
         },
         "SubnetId": {
-          "Ref": "pubAppSubnetB"
+          "Ref": "AppSubnetB"
         }
       }
     },
@@ -576,10 +387,10 @@
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
-          "Ref": "defaultTvaritVpcAcl"
+          "Ref": "DefaultTvaritVpcNacl"
         },
         "SubnetId": {
-          "Ref": "dbSubnetB"
+          "Ref": "DbSubnetB"
         }
       }
     },
@@ -587,10 +398,10 @@
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
-          "Ref": "defaultTvaritVpcAcl"
+          "Ref": "DefaultTvaritVpcNacl"
         },
         "SubnetId": {
-          "Ref": "dbSubnetA"
+          "Ref": "DbSubnetA"
         }
       }
     },
@@ -598,10 +409,10 @@
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
-          "Ref": "defaultTvaritVpcAcl"
+          "Ref": "DefaultTvaritVpcNacl"
         },
         "SubnetId": {
-          "Ref": "pubAppSubnetA"
+          "Ref": "AppSubnetA"
         }
       }
     },
@@ -609,10 +420,10 @@
       "Type": "AWS::EC2::VPCGatewayAttachment",
       "Properties": {
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         },
         "InternetGatewayId": {
-          "Ref": "publicSubnetIg"
+          "Ref": "IgForVpc"
         }
       }
     },
@@ -620,10 +431,10 @@
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "publicSubnetRouteTable"
+          "Ref": "AppSubnetRouteTable"
         },
         "SubnetId": {
-          "Ref": "pubAppSubnetA"
+          "Ref": "AppSubnetA"
         }
       }
     },
@@ -631,10 +442,10 @@
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "publicSubnetRouteTable"
+          "Ref": "AppSubnetRouteTable"
         },
         "SubnetId": {
-          "Ref": "pubAppSubnetB"
+          "Ref": "AppSubnetB"
         }
       }
     },
@@ -642,10 +453,10 @@
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "dbSubnetRouteTable"
+          "Ref": "DbSubnetRouteTable"
         },
         "SubnetId": {
-          "Ref": "dbSubnetA"
+          "Ref": "DbSubnetA"
         }
       }
     },
@@ -653,10 +464,86 @@
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "dbSubnetRouteTable"
+          "Ref": "DbSubnetRouteTable"
         },
         "SubnetId": {
-          "Ref": "dbSubnetB"
+          "Ref": "DbSubnetB"
+        }
+      }
+    },
+    "PubSubnetA": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.120.0/24",
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        },
+        "MapPublicIpOnLaunch": true,
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Ref": "AvailabilityZones"
+            }
+          ]
+        }
+      }
+    },
+    "PubSubnetB": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.220.0/24",
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        },
+        "MapPublicIpOnLaunch": true,
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Ref": "AvailabilityZones"
+            }
+          ]
+        }
+      }
+    },
+    "IpForNatA": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "IpForNatB": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "NatGatewayA": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PubSubnetA"
+        },
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "IpForNatA",
+            "AllocationId"
+          ]
+        }
+      }
+    },
+    "NatGatewayB": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PubSubnetB"
+        },
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "IpForNatB",
+            "AllocationId"
+          ]
         }
       }
     },
@@ -665,39 +552,37 @@
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "RouteTableId": {
-          "Ref": "publicSubnetRouteTable"
+          "Ref": "AppSubnetRouteTable"
         },
-        "GatewayId": {
-          "Ref": "publicSubnetIg"
+        "NatGatewayId": {
+          "Ref": "NatGatewayA"
         }
-      },
-      "DependsOn": "pubSubnetInternetGateway"
+      }
     },
     "DbSubnetBToNatRoute": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "RouteTableId": {
-          "Ref": "dbSubnetRouteTable"
+          "Ref": "DbSubnetRouteTable"
         },
         "NatGatewayId": {
-          "Ref": "natForLambda"
+          "Ref": "NatGatewayA"
         }
-      },
-      "DependsOn": "natForLambda"
+      }
     },
     "S3Endpoint": {
       "Type": "AWS::EC2::VPCEndpoint",
       "DependsOn": [
-        "tvaritS3Bucket"
+        "TvaritS3Bucket"
       ],
       "Properties": {
         "RouteTableIds": [
           {
-            "Ref": "publicSubnetRouteTable"
+            "Ref": "AppSubnetRouteTable"
           },
           {
-            "Ref": "dbSubnetRouteTable"
+            "Ref": "DbSubnetRouteTable"
           }
         ],
         "ServiceName": {
@@ -713,7 +598,7 @@
           ]
         },
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         }
       }
     },
@@ -721,10 +606,10 @@
       "Type": "AWS::EC2::VPCDHCPOptionsAssociation",
       "Properties": {
         "VpcId": {
-          "Ref": "tvaritVpc"
+          "Ref": "TvaritVpc"
         },
         "DhcpOptionsId": {
-          "Ref": "tvaritVpcDhcpOpts"
+          "Ref": "TvaritVpcDhcpOpts"
         }
       }
     },
@@ -732,11 +617,11 @@
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "GroupId": {
-          "Ref": "sgDefault"
+          "Ref": "SgDefault"
         },
         "IpProtocol": "-1",
         "SourceSecurityGroupId": {
-          "Ref": "sgDefault"
+          "Ref": "SgDefault"
         },
         "SourceSecurityGroupOwnerId": {
           "Ref": "AWS::AccountId"
@@ -747,35 +632,18 @@
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
-          "Ref": "sgDefault"
+          "Ref": "SgDefault"
         },
         "IpProtocol": "-1",
         "CidrIp": "0.0.0.0/0"
       }
-    },
-    "ipForNat": {
-      "Type": "AWS::EC2::EIP",
-      "Properties": {
-        "Domain": "vpc"
-      }
-    },
-    "natForLambda": {
-      "Type": "AWS::EC2::NatGateway",
-      "Properties": {
-        "AllocationId": {
-          "Fn::GetAtt": [
-            "ipForNat",
-            "AllocationId"
-          ]
-        },
-        "SubnetId": {
-          "Ref": "pubAppSubnetA"
-        }
-      },
-      "DependsOn": "ipForNat"
     }
   },
   "Parameters": {
+    "AvailabilityZones": {
+      "Type": "CommaDelimitedList",
+      "Description": "Enter exactly 2 availability zone ids where the ELBs and app servers will be deployed."
+    },
     "ProjectNameParm": {
       "Type": "String",
       "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
@@ -794,22 +662,10 @@
     }
   },
   "Outputs": {
-    "TvaritRole": {
-      "Description": "",
+    "TvaritVpcId": {
+      "Description": "The vpc created for Tvarit",
       "Value": {
-        "Fn::GetAtt": [
-          "tvaritRole",
-          "Arn"
-        ]
-      }
-    },
-    "TvaritInstanceProfile": {
-      "Description": "",
-      "Value": {
-        "Fn::GetAtt": [
-          "tvaritInstanceProfile",
-          "Arn"
-        ]
+        "Ref": "TvaritVpc"
       }
     }
   },

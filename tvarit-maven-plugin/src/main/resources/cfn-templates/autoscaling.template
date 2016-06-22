@@ -357,7 +357,7 @@
     }
   },
   "Parameters": {
-    "projectName": {
+    "ProjectNameParm": {
       "Type": "String",
       "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
       "AllowedPattern": "[A-Za-z]*",
@@ -375,7 +375,7 @@
       "Type": "String",
       "Description": "Enter the health check absolute url for the app servers. "
     },
-    "availabilityZones": {
+    "AvailabilityZones": {
       "Type": "CommaDelimitedList",
       "Description": "Enter exactly 2 availability zone ids where the ELBs and app servers will be deployed."
     },
@@ -387,7 +387,7 @@
       "Type": "String",
       "Description": "The IAM role that will be used for all tvarit instances."
     },
-    "bucketName": {
+    "TvaritBucketNameParm": {
       "Type": "String",
       "Description": "The bucket where code, config and lambda will be stored."
     },

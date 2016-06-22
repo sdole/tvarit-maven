@@ -21,69 +21,136 @@
         },
         "MetricsCollection": [
           {
-            "Metrics": ["GroupTerminatingInstances"],
-            "Granularity":
-            "1Minute"
-
+            "Metrics": [
+              "GroupTerminatingInstances"
+            ],
+            "Granularity": "1Minute"
           },
           {
-            "Metrics": ["GroupMinSize"],
-            "Granularity":
-            "1Minute"
-
+            "Metrics": [
+              "GroupMinSize"
+            ],
+            "Granularity": "1Minute"
           },
           {
-            "Metrics": ["GroupMaxSize"],
-            "Granularity":
-            "1Minute"
-
+            "Metrics": [
+              "GroupMaxSize"
+            ],
+            "Granularity": "1Minute"
           },
           {
-            "Metrics": ["GroupPendingInstances"],
-            "Granularity":
-            "1Minute"
-
+            "Metrics": [
+              "GroupPendingInstances"
+            ],
+            "Granularity": "1Minute"
           },
           {
-            "Metrics": ["GroupInServiceInstances"],
-            "Granularity":
-            "1Minute"
-
+            "Metrics": [
+              "GroupInServiceInstances"
+            ],
+            "Granularity": "1Minute"
           },
           {
-            "Metrics": ["GroupTotalInstances"],
-            "Granularity":
-            "1Minute"
-
+            "Metrics": [
+              "GroupTotalInstances"
+            ],
+            "Granularity": "1Minute"
           },
           {
-            "Metrics": ["GroupDesiredCapacity"],
-            "Granularity":
-            "1Minute"
-
+            "Metrics": [
+              "GroupDesiredCapacity"
+            ],
+            "Granularity": "1Minute"
           }
         ],
         "TerminationPolicies": [
           "Default"
         ]
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "da4d2f75-a235-4875-ae8f-7d969386171d"
-        }
       }
     },
     "lclc": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Timeout": "PT60M"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Authentication": {
+          "S3AccessCreds": {
+            "type": "S3",
+            "buckets": [
+              {
+                "Ref": "bucketName"
+              }
+            ],
+            "roleName": {
+              "Ref": "tvaritRole"
+            }
+          }
+        },
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "main": [
+              "makeLogDir",
+              "downloadWar",
+              "startTomcat"
+            ]
+          },
+          "makeLogDir": {
+            "commands": {
+              "01": {
+                "command": [
+                  "mkdir",
+                  "/var/log/tomcat8"
+                ]
+              },
+              "02": {
+                "command": [
+                  "chown",
+                  "tomcat:tomcat",
+                  "/var/log/tomcat8"
+                ]
+              }
+            }
+          },
+          "downloadWar": {
+            "files": {
+              "/var/lib/tomcat8/webapps/tvarit.war": {
+                "source": {
+                  "Ref": "warFileUrl"
+                },
+                "owner": "tomcat",
+                "group": "tomcat",
+                "mode": "000755",
+                "authentication": "S3AccessCreds"
+              }
+            }
+          },
+          "startTomcat": {
+            "commands": {
+              "03": {
+                "command": [
+                  "/etc/init.d/tomcat8",
+                  "start"
+                ]
+              }
+            }
+          }
+        }
+      },
       "Properties": {
-        "ImageId": "ami-0c6f5f64",
+        "ImageId": "ami-0d61c466",
         "InstanceType": "t2.micro",
-        "KeyName": "trelair",
-        "IamInstanceProfile": "tvarit-role",
         "InstanceMonitoring": "true",
         "SecurityGroups": [
-          "sg-180bd060"
+          {
+            "Ref": "sgId"
+          }
         ],
+        "IamInstanceProfile": {
+          "Ref": "tvaritInstanceProfile"
+        },
         "BlockDeviceMappings": [
           {
             "DeviceName": "/dev/xvda",
@@ -91,45 +158,73 @@
               "VolumeSize": 10
             }
           }
-        ]
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "34c14151-0a3b-4235-af8b-a8035ecc9107"
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -v\n",
+                "/opt/aws/bin/cfn-init -v -s ",
+                {
+                  "Ref": "AWS::StackName"
+                },
+                " --region us-east-1 ",
+                " --role ",
+                {
+                  "Ref": "tvaritRole"
+                },
+                " -r ",
+                " AppServerA ",
+                " -c ",
+                " main ",
+                "\n",
+                "/opt/aws/bin/cfn-signal -e $? ",
+                "         --stack ",
+                {
+                  "Ref": "AWS::StackName"
+                },
+                "         --resource AppServerA ",
+                "         --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "\n"
+              ]
+            ]
+          }
+        },
+        "KeyName": {
+          "Ref": "keyName"
         }
       }
     }
   },
   "Description": "",
-  "Metadata": {
-    "AWS::CloudFormation::Designer": {
-      "34c14151-0a3b-4235-af8b-a8035ecc9107": {
-        "size": {
-          "width": 60,
-          "height": 60
-        },
-        "position": {
-          "x": 60,
-          "y": 90
-        },
-        "z": 1,
-        "embeds": []
-      },
-      "da4d2f75-a235-4875-ae8f-7d969386171d": {
-        "size": {
-          "width": 60,
-          "height": 60
-        },
-        "position": {
-          "x": 180,
-          "y": 90
-        },
-        "z": 1,
-        "embeds": [],
-        "isassociatedwith": [
-          "34c14151-0a3b-4235-af8b-a8035ecc9107"
-        ]
-      }
+  "Parameters": {
+    "keyName": {
+      "Type": "String",
+      "Description": "The name of private key which can be used for SSH access."
+    }
+    "sgId": {
+      "Type": "String",
+      "Description": "The security group id to use for starting instance."
+    },
+    "tvaritRole": {
+      "Type": "String",
+      "Description": "The IAM role  that this instance will assume."
+    },
+    "bucketName": {
+      "Type": "String",
+      "Description": "The bucket where code, config and lambda will be stored."
+    },
+    "warFileUrl": {
+      "Type": "String",
+      "Description": "The url where the war file is saved."
+    },
+    "tvaritInstanceProfile": {
+      "Type": "String",
+      "Description": "The IAM role that will be used for all tvarit instances."
     }
   }
 }

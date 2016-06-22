@@ -1,0 +1,168 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "",
+  "Resources": {
+    "RouterAutoscalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": "2",
+        "MaxSize": 10,
+        "AvailabilityZones": {
+          "Ref": "ActiveSubnets"
+        },
+        "LaunchConfigurationName": {
+          "Ref": "RouterLaunchConfiguration"
+        },
+        "LoadBalancerNames": {
+          "Ref": "RouterElb"
+        },
+        "HealthCheckType": "ELB",
+        "Tags": [
+          {
+            "Key": "tvarit:purpose",
+            "Value": "router",
+            "PropagateAtLaunch": "true"
+          }
+        ]
+      }
+    },
+    "RouterSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "sg for tvarit app servers",
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectName"
+                  },
+                  "-appSg"
+                ]
+              ]
+            }
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectName"
+                  },
+                  ":appSg"
+                ]
+              ]
+            },
+            "Value": ""
+          }
+        ]
+      }
+    },
+    "RouterLaunchConfiguration": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "ImageId": "ami-0c6f5f64",
+        "InstanceType": "t2.micro",
+        "KeyName": {
+          "Ref": "SshKeyName"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "RouterSecurityGroup"
+          }
+        ],
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeSize": 8
+            }
+          }
+        ]
+      }
+    },
+    "RouterElb": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "LBCookieStickinessPolicy": [
+          {
+            "PolicyName": "StickyLb"
+          }
+        ],
+        "Subnets": {
+          "Ref": "ActiveSubnets"
+        },
+        "HealthCheck": {
+          "HealthyThreshold": "10",
+          "Interval": "30",
+          "Target": {
+            "Fn::Join": [
+              "",
+              [
+                "HTTP:80",
+                {
+                  "Ref": "ElbHealthCheckAbsoluteUrl"
+                }
+              ]
+            ]
+          },
+          "Timeout": "5",
+          "UnhealthyThreshold": "2"
+        },
+        "ConnectionDrainingPolicy": {
+          "Enabled": "true",
+          "Timeout": "300"
+        },
+        "ConnectionSettings": {
+          "IdleTimeout": "60"
+        },
+        "CrossZone": "true",
+        "SecurityGroups": [
+          {
+            "Ref": "ElbSecurityGroup"
+          }
+        ],
+        "Listeners": [
+          {
+            "InstancePort": "8080",
+            "LoadBalancerPort": "80",
+            "Protocol": "HTTP",
+            "InstanceProtocol": "HTTP",
+            "PolicyNames": [
+              "StickyLb"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "NetworkTemplateUrl": {
+      "Type": "String",
+      "Description": "The URL to the cloudformation template describing all network assets.",
+      "MinLength": "1"
+    },
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Description": "The vpc in which to launch everything.",
+      "MinLength": "1"
+    },
+    "ProjectName": {
+      "Type": "String",
+      "Description": "The name of the project",
+      "MinLength": "1"
+    },
+    "ActiveSubnets": {
+      "Type": "List<AWS::EC2::Subnet::Id>",
+      "Description": "Subnets in which router instances will be launched by autoscaling group.",
+      "MinLength": "1"
+    }
+  }
+}

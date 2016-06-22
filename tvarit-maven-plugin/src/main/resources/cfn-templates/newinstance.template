@@ -214,9 +214,6 @@
         }
       },
       "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "87161bad-9eaa-44ae-a5bd-fecbcfec37fd"
-        },
         "AWS::CloudFormation::Authentication": {
           "S3AccessCreds": {
             "type": "S3",
@@ -287,7 +284,7 @@
       "Type": "CommaDelimitedList",
       "Description": "Two Subnets where app server should be started."
     },
-    "bucketName": {
+    "TvaritBucketNameParm": {
       "Type": "String",
       "Description": "The bucket where code, config and lambda will be stored."
     },
