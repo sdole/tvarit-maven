@@ -27,7 +27,7 @@
         </license>
     </licenses>
     <properties>
-        <version.aws.sdk>1.10.56</version.aws.sdk>
+        <version.aws.sdk>1.11.6</version.aws.sdk>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

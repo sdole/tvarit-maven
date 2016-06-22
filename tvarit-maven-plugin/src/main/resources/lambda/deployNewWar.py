@@ -10,13 +10,10 @@ handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-
-
 logger.debug('Loading function')
 cfn = boto3.client('cloudformation')
 s3 = boto3.client('s3')
 ec2Client = boto3.client('ec2')
-
 
 
 def find_app_subnets(projectName):
@@ -29,7 +26,8 @@ def find_app_subnets(projectName):
             ]
         }]
     )
-    return [subnets['Subnets'][0]['SubnetId'],subnets['Subnets'][1]['SubnetId']]
+    return [subnets['Subnets'][0]['SubnetId'], subnets['Subnets'][1]['SubnetId']]
+
 
 def find_app_sg(projectName):
     security_groups = ec2Client.describe_security_groups(
@@ -43,9 +41,10 @@ def find_app_sg(projectName):
     logger.debug(security_groups['SecurityGroups'][0]['GroupId'])
     return security_groups['SecurityGroups'][0]['GroupId']
 
+
 def find_tvarit_roles(projectName):
     infraStack = cfn.describe_stacks(
-        StackName=projectName+'-infra'
+        StackName=projectName + '-infra'
     )
     logger.debug(infraStack['Stacks'][0])
     role = infraStack['Stacks'][0]['Outputs'][0]['OutputValue'].split("/")[1]
@@ -75,17 +74,17 @@ def deployNewWar(event, context):
     private_key_name = s3_object_response["Metadata"]["private_key_name"]
     logger.debug("project name: " + project_name)
     logger.debug("stack_template_url" + stack_template_url)
-    war_file_url = "https://s3.amazonaws.com/"+bucketName+"/"+keyName
+    war_file_url = "https://s3.amazonaws.com/" + bucketName + "/" + keyName
     logger.debug(war_file_url)
     subnets = find_app_subnets(project_name)
     logger.debug(subnets)
     create_new_instance_response = cfn.create_stack(
-        StackName=project_name+"-new-instance",
+        StackName=project_name + "-new-instance",
         TemplateURL=stack_template_url,
         Parameters=[
-             {
+            {
                 'ParameterKey': 'publicSubnets',
-                'ParameterValue': subnets[0]+","+subnets[1]
+                'ParameterValue': subnets[0] + "," + subnets[1]
             },
             {
                 'ParameterKey': 'tvaritRole',
@@ -117,4 +116,3 @@ def deployNewWar(event, context):
     )
 
     logger.debug(create_new_instance_response)
-

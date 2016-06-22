@@ -1,0 +1,57 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "",
+  "Resources": {
+    "Network": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Ref": "NetworkTemplateUrl"
+        }
+      }
+    },
+    "DeployerLambda": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Ref": "DeployerLambdaUrl"
+        }
+      }
+    },
+    "Router": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Ref": "RouterTemplateUrl"
+        },
+        "Parameters": [
+          {
+            "SubnetId": {
+              "Fn::GetAtt": [
+                "Network",
+                "Outputs.TvaritVpcId"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "NetworkTemplateUrl": {
+      "Type": "String",
+      "Description": "The URL to the cloudformation template describing all network assets.",
+      "MinLength": "1"
+    },
+    "RouterTemplateUrl": {
+      "Type": "String",
+      "Description": "The URL to the cloudformation template describing the reverse proxy router and its autoscaling config.",
+      "MinLength": "1"
+    },
+    "DeployerLambdaUrl": {
+      "Type": "String",
+      "Description": "The URL to the cloudformation template describing the deployer lambda function.",
+      "MinLength": "1"
+    }
+  }
+}
