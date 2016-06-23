@@ -18,10 +18,26 @@ public class MakeVpcMojo extends AbstractMojo {
 
     @Parameter(required = true)
     private String projectName;
+    @Parameter(required = true)
+    private String domainName;
+    @Parameter(required = true)
+    private String bucketName;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        TvaritEnvironment tvaritEnvironment = TvaritEnvironment.init(this,projectName);
+        TvaritEnvironment tvaritEnvironment = TvaritEnvironment.init(this);
         new MakeVpcDelegate().make();
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public String getDomainName() {
+        return domainName;
     }
 }
