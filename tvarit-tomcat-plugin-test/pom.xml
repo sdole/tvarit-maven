@@ -82,8 +82,8 @@
                                 </goals>
                                 <configuration>
                                     <projectName>${tvarit-project-name}</projectName>
-                                    <!--<domainName>tvarit3.io</domainName>-->
-                                    <!--<bucketName>${tvarit-bucket-name}</bucketName>-->
+                                    <domainName>tvarit3.io</domainName>
+                                    <bucketName>${tvarit-bucket-name}</bucketName>
                                 </configuration>
                             </execution>
                         </executions>
