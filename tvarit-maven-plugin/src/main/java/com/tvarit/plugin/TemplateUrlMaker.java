@@ -20,15 +20,13 @@
 
 package com.tvarit.plugin;
 
+import com.tvarit.plugin.env.TvaritEnvironment;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by Sachin Dole on 3/26/2016.
- */
 public class TemplateUrlMaker {
     public URL makeUrl(MavenProject project, String fileName) throws MalformedURLException {
         Plugin tvaritMavenPlugin = project.getPluginManagement().getPluginsAsMap().get("io.tvarit:tvarit-maven-plugin");
@@ -39,5 +37,9 @@ public class TemplateUrlMaker {
         final String version = tvaritMavenPlugin.getVersion();
         final String infraTemplateS3Url = "https://s3.amazonaws.com/tvarit/default/" + groupId + "/" + artifactId + "/" + version + "/cfn-templates/" + fileName;
         return new URL(infraTemplateS3Url);
+    }
+
+    public URL makeUrl(String fileName) throws MalformedURLException {
+        return this.makeUrl(TvaritEnvironment.getInstance().getMavenProject(),fileName);
     }
 }

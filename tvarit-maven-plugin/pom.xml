@@ -27,8 +27,13 @@
         </license>
     </licenses>
     <properties>
-        <version.aws.sdk>1.11.6</version.aws.sdk>
+        <version.aws.sdk>1.10.56</version.aws.sdk>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-plugin-api.version>3.3.9</maven-plugin-api.version>
+        <maven-project.version>2.2.1</maven-project.version>
+        <maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
     </properties>
 
     <scm>
@@ -40,12 +45,12 @@
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-plugin-api</artifactId>
-                <version>3.3.3</version>
+                <version>${maven-plugin-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-project</artifactId>
-                <version>2.2.1</version>
+                <version>${maven-project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
@@ -144,22 +149,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.2.1</version>
+                    <version>${maven-project.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9.1</version>
+                    <version>${maven-javadoc-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.5</version>
+                    <version>${maven-gpg-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.3</version>
+                    <version>${nexus-staging-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -174,11 +179,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
                     <version>3.4</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>sisu-maven-plugin</artifactId>
-                    <version>1.4</version>
                 </plugin>
                 <plugin>
                     <groupId>com.bazaarvoice.maven.plugins</groupId>
@@ -241,7 +241,8 @@
                             <bucketName>tvarit</bucketName>
                             <source>src/main/resources</source>
                             <recursive>true</recursive>
-                            <destination>default/${project.groupId}/${project.artifactId}/${project.version}</destination>
+                            <destination>default/${project.groupId}/${project.artifactId}/${project.version}
+                            </destination>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -271,7 +272,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.3</version>
+                        <version>${nexus-staging-maven-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>
