@@ -88,6 +88,51 @@
         ]
       }
     },
+    "ElbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Router ELB SecurityGroup",
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "Tags": [
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectName"
+                  },
+                  ":RouterSg"
+                ]
+              ]
+            },
+            "Value": ""
+          }
+        ]
+      }
+    },
+    "ElbSecurityGroupIngressRules": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "ElbSecurityGroup"
+        },
+        "IpProtocol": "-1",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "ElbSecurityGroupEgressRules": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "ElbSecurityGroup"
+        },
+        "IpProtocol": "-1",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
     "RouterElb": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
@@ -144,9 +189,14 @@
     }
   },
   "Parameters": {
-    "NetworkTemplateUrl": {
+    "SshKeyName": {
       "Type": "String",
-      "Description": "The URL to the cloudformation template describing all network assets.",
+      "Description": "The Ssh Key to be used to allow login to router",
+      "MinLength": "1"
+    },
+    "ElbHealthCheckAbsoluteUrl": {
+      "Type": "String",
+      "Description": "The health check url that ELB should perform on router instances",
       "MinLength": "1"
     },
     "VpcId": {

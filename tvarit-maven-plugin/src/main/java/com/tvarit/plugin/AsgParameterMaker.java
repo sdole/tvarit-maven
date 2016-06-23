@@ -25,12 +25,10 @@ import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import org.apache.maven.project.MavenProject;
 
+import javax.inject.Named;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by Sachin Dole on 3/27/2016.
- */
 public class AsgParameterMaker {
     public List<Parameter> make(AmazonEC2Client amazonEC2Client, AmazonCloudFormationClient amazonCloudFormationClient, MavenProject project, String projectName, String lambdaCodeS3Key, String lambdaCodeS3Bucket) {
         final RolesFinder rolesFinder = new RolesFinder(projectName, amazonCloudFormationClient);

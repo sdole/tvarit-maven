@@ -642,17 +642,12 @@
   "Parameters": {
     "AvailabilityZones": {
       "Type": "CommaDelimitedList",
-      "Description": "Enter exactly 2 availability zone ids where the ELBs and app servers will be deployed."
+      "Description": "Enter exactly 2 availability zone ids where the ELBs and app servers will be deployed. e.g. us-east-1a"
     },
     "ProjectNameParm": {
       "Type": "String",
       "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
       "AllowedPattern": "[A-Za-z]*",
-      "MinLength": "1"
-    },
-    "domainName": {
-      "Type": "String",
-      "Description": "Enter a name for the domain name for which a new hosted zone will be created.",
       "MinLength": "1"
     },
     "TvaritBucketNameParm": {

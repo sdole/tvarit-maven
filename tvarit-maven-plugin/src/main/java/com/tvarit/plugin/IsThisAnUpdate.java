@@ -27,6 +27,6 @@ class IsThisAnUpdate {
                                 tagDescription.getKey().equals("tvarit:asg:app:mvn:group:artifact:version")
                                         &&
                                         tagDescription.getValue().equals(projectGroupId + ":" + projectArtifactId + ":" + projectVersion)));
-        return doesAGroupExist?new UpdateStackDeployer():new CreateStackDeployer();
+        return doesAGroupExist?new UpdateStackDeployer(null):new CreateStackDeployer();
     }
 }

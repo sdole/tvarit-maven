@@ -14,7 +14,7 @@
         </repository>
         <snapshotRepository>
             <id>local-test-snapshot</id>
-            <url>file://C:/users/sachi_000/dev/tvarit/mvn_repo</url>
+            <url>file://C:/tmp/mvn_repo</url>
         </snapshotRepository>
     </distributionManagement>
     <properties>
@@ -76,13 +76,14 @@
                         <executions>
                             <execution>
                                 <id>make-infrastructure</id>
+                                <phase>deploy</phase>
                                 <goals>
-                                    <goal>make-infrastructure</goal>
+                                    <goal>make-vpc</goal>
                                 </goals>
                                 <configuration>
                                     <projectName>${tvarit-project-name}</projectName>
-                                    <domainName>tvarit3.io</domainName>
-                                    <bucketName>${tvarit-bucket-name}</bucketName>
+                                    <!--<domainName>tvarit3.io</domainName>-->
+                                    <!--<bucketName>${tvarit-bucket-name}</bucketName>-->
                                 </configuration>
                             </execution>
                         </executions>
