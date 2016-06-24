@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>tvarit</groupId>
-    <artifactId>tvarit-tomcat-plugin-test</artifactId>
+    <artifactId>tomcat-plugin-test</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <distributionManagement>
@@ -18,7 +18,6 @@
         </snapshotRepository>
     </distributionManagement>
     <properties>
-        <tvarit-project-name>cccdemo</tvarit-project-name>
         <tvarit-bucket-name>tvarit-automation</tvarit-bucket-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -81,9 +80,9 @@
                                     <goal>make-vpc</goal>
                                 </goals>
                                 <configuration>
-                                    <projectName>${tvarit-project-name}</projectName>
                                     <domainName>tvarit3.io</domainName>
                                     <bucketName>${tvarit-bucket-name}</bucketName>
+                                    <availabilityZones>us-east-1a,us-east-1c</availabilityZones>
                                 </configuration>
                             </execution>
                         </executions>

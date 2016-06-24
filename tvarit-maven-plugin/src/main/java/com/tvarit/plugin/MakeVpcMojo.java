@@ -17,11 +17,9 @@ import java.net.URL;
 public class MakeVpcMojo extends AbstractMojo {
 
     @Parameter(required = true)
-    private String projectName;
-    @Parameter(required = true)
-    private String domainName;
-    @Parameter(required = true)
     private String bucketName;
+    @Parameter(required = true)
+    private String availabilityZones;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -29,15 +27,11 @@ public class MakeVpcMojo extends AbstractMojo {
         new MakeVpcDelegate().make();
     }
 
-    public String getProjectName() {
-        return projectName;
-    }
-
     public String getBucketName() {
         return bucketName;
     }
 
-    public String getDomainName() {
-        return domainName;
+    public String getAvailabilityZones() {
+        return availabilityZones;
     }
 }
