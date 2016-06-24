@@ -35,7 +35,7 @@ public class TemplateUrlMaker {
         final String groupId = tvaritMavenPlugin.getGroupId();
         final String artifactId = tvaritMavenPlugin.getArtifactId();
         final String version = tvaritMavenPlugin.getVersion();
-        final String infraTemplateS3Url = "https://s3.amazonaws.com/tvarit/default/" + groupId + "/" + artifactId + "/" + version + "/cfn-templates/" + fileName;
+        final String infraTemplateS3Url = "https://s3.amazonaws.com/tvarit/default/" + groupId + "/" + artifactId + "/" + version + "/" + fileName;
         return new URL(infraTemplateS3Url);
     }
 

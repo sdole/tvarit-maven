@@ -53,4 +53,7 @@ public final class TvaritEnvironment {
         return (T) mojo;
     }
 
+    public String getProjectName() {
+        return mavenProject.getGroupId() + "-" + mavenProject.getArtifactId();
+    }
 }

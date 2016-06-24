@@ -18,13 +18,13 @@ public class MakeVpcDelegate {
         CreateStackRequest createVpcStackRequest = new CreateStackRequest();
         URL url;
         try {
-            url = tvaritEnvironment.getTemplateUrlMaker().makeUrl("router.template");
+            url = tvaritEnvironment.getTemplateUrlMaker().makeUrl("base/network.template");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        String stackNameSuffix = TvaritEnvironment.getInstance().getMavenProject().getArtifactId() + "-" + TvaritEnvironment.getInstance().getMavenProject().getVersion().replace(".", "-");
-        String projectName = tvaritEnvironment.<MakeVpcMojo>getMojo().getProjectName();
-        createVpcStackRequest.withTemplateURL(url.toString()).withStackName("tvarit-" + projectName + "-" + stackNameSuffix);
+        String versionSuffix = TvaritEnvironment.getInstance().getMavenProject().getVersion().replace(".", "-");
+        String projectName = tvaritEnvironment.getProjectName();
+        createVpcStackRequest.withTemplateURL(url.toString()).withStackName(projectName + "-" + versionSuffix);
         List<Parameter> makeVpcParameters = new MakeVpcParameterMaker().make();
         createVpcStackRequest.withParameters(makeVpcParameters).withCapabilities(Capability.CAPABILITY_IAM);
         cloudformationClient.createStack(createVpcStackRequest);

@@ -647,7 +647,7 @@
     "ProjectNameParm": {
       "Type": "String",
       "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
-      "AllowedPattern": "[A-Za-z]*",
+      "AllowedPattern": "[a-zA-Z][-a-zA-Z0-9]*",
       "MinLength": "1"
     },
     "TvaritBucketNameParm": {
