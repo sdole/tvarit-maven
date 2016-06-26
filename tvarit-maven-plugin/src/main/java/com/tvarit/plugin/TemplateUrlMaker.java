@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class TemplateUrlMaker {
+    @Deprecated
     public URL makeUrl(MavenProject project, String fileName) throws MalformedURLException {
         Plugin tvaritMavenPlugin = project.getPluginManagement().getPluginsAsMap().get("io.tvarit:tvarit-maven-plugin");
         if (tvaritMavenPlugin == null)

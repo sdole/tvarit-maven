@@ -23,7 +23,7 @@ public class MakeVpcMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        TvaritEnvironment tvaritEnvironment = TvaritEnvironment.init(this);
+        TvaritEnvironment.init(this);
         new MakeVpcDelegate().make();
     }
 

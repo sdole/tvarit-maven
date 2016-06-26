@@ -8,7 +8,7 @@
         "MinSize": "2",
         "MaxSize": 10,
         "AvailabilityZones": {
-          "Ref": "ActiveSubnets"
+          "Ref": "RouterSubnets"
         },
         "LaunchConfigurationName": {
           "Ref": "RouterLaunchConfiguration"
@@ -142,7 +142,7 @@
           }
         ],
         "Subnets": {
-          "Ref": "ActiveSubnets"
+          "Ref": "RouterSubnets"
         },
         "HealthCheck": {
           "HealthyThreshold": "10",
@@ -194,14 +194,14 @@
       "Description": "The Ssh Key to be used to allow login to router",
       "MinLength": "1"
     },
-    "ElbHealthCheckAbsoluteUrl": {
-      "Type": "String",
-      "Description": "The health check url that ELB should perform on router instances",
-      "MinLength": "1"
-    },
     "VpcId": {
       "Type": "AWS::EC2::VPC::Id",
       "Description": "The vpc in which to launch everything.",
+      "MinLength": "1"
+    },
+    "RouterSubnets": {
+      "Type": "List<AWS::EC2::Subnet::Id>",
+      "Description": "Subnets in which router instances will be launched by autoscaling group.",
       "MinLength": "1"
     },
     "ProjectName": {
@@ -209,9 +209,9 @@
       "Description": "The name of the project",
       "MinLength": "1"
     },
-    "ActiveSubnets": {
-      "Type": "List<AWS::EC2::Subnet::Id>",
-      "Description": "Subnets in which router instances will be launched by autoscaling group.",
+    "ElbHealthCheckAbsoluteUrl": {
+      "Type": "String",
+      "Description": "The health check url that ELB should perform on router instances",
       "MinLength": "1"
     }
   }

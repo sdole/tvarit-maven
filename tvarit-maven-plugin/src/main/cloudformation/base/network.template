@@ -662,6 +662,17 @@
       "Value": {
         "Ref": "TvaritVpc"
       }
+    },
+    "AppSubnets": {
+      "Description": "The two subnets for applications",
+      "Value": [
+        {
+          "Ref": "AppSubnetA"
+        },
+        {
+          "Ref": "AppSubnetB"
+        }
+      ]
     }
   },
   "Description": ""
