@@ -12,7 +12,6 @@ import java.util.List;
 
 public class MakeVpcDelegate {
     public void make() {
-        //TODO add the router with minxize=mazsize=desired = 0
         TvaritEnvironment tvaritEnvironment = TvaritEnvironment.getInstance();
         AmazonCloudFormationClient cloudformationClient = TvaritEnvironment.getInstance().getAmazonCloudFormationClient();
         CreateStackRequest createVpcStackRequest = new CreateStackRequest();
@@ -24,7 +23,7 @@ public class MakeVpcDelegate {
         }
         String versionSuffix = TvaritEnvironment.getInstance().getMavenProject().getVersion().replace(".", "-");
         String projectName = tvaritEnvironment.getProjectName();
-        createVpcStackRequest.withTemplateURL(url.toString()).withStackName(projectName + "-" + versionSuffix);
+        createVpcStackRequest.withTemplateURL(url.toString()).withStackName(projectName + "-base");
         List<Parameter> makeVpcParameters = new MakeVpcParameterMaker().make();
         createVpcStackRequest.withParameters(makeVpcParameters).withCapabilities(Capability.CAPABILITY_IAM);
         cloudformationClient.createStack(createVpcStackRequest);
