@@ -5,8 +5,10 @@
     "RouterAutoscalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
-        "MinSize": "2",
-        "MaxSize": 10,
+        "AutoScalingGroupName":"ReverseProxyRouter",
+        "MinSize": "0",
+        "MaxSize": "0",
+        "DesiredCapacity": "0",
         "AvailabilityZones": {
           "Ref": "RouterSubnets"
         },
