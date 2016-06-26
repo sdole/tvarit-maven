@@ -4,6 +4,7 @@ import boto3
 
 cfn = boto3.client('cloudformation')
 s3 = boto3.client('s3')
+autoscaling = boto3.client('autoscaling')
 ec2 = boto3.client('ec2')
 
 
@@ -19,15 +20,18 @@ def execute_stack():
     pass
 
 
-def instances_exist(app_metadata):
-    pass
+def do_instances_exist(app_instance_tag):
+    instances = ec2.describe_instances(Filters=[{'Name': 'tag-key', 'Values': [app_instance_tag]}])
+    return len(instances['Reservations'][0]['Instances']) > 0
 
 
-def router_exists():
-    pass
+def do_router_exists():
+    instances = ec2.describe_instances(Filters=[{'Name': 'tag-key', 'Values': ["tvarit::router"]}])
+    return len(instances['Reservations'][0]['Instances']) > 0
 
 
 def create_router():
+    autoscaling.describe_auto_scaling_groups(AutoScalingGroupNames=["ReverseProxyRouter"])
     pass
 
 
@@ -54,9 +58,9 @@ def deploy(event, context):
 
     '''
     print("Starting deploy process")
-    app_metadata = get_app_metadata(event)
-    if not instances_exist(app_metadata):
-        if not router_exists():
+    app_instance_tag = get_app_metadata(event)
+    if not do_instances_exist(app_instance_tag):
+        if not do_router_exists():
             create_router()
         create_autoscaling_group()
         modify_router_rules()
