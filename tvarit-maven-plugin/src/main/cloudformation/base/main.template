@@ -7,14 +7,11 @@
       "Properties": {
         "TemplateURL": {
           "Ref": "NetworkTemplateUrl"
-        }
-      }
-    },
-    "DeployerLambda": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": {
-          "Ref": "DeployerLambdaUrl"
+        },
+        "Parameters": {
+          "ProjectNameParm": {
+            "Ref": "ProjectNameParm"
+          }
         }
       }
     },
@@ -26,11 +23,34 @@
         },
         "Parameters": [
           {
-            "SubnetId": {
+            "VpcId": {
               "Fn::GetAtt": [
                 "Network",
                 "Outputs.TvaritVpcId"
               ]
+            }
+          },
+          {
+            "RouterSubnets": {
+              "Fn:GetAtt": [
+                "Network",
+                "Outputs.RouterSubnets"
+              ]
+            }
+          },
+          {
+            "ProjectNameParm": {
+              "Ref": "ProjectNameParm"
+            }
+          },
+          {
+            "SshKey": {
+              "Ref": "SshKey"
+            }
+          },
+          {
+            "ElbHealthCheckAbsoluteUrl": {
+              "Ref": "ElbHealthCheckAbsoluteUrl"
             }
           }
         ]
@@ -48,10 +68,28 @@
       "Description": "The URL to the cloudformation template describing the reverse proxy router and its autoscaling config.",
       "MinLength": "1"
     },
-    "DeployerLambdaUrl": {
+    "AvailabilityZones": {
+      "Type": "CommaDelimitedList",
+      "Description": "Enter exactly 2 availability zone ids where the ELBs and app servers will be deployed. e.g. us-east-1a"
+    },
+    "ProjectNameParm": {
       "Type": "String",
-      "Description": "The URL to the cloudformation template describing the deployer lambda function.",
+      "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
+      "AllowedPattern": "[a-zA-Z][-a-zA-Z0-9]*",
       "MinLength": "1"
+    },
+    "TvaritBucketNameParm": {
+      "Type": "String",
+      "Description": "Enter a name for a new S3 bucket where that will be created for deployment via tvarit.",
+      "MinLength": "1"
+    },
+    "ElbHealthCheckAbsoluteUrl": {
+      "Type": "String",
+      "Description": "Enter a url to the router reverse proxy that indicates an instance's health"
+    },
+    "SshKey": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Description": "The key pair name that can be used for logging on to the router instances."
     }
   }
 }

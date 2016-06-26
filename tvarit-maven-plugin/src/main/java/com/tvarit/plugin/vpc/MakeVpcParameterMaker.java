@@ -2,10 +2,12 @@ package com.tvarit.plugin.vpc;
 
 import com.amazonaws.services.cloudformation.model.Parameter;
 import com.tvarit.plugin.MakeVpcMojo;
+import com.tvarit.plugin.TemplateUrlMaker;
 import com.tvarit.plugin.env.TvaritEnvironment;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.maven.project.MavenProject;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 class MakeVpcParameterMaker {
@@ -13,9 +15,19 @@ class MakeVpcParameterMaker {
         String projectName = TvaritEnvironment.getInstance().getProjectName();
         String bucketName = TvaritEnvironment.getInstance().<MakeVpcMojo>getMojo().getBucketName();
         String availabilityZones = TvaritEnvironment.getInstance().<MakeVpcMojo>getMojo().getAvailabilityZones();
-        final com.amazonaws.services.cloudformation.model.Parameter bucketNameParm = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("TvaritBucketNameParm").withParameterValue(bucketName);
-        final com.amazonaws.services.cloudformation.model.Parameter projectNameParm = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("ProjectNameParm").withParameterValue(projectName);
-        final com.amazonaws.services.cloudformation.model.Parameter availabilityZonesParm = new com.amazonaws.services.cloudformation.model.Parameter().withParameterKey("AvailabilityZones").withParameterValue(availabilityZones);
-        return Arrays.<Parameter>asList(new Parameter[]{bucketNameParm, projectNameParm, availabilityZonesParm});
+        final Parameter bucketNameParm = new Parameter().withParameterKey("TvaritBucketNameParm").withParameterValue(bucketName);
+        final Parameter projectNameParm = new Parameter().withParameterKey("ProjectNameParm").withParameterValue(projectName);
+        final Parameter availabilityZonesParm = new Parameter().withParameterKey("AvailabilityZones").withParameterValue(availabilityZones);
+        String routerTemplateUrl;
+        String networkTemplateUrl;
+        try {
+            networkTemplateUrl = new TemplateUrlMaker().makeUrl("base/network.template").toString();
+            routerTemplateUrl = new TemplateUrlMaker().makeUrl("base/router.template").toString();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        final Parameter routerTemplateUrlParm = new Parameter().withParameterKey("NetworkTemplateUrl").withParameterValue(networkTemplateUrl);
+        final Parameter networkTemplateUrlParm = new Parameter().withParameterKey("RouterTemplateUrl").withParameterValue(routerTemplateUrl);
+        return Arrays.<Parameter>asList(new Parameter[]{bucketNameParm, projectNameParm, availabilityZonesParm, routerTemplateUrlParm, networkTemplateUrlParm});
     }
 }

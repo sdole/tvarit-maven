@@ -80,7 +80,7 @@
                                     <goal>make-vpc</goal>
                                 </goals>
                                 <configuration>
-                                    <domainName>tvarit3.io</domainName>
+                                    <!--<domainName>tvarit3.io</domainName>-->
                                     <bucketName>${tvarit-bucket-name}</bucketName>
                                     <availabilityZones>us-east-1a,us-east-1c</availabilityZones>
                                 </configuration>

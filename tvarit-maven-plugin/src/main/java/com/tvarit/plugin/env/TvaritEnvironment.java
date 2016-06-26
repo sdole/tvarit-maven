@@ -1,5 +1,7 @@
 package com.tvarit.plugin.env;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 import com.tvarit.plugin.TemplateUrlMaker;
 import org.apache.maven.plugin.AbstractMojo;
@@ -32,7 +34,7 @@ public final class TvaritEnvironment {
             instance = new TvaritEnvironment();
             instance.mavenProject = (MavenProject) mojo.getPluginContext().getOrDefault("project", null);
             instance.logger = mojo.getLog();
-            instance.amazonCloudFormationClient = new AmazonCloudFormationClient();
+            instance.amazonCloudFormationClient = new AmazonCloudFormationClient(new ProfileCredentialsProvider("gv"));
             instance.templateUrlMaker = new TemplateUrlMaker();
             instance.mojo = mojo;
         } else {

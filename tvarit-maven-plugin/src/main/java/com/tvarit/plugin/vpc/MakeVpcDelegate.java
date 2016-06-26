@@ -13,12 +13,13 @@ import java.util.List;
 
 public class MakeVpcDelegate {
     public void make() {
+        //TODO add the router with minxize=mazsize=desired = 0
         TvaritEnvironment tvaritEnvironment = TvaritEnvironment.getInstance();
         AmazonCloudFormationClient cloudformationClient = new AmazonCloudFormationClient();
         CreateStackRequest createVpcStackRequest = new CreateStackRequest();
         URL url;
         try {
-            url = tvaritEnvironment.getTemplateUrlMaker().makeUrl("base/network.template");
+            url = tvaritEnvironment.getTemplateUrlMaker().makeUrl("base/main.template");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
