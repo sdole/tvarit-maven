@@ -31,6 +31,11 @@ def do_router_exists():
 
 
 def create_router():
+    '''
+    TODO describe stack that has the reverse proxy, find the autoscaling group in it. We have to do this because, when an autoscaling group is created in a cf stack, we cannnot specify a specific
+    name. it is created dynamically by cloudformation. so, we need to dump the name in the stack outputs - TBD and then query that over here. then, we increment the instance counts in that asg to 2.
+    '''
+    cfn.describe_stacks("")
     autoscaling.describe_auto_scaling_groups(AutoScalingGroupNames=["ReverseProxyRouter"])
     pass
 

@@ -2,10 +2,9 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "",
   "Resources": {
-    "RouterAutoscalingGroup": {
+    "RouterAutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
-        "AutoScalingGroupName":"ReverseProxyRouter",
         "MinSize": "0",
         "MaxSize": "0",
         "DesiredCapacity": "0",
@@ -215,6 +214,11 @@
       "Type": "String",
       "Description": "The health check url that ELB should perform on router instances",
       "MinLength": "1"
+    }
+  },
+  "Outputs": {
+    "ReverseProxyRouterAutoScalingGroupName": {
+      "Ref": "RouterAutoScalingGroup"
     }
   }
 }
