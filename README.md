@@ -161,8 +161,9 @@ Additionally, the following trust relationships will be needed:
 Default cloudformation template will create resources shown in this diagram. ![Basic schematic diagram](https://raw.githubusercontent.com/sdole/tvarit-maven/master/docs/Schematic.png)
 
 ## Tagging
-Resources are tagged with a single tag of the following format.
-Key: `project name:purpose`
+###Instances
+Instances are tagged with a single tag of the following format.
+Key: `tvarti::groupId::artifactId::version`
 Value: `empty`
 
 
