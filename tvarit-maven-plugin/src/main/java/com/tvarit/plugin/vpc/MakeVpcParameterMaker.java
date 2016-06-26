@@ -5,7 +5,6 @@ import com.tvarit.plugin.MakeVpcMojo;
 import com.tvarit.plugin.TemplateUrlMaker;
 import com.tvarit.plugin.env.TvaritEnvironment;
 import edu.emory.mathcs.backport.java.util.Arrays;
-import org.apache.maven.project.MavenProject;
 
 import java.net.MalformedURLException;
 import java.util.List;
@@ -13,9 +12,9 @@ import java.util.List;
 class MakeVpcParameterMaker {
     List<Parameter> make() {
         String projectName = TvaritEnvironment.getInstance().getProjectName();
-        String bucketName = TvaritEnvironment.getInstance().<MakeVpcMojo>getMojo().getBucketName();
+        String artifactBucketName = TvaritEnvironment.getInstance().<MakeVpcMojo>getMojo().getArtifactBucketName();
         String availabilityZones = TvaritEnvironment.getInstance().<MakeVpcMojo>getMojo().getAvailabilityZones();
-        final Parameter bucketNameParm = new Parameter().withParameterKey("TvaritBucketNameParm").withParameterValue(bucketName);
+        final Parameter bucketNameParm = new Parameter().withParameterKey("ArtifactBucketNameParm").withParameterValue(artifactBucketName);
         final Parameter projectNameParm = new Parameter().withParameterKey("ProjectNameParm").withParameterValue(projectName);
         final Parameter availabilityZonesParm = new Parameter().withParameterKey("AvailabilityZones").withParameterValue(availabilityZones);
         String routerTemplateUrl;

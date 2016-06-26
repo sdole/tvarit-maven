@@ -1,35 +1,23 @@
 package com.tvarit.plugin;
 
-import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
-import com.amazonaws.services.cloudformation.model.CreateStackRequest;
-import com.tvarit.plugin.env.TvaritEnvironment;
 import com.tvarit.plugin.vpc.MakeVpcDelegate;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 @Mojo(name = "make-vpc")
-public class MakeVpcMojo extends AbstractMojo {
+public class MakeVpcMojo extends AbstractTvaritMojo {
 
-    @Parameter(required = true)
-    private String bucketName;
-    @Parameter(required = true)
+    @Parameter(required = true,name = "availability-zones")
     private String availabilityZones;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        TvaritEnvironment.init(this);
+        super.execute();
         new MakeVpcDelegate().make();
     }
 
-    public String getBucketName() {
-        return bucketName;
-    }
 
     public String getAvailabilityZones() {
         return availabilityZones;
