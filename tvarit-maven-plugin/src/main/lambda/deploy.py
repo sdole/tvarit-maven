@@ -7,7 +7,7 @@ ec2 = boto3.client('ec2')
 
 
 def find_app_subnets(projectName):
-    logger.debug(projectName)
+    print(projectName)
     subnets = ec2.describe_subnets(
         Filters=[{
             'Name': 'tag-key',
