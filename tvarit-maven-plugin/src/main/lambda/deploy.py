@@ -1,4 +1,5 @@
 from __future__ import print_function
+
 import boto3
 
 cfn = boto3.client('cloudformation')
@@ -6,38 +7,36 @@ s3 = boto3.client('s3')
 ec2 = boto3.client('ec2')
 
 
-def find_app_subnets(projectName):
-    print(projectName)
-    subnets = ec2.describe_subnets(
-        Filters=[{
-            'Name': 'tag-key',
-            'Values': [
-                projectName + ':appSubnet'
-            ]
-        }]
-    )
-    return [subnets['Subnets'][0]['SubnetId'], subnets['Subnets'][1]['SubnetId']]
+def find_template():
+    pass
 
 
-def find_app_sg(projectName):
-    security_groups = ec2.describe_security_groups(
-        Filters=[{
-            'Name': 'tag-key',
-            'Values': [
-                projectName + ':appSg'
-            ]
-        }]
-    )
-    return security_groups['SecurityGroups'][0]['GroupId']
+def modify_template():
+    pass
 
 
-def find_tvarit_roles(projectName):
-    infraStack = cfn.describe_stacks(
-        StackName=projectName + '-infra'
-    )
-    role = infraStack['Stacks'][0]['Outputs'][0]['OutputValue'].split("/")[1]
-    instance_profile = infraStack['Stacks'][0]['Outputs'][1]['OutputValue'].split("/")[1]
-    return [role, instance_profile]
+def execute_stack():
+    pass
+
+
+def instances_exist(app_metadata):
+    pass
+
+
+def router_exists():
+    pass
+
+
+def create_router():
+    pass
+
+
+def create_autoscaling_group():
+    pass
+
+
+def modify_router_rules():
+    pass
 
 
 def deploy(event, context):
@@ -55,10 +54,24 @@ def deploy(event, context):
 
     '''
     print("Starting deploy process")
+    app_metadata = get_app_metadata(event)
+    if not instances_exist(app_metadata):
+        if not router_exists():
+            create_router()
+        create_autoscaling_group()
+        modify_router_rules()
+    else:
+        find_template()  # find the template that is used to start the autoscaling group for this app/version
+        modify_template()  # copy the launch config into a variable, modify the launch config logical name
+        execute_stack()  # execute the new stack from memory (no need to save it in S3)
+
+
+def get_app_metadata(event):
     bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
     keyName = event["Records"][0]["s3"]["object"]["key"]
     s3_object_response = s3.head_object(
         Bucket=bucket_name,
         Key=keyName
     )
-    project_name = s3_object_response["Metadata"]["project_name"]
+    key_name_split = keyName.split("/")
+    return "tvarit::" + key_name_split[1] + "::" + key_name_split[2] + "::" + key_name_split[3]

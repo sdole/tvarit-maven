@@ -26,6 +26,7 @@ import com.tvarit.plugin.env.TvaritEnvironment;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 class DeployPutRequestMaker {
     PutObjectRequest makePutRequest() {
@@ -40,7 +41,7 @@ class DeployPutRequestMaker {
         final String bucketName = tvaritEnvironment.<AppDeployerMojo>getMojo().getArtifactBucketName();
         final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, warFile);
         final ObjectMetadata metadata = new ObjectMetadata();
-        final HashMap<String, String> userMetadata = new HashMap<>();
+        final Map<String, String> userMetadata = new HashMap<>();
         userMetadata.put("project_name", tvaritEnvironment.getProjectName());
         userMetadata.put("private_key_name", tvaritEnvironment.<AppDeployerMojo>getMojo().getSshKeyName());
         metadata.setUserMetadata(userMetadata);
