@@ -4,7 +4,6 @@ import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 import com.amazonaws.services.cloudformation.model.Capability;
 import com.amazonaws.services.cloudformation.model.CreateStackRequest;
 import com.amazonaws.services.cloudformation.model.Parameter;
-import com.tvarit.plugin.MakeVpcMojo;
 import com.tvarit.plugin.env.TvaritEnvironment;
 
 import java.net.MalformedURLException;
@@ -15,7 +14,7 @@ public class MakeVpcDelegate {
     public void make() {
         //TODO add the router with minxize=mazsize=desired = 0
         TvaritEnvironment tvaritEnvironment = TvaritEnvironment.getInstance();
-        AmazonCloudFormationClient cloudformationClient = new AmazonCloudFormationClient();
+        AmazonCloudFormationClient cloudformationClient = TvaritEnvironment.getInstance().getAmazonCloudFormationClient();
         CreateStackRequest createVpcStackRequest = new CreateStackRequest();
         URL url;
         try {

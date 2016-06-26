@@ -78,7 +78,7 @@
       "AllowedPattern": "[a-zA-Z][-a-zA-Z0-9]*",
       "MinLength": "1"
     },
-    "TvaritBucketNameParm": {
+    "ArtifactBucketNameParm": {
       "Type": "String",
       "Description": "Enter a name for a new S3 bucket where that will be created for deployment via tvarit.",
       "MinLength": "1"
