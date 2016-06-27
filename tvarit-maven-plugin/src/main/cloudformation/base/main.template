@@ -91,5 +91,13 @@
       "Type": "AWS::EC2::KeyPair::KeyName",
       "Description": "The key pair name that can be used for logging on to the router instances."
     }
+  },
+  "Outputs": {
+    "ReverseProxyRouterAutoScalingGroupName": {
+      "Fn::GetAtt": [
+        "Router",
+        "Outputs.ReverseProxyRouterAutoScalingGroupName"
+      ]
+    }
   }
 }

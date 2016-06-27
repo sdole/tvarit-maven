@@ -21,9 +21,7 @@ public class MakeVpcDelegate {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        String versionSuffix = TvaritEnvironment.getInstance().getMavenProject().getVersion().replace(".", "-");
-        String projectName = tvaritEnvironment.getProjectName();
-        createVpcStackRequest.withTemplateURL(url.toString()).withStackName(projectName + "-base");
+        createVpcStackRequest.withTemplateURL(url.toString()).withStackName("tvarit-vpc");
         List<Parameter> makeVpcParameters = new MakeVpcParameterMaker().make();
         createVpcStackRequest.withParameters(makeVpcParameters).withCapabilities(Capability.CAPABILITY_IAM);
         cloudformationClient.createStack(createVpcStackRequest);
