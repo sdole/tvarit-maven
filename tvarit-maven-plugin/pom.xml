@@ -183,7 +183,7 @@
                 <plugin>
                     <groupId>com.bazaarvoice.maven.plugins</groupId>
                     <artifactId>s3-upload-maven-plugin</artifactId>
-                    <version>1.3</version>
+                    <version>1.5-SNAPSHOT</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -229,6 +229,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <awsAuthProfile>gv</awsAuthProfile>
                     <bucketName>tvarit</bucketName>
                     <source>src/main/cloudformation</source>
                     <recursive>true</recursive>
