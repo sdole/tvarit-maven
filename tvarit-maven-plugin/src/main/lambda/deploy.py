@@ -54,7 +54,6 @@ def start_router_auto_scaling_group():
     )
 
 
-
 def create_app_auto_scaling_group():
     pass
 
@@ -78,11 +77,11 @@ def deploy(event, context):
 
     '''
     print("Starting deploy process")
-    app_instance_tag = get_app_metadata(event)
+    war_key_name, app_instance_tag = get_app_metadata(event)
     if not do_instances_exist(app_instance_tag):
         if not do_router_exists():
             start_router_auto_scaling_group()
-        create_app_auto_scaling_group()
+        create_app_auto_scaling_group(bucket_name, war_key_name)
         modify_router_rules()
     else:
         find_template()  # find the template that is used to start the autoscaling group for this app/version
@@ -92,10 +91,11 @@ def deploy(event, context):
 
 def get_app_metadata(event):
     bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
-    keyName = event["Records"][0]["s3"]["object"]["key"]
+    key_name = event["Records"][0]["s3"]["object"]["key"]
     s3_object_response = s3.head_object(
         Bucket=bucket_name,
-        Key=keyName
+        Key=key_name
     )
-    key_name_split = keyName.split("/")
-    return "tvarit::" + key_name_split[1] + "::" + key_name_split[2] + "::" + key_name_split[3]
+    key_name_split = key_name.split("/")
+    instance_tag = "tvarit::" + key_name_split[1] + "::" + key_name_split[2] + "::" + key_name_split[3]
+    return key_name, instance_tag

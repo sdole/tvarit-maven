@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "tvaritElb": {
+    "AppElb": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
         "LBCookieStickinessPolicy": [
@@ -55,7 +55,7 @@
         ]
       }
     },
-    "tvaritAutoScalingGroup": {
+    "AppAutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "AvailabilityZones": {
@@ -83,7 +83,7 @@
         ]
       }
     },
-    "lctvaritlc": {
+    "LaunchConfiguration": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": "ami-0c6f5f64",
@@ -164,7 +164,7 @@
         }
       }
     },
-    "scalingDecreaseGroupSize": {
+    "ScalingPolicyDecreaseSize": {
       "Type": "AWS::AutoScaling::ScalingPolicy",
       "Properties": {
         "AdjustmentType": "ChangeInCapacity",
@@ -174,7 +174,7 @@
         }
       }
     },
-    "scalingIncreaseGroupSize": {
+    "ScalingPolicyIncreaseSize": {
       "Type": "AWS::AutoScaling::ScalingPolicy",
       "Properties": {
         "AdjustmentType": "ChangeInCapacity",
@@ -184,7 +184,7 @@
         }
       }
     },
-    "alarmtvarithighcpumark": {
+    "HighCpuAlarm": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
         "ActionsEnabled": "true",
@@ -208,7 +208,7 @@
         ]
       }
     },
-    "alarmtvaritlowcpumark": {
+    "LowCpuAlarm": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
         "ActionsEnabled": "true",

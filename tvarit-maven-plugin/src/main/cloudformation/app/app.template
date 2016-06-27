@@ -1,0 +1,203 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "",
+  "Resources": {
+    "AppElb": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "LBCookieStickinessPolicy": [
+          {
+            "PolicyName": "StickyLb"
+          }
+        ],
+        "Subnets": {
+          "Ref": "AppSubnets"
+        },
+        "HealthCheck": {
+          "HealthyThreshold": "10",
+          "Interval": "30",
+          "Target": {
+            "Fn::Join": [
+              "",
+              [
+                "HTTP:8080",
+                {
+                  "Ref": "HealthCheckAbsoluteUrl"
+                }
+              ]
+            ]
+          },
+          "Timeout": "5",
+          "UnhealthyThreshold": "2"
+        },
+        "ConnectionDrainingPolicy": {
+          "Enabled": "true",
+          "Timeout": "300"
+        },
+        "ConnectionSettings": {
+          "IdleTimeout": "60"
+        },
+        "CrossZone": "true",
+        "SecurityGroups": [
+          {
+            "Ref": "AppElbSecurityGroup"
+          }
+        ],
+        "Listeners": [
+          {
+            "InstancePort": "8080",
+            "LoadBalancerPort": "80",
+            "Protocol": "HTTP",
+            "InstanceProtocol": "HTTP",
+            "PolicyNames": [
+              "StickyLb"
+            ]
+          }
+        ]
+      }
+    },
+    "AppAutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": {
+          "Ref": "AvailabilityZones"
+        },
+        "Cooldown": "300",
+        "DesiredCapacity": "0",
+        "HealthCheckGracePeriod": "300",
+        "HealthCheckType": "ELB",
+        "MaxSize": "6",
+        "MinSize": "0",
+        "LaunchConfigurationName": {
+          "Ref": "LaunchConfiguration"
+        },
+        "LoadBalancerNames": [
+          {
+            "Ref": "AppElb"
+          }
+        ],
+        "TerminationPolicies": [
+          "Default"
+        ]
+      }
+    },
+    "LaunchConfiguration": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "ImageId": "ami-0c6f5f64",
+        "InstanceType": "t2.micro",
+        "KeyName": "trelair",
+        "IamInstanceProfile": {
+          "Ref": "AppInstanceProfile"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "AppSecurityGroup"
+          }
+        ],
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeSize": 8
+            }
+          }
+        ]
+      }
+    },
+    "ScalingPolicyDecreaseSize": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "AdjustmentType": "ChangeInCapacity",
+        "ScalingAdjustment": "-1",
+        "AutoScalingGroupName": {
+          "Ref": "AppAutoScalingGroup"
+        }
+      }
+    },
+    "ScalingPolicyIncreaseSize": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "AdjustmentType": "ChangeInCapacity",
+        "ScalingAdjustment": "1",
+        "AutoScalingGroupName": {
+          "Ref": "AppAutoScalingGroup"
+        }
+      }
+    },
+    "HighCpuAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ActionsEnabled": "true",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": "1",
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/EC2",
+        "Period": "300",
+        "Statistic": "Average",
+        "Threshold": "70.0",
+        "AlarmActions": [
+          {
+            "Ref": "ScalingPolicyIncreaseSize"
+          }
+        ],
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": "tvaritAutoScalingGroup"
+          }
+        ]
+      }
+    },
+    "LowCpuAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ActionsEnabled": "true",
+        "ComparisonOperator": "LessThanOrEqualToThreshold",
+        "EvaluationPeriods": "1",
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/EC2",
+        "Period": "300",
+        "Statistic": "Average",
+        "Threshold": "20.0",
+        "AlarmActions": [
+          {
+            "Ref": "ScalingPolicyDecreaseSize"
+          }
+        ],
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": "tvaritAutoScalingGroup"
+          }
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "AppInstanceProfile": {
+      "Type": "String",
+      "Description": "The IAM role that will be used for all tvarit instances."
+    },
+    "AvailabilityZones": {
+      "Type": "CommaDelimitedList",
+      "Description": "Enter exactly 2 availability zone ids where the ELBs and app servers will be deployed."
+    },
+    "AppSecurityGroup": {
+      "Type": "String",
+      "Description": "The IAM role that will be used for all tvarit instances."
+    },
+    "AppSubnets": {
+      "Type": "CommaDelimitedList",
+      "Description": "Enter exactly 2 subnet ids that are publicly accessible. ELBs and app servers will be placed in these two subnets."
+    },
+    "HealthCheckAbsoluteUrl": {
+      "Type": "String",
+      "Description": "Enter the health check absolute url for the app servers. "
+    },
+    "AppElbSecurityGroup": {
+      "Type": "String",
+      "Description": "Enter the health check absolute url for the app servers. "
+    }
+  }
+}
