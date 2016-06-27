@@ -30,17 +30,32 @@ def do_router_exists():
     return len(instances['Reservations'][0]['Instances']) > 0
 
 
-def create_router():
+def start_router_auto_scaling_group():
     '''
     TODO describe stack that has the reverse proxy, find the autoscaling group in it. We have to do this because, when an autoscaling group is created in a cf stack, we cannnot specify a specific
     name. it is created dynamically by cloudformation. so, we need to dump the name in the stack outputs - TBD and then query that over here. then, we increment the instance counts in that asg to 2.
     '''
-    cfn.describe_stacks("")
-    autoscaling.describe_auto_scaling_groups(AutoScalingGroupNames=["ReverseProxyRouter"])
-    pass
+    tvarit_vpc_stack = cfn.describe_stacks("tvarit-vpc")
+    router_auto_scaling_group_name = None
+    for anOutput in tvarit_vpc_stack['Stacks']['Outputs']:
+        if anOutput['OutputKey'] == 'ReverseProxyRouterAutoScalingGroupName':
+            router_auto_scaling_group_name = anOutput['OutputValue']
+            break
+    if not router_auto_scaling_group_name:
+        raise Exception("No router auto scaling group found!")
+
+    router_auto_scaling_group = autoscaling.describe_auto_scaling_groups(AutoScalingGroupNames=router_auto_scaling_group_name)
+
+    autoscaling.update_auto_scaling_group(
+        AutoScalingGroupName=router_auto_scaling_group,
+        MinSize=2,
+        MaxSize=10,
+        DesiredCapacity=2
+    )
 
 
-def create_autoscaling_group():
+
+def create_app_auto_scaling_group():
     pass
 
 
@@ -66,8 +81,8 @@ def deploy(event, context):
     app_instance_tag = get_app_metadata(event)
     if not do_instances_exist(app_instance_tag):
         if not do_router_exists():
-            create_router()
-        create_autoscaling_group()
+            start_router_auto_scaling_group()
+        create_app_auto_scaling_group()
         modify_router_rules()
     else:
         find_template()  # find the template that is used to start the autoscaling group for this app/version
