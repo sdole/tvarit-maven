@@ -62,7 +62,19 @@ def create_app_auto_scaling_group():
     parameters on it from s3 war file metadata and execute it.
     :return:
     '''
-    pass
+    s3_region = '' if region_name == "us-east-1" else '-' + region_name
+    cfn_template_s3_url = (
+        "https://s3" +
+        s3_region +
+        '.amazonaws.com' +
+        '/' +
+        resources.RESOURCES["automation_buckets"][region_name] +
+        '/' + project_name + "/" + version +
+        '/' + env + "/cloudformation/" +
+        each_nested_template['Template']
+    )
+
+
 
 
 def modify_router_rules():
