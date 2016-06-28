@@ -44,7 +44,9 @@ def start_router_auto_scaling_group():
     if not router_auto_scaling_group_name:
         raise Exception("No router auto scaling group found!")
 
-    router_auto_scaling_group = autoscaling.describe_auto_scaling_groups(AutoScalingGroupNames=router_auto_scaling_group_name)
+    router_auto_scaling_group = autoscaling.describe_auto_scaling_groups(
+        AutoScalingGroupNames=router_auto_scaling_group_name
+    )
 
     autoscaling.update_auto_scaling_group(
         AutoScalingGroupName=router_auto_scaling_group,
@@ -55,6 +57,11 @@ def start_router_auto_scaling_group():
 
 
 def create_app_auto_scaling_group():
+    '''
+    Here, we know that the app auto scaling group does not exist. so, we find template url for autoscaling group, set
+    parameters on it from s3 war file metadata and execute it.
+    :return:
+    '''
     pass
 
 
