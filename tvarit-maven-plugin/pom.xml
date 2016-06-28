@@ -229,35 +229,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <bucketName>tvarit</bucketName>
-                    <source>src/main/cloudformation</source>
-                    <recursive>true</recursive>
-                    <destination>default/${project.groupId}/${project.artifactId}/${project.version}
-                    </destination>
-                </configuration>
-            </plugin>
-
-        </plugins>
-
-    </build>
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-            <plugin>
-                <groupId>com.bazaarvoice.maven.plugins</groupId>
-                <artifactId>s3-upload-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>upload-templates</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>s3-upload</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
                     <awsAuthProfile>gv</awsAuthProfile>
                     <bucketName>tvarit</bucketName>
                     <source>src/main/cloudformation</source>
