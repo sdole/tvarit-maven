@@ -41,7 +41,7 @@ public abstract class AbstractTvaritMojo extends AbstractMojo {
     }
 
     public String getArtifactBucketName() {
-        return TvaritEnvironment.getInstance().getArtifactBucketName();
+        return artifactBucketName;
     }
 
     public String getAwsAuthProfile() {

@@ -1,4 +1,4 @@
-package com.tvarit.plugin.vpc;
+package com.tvarit.plugin.base;
 
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 import com.amazonaws.services.cloudformation.model.Capability;
@@ -10,7 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-public class MakeVpcDelegate {
+public class MakeBaseInfrastructureDelegate {
     public void make() {
         TvaritEnvironment tvaritEnvironment = TvaritEnvironment.getInstance();
         AmazonCloudFormationClient amazonCloudFormationClient = TvaritEnvironment.getInstance().getAmazonCloudFormationClient();
@@ -22,7 +22,7 @@ public class MakeVpcDelegate {
             throw new RuntimeException(e);
         }
         createVpcStackRequest.withTemplateURL(url.toString()).withStackName("tvarit-vpc");
-        List<Parameter> makeVpcParameters = new MakeVpcParameterMaker().make();
+        List<Parameter> makeVpcParameters = new MakeBaseInfrastructureParameterMaker().make();
         createVpcStackRequest.withParameters(makeVpcParameters).withCapabilities(Capability.CAPABILITY_IAM);
         amazonCloudFormationClient.createStack(createVpcStackRequest);
     }

@@ -73,10 +73,10 @@
                         <artifactId>tvarit-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>make-infrastructure</id>
+                                <id>execute-base-infrastructure</id>
                                 <phase>deploy</phase>
                                 <goals>
-                                    <goal>make-vpc</goal>
+                                    <goal>make-base-infrastructure</goal>
                                 </goals>
                                 <configuration>
                                     <availability-zones>us-east-1a,us-east-1c</availability-zones>

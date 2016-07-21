@@ -73,8 +73,9 @@ public final class TvaritEnvironment {
     public AmazonS3Client getAmazonS3Client() {
         return amazonS3Client;
     }
-    public String getArtifactBucketName(){
-        return getMojo().getArtifactBucketName() ==null?"tvarit-"+getProjectName():getMojo().getArtifactBucketName();
+
+    public String getArtifactBucketName() {
+        return getMojo().getArtifactBucketName() == null ? "tvarit-" + getProjectName() : getMojo().getArtifactBucketName();
     }
 
 

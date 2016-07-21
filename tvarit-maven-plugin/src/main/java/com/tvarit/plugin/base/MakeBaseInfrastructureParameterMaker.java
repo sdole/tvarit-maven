@@ -1,7 +1,7 @@
-package com.tvarit.plugin.vpc;
+package com.tvarit.plugin.base;
 
 import com.amazonaws.services.cloudformation.model.Parameter;
-import com.tvarit.plugin.MakeVpcMojo;
+import com.tvarit.plugin.MakeBaseInfrastructureMojo;
 import com.tvarit.plugin.TemplateUrlMaker;
 import com.tvarit.plugin.env.TvaritEnvironment;
 import edu.emory.mathcs.backport.java.util.Arrays;
@@ -9,11 +9,11 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 import java.net.MalformedURLException;
 import java.util.List;
 
-class MakeVpcParameterMaker {
+class MakeBaseInfrastructureParameterMaker {
     List<Parameter> make() {
         String projectName = TvaritEnvironment.getInstance().getProjectName();
-        String artifactBucketName = TvaritEnvironment.getInstance().<MakeVpcMojo>getMojo().getArtifactBucketName();
-        String availabilityZones = TvaritEnvironment.getInstance().<MakeVpcMojo>getMojo().getAvailabilityZones();
+        String artifactBucketName = TvaritEnvironment.getInstance().<MakeBaseInfrastructureMojo>getMojo().getArtifactBucketName();
+        String availabilityZones = TvaritEnvironment.getInstance().<MakeBaseInfrastructureMojo>getMojo().getAvailabilityZones();
         final Parameter bucketNameParm = new Parameter().withParameterKey("ArtifactBucketNameParm").withParameterValue(artifactBucketName);
         final Parameter projectNameParm = new Parameter().withParameterKey("ProjectNameParm").withParameterValue(projectName);
         final Parameter availabilityZonesParm = new Parameter().withParameterKey("AvailabilityZones").withParameterValue(availabilityZones);
