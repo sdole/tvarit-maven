@@ -226,16 +226,26 @@
                         <goals>
                             <goal>s3-upload</goal>
                         </goals>
+                        <configuration>
+                            <bucketName>tvarit</bucketName>
+                            <source>src/main/cloudformation</source>
+                            <recursive>true</recursive>
+                            <destination>default/${project.groupId}/${project.artifactId}/${project.version}/cloudformation</destination>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>upload-lambda</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>s3-upload</goal>
+                        </goals>
+                        <configuration>
+                            <bucketName>tvarit</bucketName>
+                            <source>target/${build.finalName}-bin.zip</source>
+                            <destination>default/${project.groupId}/${project.artifactId}/${project.version}/lambda/tvarit-lambda.zip</destination>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <awsAuthProfile>gv</awsAuthProfile>
-                    <bucketName>tvarit</bucketName>
-                    <source>src/main/cloudformation</source>
-                    <recursive>true</recursive>
-                    <destination>default/${project.groupId}/${project.artifactId}/${project.version}
-                    </destination>
-                </configuration>
             </plugin>
 
         </plugins>
@@ -246,6 +256,23 @@
             <id>release</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.6</version>
+                        <configuration>
+                            <descriptor>src/assembly/dep.xml</descriptor>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>create-archive</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>

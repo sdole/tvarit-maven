@@ -9,15 +9,15 @@ ec2 = boto3.client('ec2')
 
 
 def find_template():
-    pass
+    print("in find template")
 
 
 def modify_template():
-    pass
+    print("in modify template")
 
 
 def execute_stack():
-    pass
+    print("in execute stack")
 
 
 def do_instances_exist(app_instance_tag):
@@ -111,7 +111,10 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
 
 
 def modify_router_rules():
-    pass
+    '''
+    add the newly created application asg into the router rules.
+    '''
+    print("do router")
 
 
 def deploy(event, context):
@@ -125,8 +128,6 @@ def deploy(event, context):
                 3.a.i. find its template on S3, modify it, create change set and execute
             3.b. if version does not exist,
                 3.b.i. find template, copy to local, create
-
-
     '''
     print("Starting deploy process")
     war_key_name, app_instance_tag = get_app_metadata(event)
