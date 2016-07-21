@@ -56,25 +56,58 @@ def start_router_auto_scaling_group():
     )
 
 
-def create_app_auto_scaling_group():
+def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_metadata):
     '''
     Here, we know that the app auto scaling group does not exist. so, we find template url for autoscaling group, set
     parameters on it from s3 war file metadata and execute it.
     :return:
     '''
+    group_id = war_file_metadata["group_id"]
+    artifact_id = war_file_metadata["artifact_id"]
+    version = war_file_metadata["version"]
+    instance_profile = war_file_metadata["instance_profile"]
     s3_region = '' if region_name == "us-east-1" else '-' + region_name
     cfn_template_s3_url = (
         "https://s3" +
         s3_region +
         '.amazonaws.com' +
         '/' +
-        resources.RESOURCES["automation_buckets"][region_name] +
-        '/' + project_name + "/" + version +
-        '/' + env + "/cloudformation/" +
-        each_nested_template['Template']
+        automation_bucket_name +
+        '/' + group_id + artifact_id + "/" + version +
+        '/' + "/cloudformation/" +
+        "app.template"
     )
 
-
+    cfn.create_stack(
+        StackName=(group_id + artifact_id + version).replace(".", "-"),
+        TemplateURL=cfn_template_s3_url,
+        Parameters=[
+            {
+                "ParameterKey": "AppInstanceProfile",
+                "ParameterValue": instance_profile
+            },
+            {
+                "ParameterKey": "AvailabilityZones",
+                "ParameterValue": ""
+            },
+            {
+                "ParameterKey": "AppSecurityGroup",
+                "ParameterValue": ""
+            },
+            {
+                "ParameterKey": "AppSubnets",
+                "ParameterValue": ""
+            },
+            {
+                "ParameterKey": "HealthCheckAbsoluteUrl",
+                "ParameterValue": ""
+            },
+            {
+                "ParameterKey": "AppElbSecurityGroup",
+                "ParameterValue": ""
+            }
+        ]
+    )
 
 
 def modify_router_rules():
@@ -100,7 +133,7 @@ def deploy(event, context):
     if not do_instances_exist(app_instance_tag):
         if not do_router_exists():
             start_router_auto_scaling_group()
-        create_app_auto_scaling_group(bucket_name, war_key_name)
+        create_app_auto_scaling_group(region_name, automation_bucket_name, group_id, artifact_id, version)
         modify_router_rules()
     else:
         find_template()  # find the template that is used to start the autoscaling group for this app/version

@@ -13,7 +13,7 @@ import java.util.List;
 public class MakeVpcDelegate {
     public void make() {
         TvaritEnvironment tvaritEnvironment = TvaritEnvironment.getInstance();
-        AmazonCloudFormationClient cloudformationClient = TvaritEnvironment.getInstance().getAmazonCloudFormationClient();
+        AmazonCloudFormationClient amazonCloudFormationClient = TvaritEnvironment.getInstance().getAmazonCloudFormationClient();
         CreateStackRequest createVpcStackRequest = new CreateStackRequest();
         URL url;
         try {
@@ -24,6 +24,6 @@ public class MakeVpcDelegate {
         createVpcStackRequest.withTemplateURL(url.toString()).withStackName("tvarit-vpc");
         List<Parameter> makeVpcParameters = new MakeVpcParameterMaker().make();
         createVpcStackRequest.withParameters(makeVpcParameters).withCapabilities(Capability.CAPABILITY_IAM);
-        cloudformationClient.createStack(createVpcStackRequest);
+        amazonCloudFormationClient.createStack(createVpcStackRequest);
     }
 }
