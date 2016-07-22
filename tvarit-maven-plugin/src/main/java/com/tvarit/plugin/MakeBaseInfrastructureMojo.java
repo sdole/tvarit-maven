@@ -11,6 +11,8 @@ public class MakeBaseInfrastructureMojo extends AbstractTvaritMojo {
 
     @Parameter(required = true, alias = "availability-zones")
     private String availabilityZones;
+    @Parameter(required = true, alias = "ssh-key-pair-name")
+    private String sshKeyPairName;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -22,4 +24,9 @@ public class MakeBaseInfrastructureMojo extends AbstractTvaritMojo {
     public String getAvailabilityZones() {
         return availabilityZones;
     }
+    public String getSshKeyPairName() {
+
+        return sshKeyPairName;
+    }
+
 }

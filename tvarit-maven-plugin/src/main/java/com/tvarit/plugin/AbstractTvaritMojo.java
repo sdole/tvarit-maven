@@ -47,4 +47,5 @@ public abstract class AbstractTvaritMojo extends AbstractMojo {
     public String getAwsAuthProfile() {
         return awsAuthProfile;
     }
+
 }

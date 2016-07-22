@@ -80,6 +80,7 @@
                                 </goals>
                                 <configuration>
                                     <availability-zones>us-east-1a,us-east-1c</availability-zones>
+                                    <ssh-key-pair-name>trelair</ssh-key-pair-name>
                                 </configuration>
                             </execution>
                         </executions>

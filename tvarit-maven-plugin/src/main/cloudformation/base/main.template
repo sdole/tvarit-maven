@@ -11,6 +11,32 @@
         "Parameters": {
           "ProjectNameParm": {
             "Ref": "ProjectNameParm"
+          },
+          "AvailabilityZones": {
+            "Fn::Join": [
+              ",",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Ref": "AvailabilityZones"
+                    }
+                  ]
+                },
+                {
+                  "Fn:: Select": [
+                    1,
+                    {
+                      "Ref": "AvailabilityZones"
+                    }
+                  ]
+                }
+              ]
+            ]
+          },
+          "ArtifactBucketNameParm": {
+            "Ref": "ArtifactBucketNameParm"
           }
         }
       }
@@ -32,7 +58,7 @@
           },
           {
             "RouterSubnets": {
-              "Fn:GetAtt": [
+              "Fn::GetAtt": [
                 "Network",
                 "Outputs.RouterSubnets"
               ]
@@ -69,7 +95,7 @@
       "MinLength": "1"
     },
     "AvailabilityZones": {
-      "Type": "CommaDelimitedList",
+      "Type": "List<AWS::EC2::AvailabilityZone::Name>",
       "Description": "Enter exactly 2 availability zone ids where the ELBs and app servers will be deployed. e.g. us-east-1a"
     },
     "ProjectNameParm": {
@@ -94,10 +120,13 @@
   },
   "Outputs": {
     "ReverseProxyRouterAutoScalingGroupName": {
-      "Fn::GetAtt": [
-        "Router",
-        "Outputs.ReverseProxyRouterAutoScalingGroupName"
-      ]
+      "Description": "Reverse proxy router asg name",
+      "Value": {
+        "Fn::GetAtt": [
+          "Router",
+          "Outputs.ReverseProxyRouterAutoScalingGroupName"
+        ]
+      }
     }
   }
 }

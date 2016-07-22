@@ -665,14 +665,19 @@
     },
     "AppSubnets": {
       "Description": "The two subnets for applications",
-      "Value": [
-        {
-          "Ref": "AppSubnetA"
-        },
-        {
-          "Ref": "AppSubnetB"
-        }
-      ]
+      "Value": {
+        "Fn::Join": [
+          ",",
+          [
+            {
+              "Ref": "AppSubnetA"
+            },
+            {
+              "Ref": "AppSubnetB"
+            }
+          ]
+        ]
+      }
     }
   },
   "Description": ""

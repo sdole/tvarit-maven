@@ -41,6 +41,13 @@ public class TemplateUrlMaker {
     }
 
     public URL makeUrl(String fileName) throws MalformedURLException {
-        return this.makeUrl(TvaritEnvironment.getInstance().getMavenProject(),fileName);
+        Plugin tvaritMavenPlugin = TvaritEnvironment.getInstance().getMavenProject().getPluginManagement().getPluginsAsMap().get("io.tvarit:tvarit-maven-plugin");
+        if (tvaritMavenPlugin == null)
+            tvaritMavenPlugin = (Plugin) TvaritEnvironment.getInstance().getMavenProject().getPluginArtifactMap().get("io.tvarit:tvarit-maven-plugin");
+        final String groupId = tvaritMavenPlugin.getGroupId();
+        final String artifactId = tvaritMavenPlugin.getArtifactId();
+        final String version = tvaritMavenPlugin.getVersion();
+        final String infraTemplateS3Url = "https://s3.amazonaws.com/tvarit/default/" + groupId + "/" + artifactId + "/" + version + "/cloudformation/" + fileName;
+        return new URL(infraTemplateS3Url);
     }
 }
