@@ -14,9 +14,11 @@
         "LaunchConfigurationName": {
           "Ref": "RouterLaunchConfiguration"
         },
-        "LoadBalancerNames": {
-          "Ref": "RouterElb"
-        },
+        "LoadBalancerNames": [
+          {
+            "Ref": "RouterElb"
+          }
+        ],
         "HealthCheckType": "ELB",
         "Tags": [
           {
