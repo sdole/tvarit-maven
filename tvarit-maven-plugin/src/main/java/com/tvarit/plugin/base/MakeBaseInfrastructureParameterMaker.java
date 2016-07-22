@@ -31,7 +31,8 @@ class MakeBaseInfrastructureParameterMaker {
         final Parameter routerTemplateUrlParm = new Parameter().withParameterKey("NetworkTemplateUrl").withParameterValue(networkTemplateUrl);
         final Parameter networkTemplateUrlParm = new Parameter().withParameterKey("RouterTemplateUrl").withParameterValue(routerTemplateUrl);
         final List<Parameter> listOfParms = Arrays.<Parameter>asList(new Parameter[]{bucketNameParm, projectNameParm, availabilityZonesParm, routerTemplateUrlParm, networkTemplateUrlParm, elbHealthCheckAbsoluteUrlParm, sshKeyParm});
-        TvaritEnvironment.getInstance().getLogger().info("Parameters for main template are: " + listOfParms.stream().map(parameter -> "\n\t" + parameter.getParameterKey() + ":" + parameter.getParameterValue()).collect(Collectors.toList()));
+        final List<String> stringifiedListOfParms = listOfParms.stream().map(parameter -> parameter.getParameterKey() + " : " + parameter.getParameterValue()).collect(Collectors.toList());
+        TvaritEnvironment.getInstance().getLogger().info("Parameters for main template are: \n\t" + String.join("\n\t", stringifiedListOfParms));
         return listOfParms;
     }
 }
