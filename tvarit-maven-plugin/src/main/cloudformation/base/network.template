@@ -520,6 +520,9 @@
       }
     },
     "NatGatewayA": {
+      "DependsOn": {
+        "Ref": "IgAttachedtoVpc"
+      },
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "SubnetId": {
@@ -534,6 +537,9 @@
       }
     },
     "NatGatewayB": {
+      "DependsOn": {
+        "Ref": "IgAttachedtoVpc"
+      },
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "SubnetId": {

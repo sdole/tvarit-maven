@@ -25,7 +25,7 @@
                   ]
                 },
                 {
-                  "Fn:: Select": [
+                  "Fn::Select": [
                     1,
                     {
                       "Ref": "AvailabilityZones"
@@ -47,39 +47,29 @@
         "TemplateURL": {
           "Ref": "RouterTemplateUrl"
         },
-        "Parameters": [
-          {
-            "VpcId": {
-              "Fn::GetAtt": [
-                "Network",
-                "Outputs.TvaritVpcId"
-              ]
-            }
+        "Parameters": {
+          "VpcId": {
+            "Fn::GetAtt": [
+              "Network",
+              "Outputs.TvaritVpcId"
+            ]
           },
-          {
-            "RouterSubnets": {
-              "Fn::GetAtt": [
-                "Network",
-                "Outputs.RouterSubnets"
-              ]
-            }
+          "RouterSubnets": {
+            "Fn::GetAtt": [
+              "Network",
+              "Outputs.AppSubnets"
+            ]
           },
-          {
-            "ProjectNameParm": {
-              "Ref": "ProjectNameParm"
-            }
+          "ProjectName": {
+            "Ref": "ProjectNameParm"
           },
-          {
-            "SshKey": {
-              "Ref": "SshKey"
-            }
+          "SshKey": {
+            "Ref": "SshKey"
           },
-          {
-            "ElbHealthCheckAbsoluteUrl": {
-              "Ref": "ElbHealthCheckAbsoluteUrl"
-            }
+          "ElbHealthCheckAbsoluteUrl": {
+            "Ref": "ElbHealthCheckAbsoluteUrl"
           }
-        ]
+        }
       }
     }
   },
