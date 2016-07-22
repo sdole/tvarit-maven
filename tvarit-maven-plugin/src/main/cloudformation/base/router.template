@@ -8,9 +8,10 @@
         "MinSize": "0",
         "MaxSize": "0",
         "DesiredCapacity": "0",
-        "AvailabilityZones": {
+        "VPCZoneIdentifier": {
           "Ref": "RouterSubnets"
         },
+        "HealthCheckGracePeriod": "60",
         "LaunchConfigurationName": {
           "Ref": "RouterLaunchConfiguration"
         },
