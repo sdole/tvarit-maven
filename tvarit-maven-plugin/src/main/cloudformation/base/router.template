@@ -218,11 +218,9 @@
   },
   "Outputs": {
     "ReverseProxyRouterAutoScalingGroupName": {
-      "RouterAutoScalingGroup": {
-        "Description": "Router auto scaling group name",
-        "Value": {
-          "Ref": "RouterAutoScalingGroup"
-        }
+      "Description": "Router auto scaling group name",
+      "Value": {
+        "Ref": "RouterAutoScalingGroup"
       }
     }
   }
