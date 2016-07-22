@@ -63,8 +63,8 @@
           "ProjectName": {
             "Ref": "ProjectNameParm"
           },
-          "SshKey": {
-            "Ref": "SshKey"
+          "SshKeyPairName": {
+            "Ref": "SshKeyPairName"
           },
           "ElbHealthCheckAbsoluteUrl": {
             "Ref": "ElbHealthCheckAbsoluteUrl"
@@ -103,7 +103,7 @@
       "Type": "String",
       "Description": "Enter a url to the router reverse proxy that indicates an instance's health"
     },
-    "SshKey": {
+    "SshKeyPairName": {
       "Type": "AWS::EC2::KeyPair::KeyName",
       "Description": "The key pair name that can be used for logging on to the router instances."
     }

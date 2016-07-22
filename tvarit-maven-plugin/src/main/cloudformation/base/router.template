@@ -72,7 +72,7 @@
         "ImageId": "ami-0c6f5f64",
         "InstanceType": "t2.micro",
         "KeyName": {
-          "Ref": "SshKeyName"
+          "Ref": "SshKeyPairName"
         },
         "SecurityGroups": [
           {
@@ -190,8 +190,8 @@
     }
   },
   "Parameters": {
-    "SshKeyName": {
-      "Type": "String",
+    "SshKeyPairName": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
       "Description": "The Ssh Key to be used to allow login to router",
       "MinLength": "1"
     },
