@@ -2,6 +2,14 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "",
   "Resources": {
+    "IAM": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Ref": "IamTemplateUrl"
+        }
+      }
+    },
     "Network": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
@@ -71,12 +79,57 @@
           }
         }
       }
+    },
+    "DeployerLambda": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "DeployerLambdaTemplateUrl",
+        "Parameters": {
+          "LambdaFunctionExecutionRoleParam": {
+            "Fn::GetAtt": [
+              "IAM",
+              "Outputs.TvaritRoleOutParam"
+            ]
+          },
+          "DeployerLambdaFunctionCodeS3BucketParam": {
+            "Fn::GetAtt": [
+              "Network",
+              "Outputs.TvaritS3BucketOutParam"
+            ]
+          },
+          "DeployerLambdaFunctionCodeS3KeyParam": {
+            "Ref": "DeployerLambdaFunctionCodeS3KeyParam"
+          },
+          "DeployerLambdaFunctionSecurityGroupsParam": {
+            "Fn::GetAtt": [
+              "Network",
+              "Outputs.DeployerLambdaFunctionSecurityGroupsOutParam"
+            ]
+          },
+          "DeployerLambdaFunctionSubnetIdsParam": {
+            "Fn::GetAtt": [
+              "Network",
+              "Outputs.DeployerLambdaFunctionSubnetIdsOutParam"
+            ]
+          }
+        }
+      }
     }
   },
   "Parameters": {
     "NetworkTemplateUrl": {
       "Type": "String",
       "Description": "The URL to the cloudformation template describing all network assets.",
+      "MinLength": "1"
+    },
+    "IamTemplateUrl": {
+      "Type": "String",
+      "Description": "The URL to the cloudformation template describing all IAM assets.",
+      "MinLength": "1"
+    },
+    "DeployerLambdaTemplateUrl": {
+      "Type": "String",
+      "Description": "The URL to the cloudformation template describing the deployer lambda function.",
       "MinLength": "1"
     },
     "RouterTemplateUrl": {
@@ -106,6 +159,10 @@
     "SshKeyPairName": {
       "Type": "AWS::EC2::KeyPair::KeyName",
       "Description": "The key pair name that can be used for logging on to the router instances."
+    },
+    "DeployerLambdaFunctionCodeS3KeyParam": {
+      "Type": "String",
+      "Description": "The key name where the lambda function code is stored/uploaded."
     }
   },
   "Outputs": {

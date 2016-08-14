@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import os
+
 import boto3
 
 cfn = boto3.client('cloudformation')
@@ -117,6 +119,17 @@ def modify_router_rules():
     print("do router")
 
 
+def get_app_metadata(event):
+    bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
+    key_name = event["Records"][0]["s3"]["object"]["key"]
+    all_metadata = s3.head_object(
+        Bucket=bucket_name,
+        Key=key_name
+    )
+    print(all_metadata)
+    return all_metadata
+
+
 def deploy(event, context):
     '''
 
@@ -130,25 +143,21 @@ def deploy(event, context):
                 3.b.i. find template, copy to local, create
     '''
     print("Starting deploy process")
-    war_key_name, app_instance_tag = get_app_metadata(event)
-    if not do_instances_exist(app_instance_tag):
-        if not do_router_exists():
-            start_router_auto_scaling_group()
-        create_app_auto_scaling_group(region_name, automation_bucket_name, group_id, artifact_id, version)
-        modify_router_rules()
+    all_metadata = get_app_metadata(event)
+    if not do_router_exists():
+        start_router_auto_scaling_group()
+        print("started routers as none were running. Continuing with deploy")
     else:
-        find_template()  # find the template that is used to start the autoscaling group for this app/version
-        modify_template()  # copy the launch config into a variable, modify the launch config logical name
-        execute_stack()  # execute the new stack from memory (no need to save it in S3)
-
-
-def get_app_metadata(event):
-    bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
+        print("router instances found. Continuing with deploy.")
     key_name = event["Records"][0]["s3"]["object"]["key"]
-    s3_object_response = s3.head_object(
-        Bucket=bucket_name,
-        Key=key_name
-    )
     key_name_split = key_name.split("/")
     instance_tag = "tvarit::" + key_name_split[1] + "::" + key_name_split[2] + "::" + key_name_split[3]
-    return key_name, instance_tag
+    if not do_instances_exist(instance_tag):
+        print("no instances found for " + key_name + " " + instance_tag + ". will attempt to start.")
+        create_app_auto_scaling_group(os.environ['AWS_DEFAULT_REGION'], event["Records"][0]["s3"]["bucket"]["name"], all_metadata['group_id'])
+        print("done starting new autoscaling group.")
+        # modify_router_rules()
+        # else:
+        #     find_template()  # find the template that is used to start the autoscaling group for this app/version
+        #     modify_template()  # copy the launch config into a variable, modify the launch config logical name
+        #     execute_stack()  # execute the new stack from memory (no need to save it in S3)

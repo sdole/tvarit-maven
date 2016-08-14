@@ -4,25 +4,32 @@ import com.amazonaws.services.cloudformation.model.Parameter;
 import com.tvarit.plugin.MakeBaseInfrastructureMojo;
 import com.tvarit.plugin.TemplateUrlMaker;
 import com.tvarit.plugin.env.TvaritEnvironment;
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 class MakeBaseInfrastructureParameterMaker {
     List<Parameter> make() {
         String projectName = TvaritEnvironment.getInstance().getProjectName();
-        String artifactBucketName = TvaritEnvironment.getInstance().getArtifactBucketName();
-        String availabilityZones = TvaritEnvironment.getInstance().<MakeBaseInfrastructureMojo>getMojo().getAvailabilityZones();
+        final String artifactId = TvaritEnvironment.getInstance().getMavenProject().getArtifactId();
+        final String projectVersion = TvaritEnvironment.getInstance().getMavenProject().getVersion();
+        final String artifactBucketName = TvaritEnvironment.getInstance().getArtifactBucketName();
+        final String availabilityZones = TvaritEnvironment.getInstance().<MakeBaseInfrastructureMojo>getMojo().getAvailabilityZones();
         final Parameter bucketNameParm = new Parameter().withParameterKey("ArtifactBucketNameParm").withParameterValue(artifactBucketName);
         final Parameter projectNameParm = new Parameter().withParameterKey("ProjectNameParm").withParameterValue(projectName);
         final Parameter availabilityZonesParm = new Parameter().withParameterKey("AvailabilityZones").withParameterValue(availabilityZones);
         final Parameter elbHealthCheckAbsoluteUrlParm = new Parameter().withParameterKey("ElbHealthCheckAbsoluteUrl").withParameterValue("/to_be_fixed.html");
         final Parameter sshKeyParm = new Parameter().withParameterKey("SshKeyPairName").withParameterValue(TvaritEnvironment.getInstance().<MakeBaseInfrastructureMojo>getMojo().getSshKeyPairName());
         String routerTemplateUrl;
+        String iamTemplateUrl;
         String networkTemplateUrl;
+        String deployerLambdaTemplateUrl;
+        String deployerLambdaFunctionCodeS3Key = "default/io.tvarit/tvarit-maven-plugin/0.1.2-SNAPSHOT/lambda/" + artifactId + "-" + projectVersion + "-bin.zip";
         try {
+            iamTemplateUrl = new TemplateUrlMaker().makeUrl("base/iam.template").toString();
+            deployerLambdaTemplateUrl = new TemplateUrlMaker().makeUrl("base/deployer_lambda.template").toString();
             networkTemplateUrl = new TemplateUrlMaker().makeUrl("base/network.template").toString();
             routerTemplateUrl = new TemplateUrlMaker().makeUrl("base/router.template").toString();
         } catch (MalformedURLException e) {
@@ -30,7 +37,20 @@ class MakeBaseInfrastructureParameterMaker {
         }
         final Parameter routerTemplateUrlParm = new Parameter().withParameterKey("NetworkTemplateUrl").withParameterValue(networkTemplateUrl);
         final Parameter networkTemplateUrlParm = new Parameter().withParameterKey("RouterTemplateUrl").withParameterValue(routerTemplateUrl);
-        final List<Parameter> listOfParms = Arrays.<Parameter>asList(new Parameter[]{bucketNameParm, projectNameParm, availabilityZonesParm, routerTemplateUrlParm, networkTemplateUrlParm, elbHealthCheckAbsoluteUrlParm, sshKeyParm});
+        final Parameter iamTemplateUrlParm = new Parameter().withParameterKey("IamTemplateUrl").withParameterValue(iamTemplateUrl);
+        final Parameter deployerLambdaTemplateUrlParm = new Parameter().withParameterKey("DeployerLambdaTemplateUrl").withParameterValue(deployerLambdaTemplateUrl);
+        final Parameter deployerLambdaFunctionCodeS3KeyParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3KeyParam").withParameterValue(deployerLambdaFunctionCodeS3Key);
+        final ArrayList<Parameter> listOfParms = new ArrayList<>();
+        listOfParms.add(bucketNameParm);
+        listOfParms.add(projectNameParm);
+        listOfParms.add(availabilityZonesParm);
+        listOfParms.add(routerTemplateUrlParm);
+        listOfParms.add(networkTemplateUrlParm);
+        listOfParms.add(elbHealthCheckAbsoluteUrlParm);
+        listOfParms.add(sshKeyParm);
+        listOfParms.add(iamTemplateUrlParm);
+        listOfParms.add(deployerLambdaTemplateUrlParm);
+        listOfParms.add(deployerLambdaFunctionCodeS3KeyParam);
         final List<String> stringifiedListOfParms = listOfParms.stream().map(parameter -> parameter.getParameterKey() + " : " + parameter.getParameterValue()).collect(Collectors.toList());
         TvaritEnvironment.getInstance().getLogger().info("Parameters for main template are: \n\t" + String.join("\n\t", stringifiedListOfParms));
         return listOfParms;

@@ -2,5 +2,60 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "",
   "Resources": {
+    "DeployerLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "DeployerLambdaFunctionCodeS3BucketParam"
+          },
+          "S3Key": {
+            "Ref": "DeployerLambdaFunctionCodeS3KeyParam"
+          }
+        },
+        "Handler": "deployer.deploy",
+        "Runtime": "Python2.7",
+        "Role": {
+          "Ref": "LambdaFunctionExecutionRoleParam"
+        },
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Ref": "DeployerLambdaFunctionSecurityGroupsParam"
+            }
+          ],
+          "SubnetIds": {
+            "Ref": "DeployerLambdaFunctionSubnetIdsParam"
+          }
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "LambdaFunctionExecutionRoleParam": {
+      "Description": "The IAM role ARN with which to run the lambda function.",
+      "Type": "String",
+      "MinLength": "1"
+    },
+    "DeployerLambdaFunctionCodeS3BucketParam": {
+      "Description": "The S3 bucket where lambda function code is uploaded and stored.",
+      "Type": "String",
+      "MinLength": "1"
+    },
+    "DeployerLambdaFunctionCodeS3KeyParam": {
+      "Description": "The key at which the deployer lamdba function can be found.",
+      "Type": "String",
+      "MinLength": "1"
+    },
+    "DeployerLambdaFunctionSecurityGroupsParam": {
+      "Description": "The security groups applied to deployer lambda function.",
+      "Type": "List<AWS::EC2::SecurityGroup::Id>",
+      "MinLength": "1"
+    },
+    "DeployerLambdaFunctionSubnetIdsParam": {
+      "Description": "The subnets (ids) where the deployer lambda function will be deployed.",
+      "Type": "List<AWS::EC2::Subnet::Id>",
+      "MinLength": "1"
+    }
   }
 }

@@ -40,7 +40,7 @@
         ]
       }
     },
-    "DbSubnetA": {
+    "PrivateSubnetA": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.10.0/24",
@@ -80,7 +80,7 @@
         ]
       }
     },
-    "AppSubnetA": {
+    "PublicSubnetA": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.1.0/24",
@@ -120,7 +120,7 @@
         ]
       }
     },
-    "DbSubnetB": {
+    "PrivateSubnetB": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.20.0/24",
@@ -160,7 +160,7 @@
         ]
       }
     },
-    "AppSubnetB": {
+    "PublicSubnetB": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.2.0/24",
@@ -379,7 +379,7 @@
           "Ref": "DefaultTvaritVpcNacl"
         },
         "SubnetId": {
-          "Ref": "AppSubnetB"
+          "Ref": "PublicSubnetB"
         }
       }
     },
@@ -390,7 +390,7 @@
           "Ref": "DefaultTvaritVpcNacl"
         },
         "SubnetId": {
-          "Ref": "DbSubnetB"
+          "Ref": "PrivateSubnetB"
         }
       }
     },
@@ -401,7 +401,7 @@
           "Ref": "DefaultTvaritVpcNacl"
         },
         "SubnetId": {
-          "Ref": "DbSubnetA"
+          "Ref": "PrivateSubnetA"
         }
       }
     },
@@ -412,7 +412,7 @@
           "Ref": "DefaultTvaritVpcNacl"
         },
         "SubnetId": {
-          "Ref": "AppSubnetA"
+          "Ref": "PublicSubnetA"
         }
       }
     },
@@ -434,7 +434,7 @@
           "Ref": "AppSubnetRouteTable"
         },
         "SubnetId": {
-          "Ref": "AppSubnetA"
+          "Ref": "PublicSubnetA"
         }
       }
     },
@@ -445,7 +445,7 @@
           "Ref": "AppSubnetRouteTable"
         },
         "SubnetId": {
-          "Ref": "AppSubnetB"
+          "Ref": "PublicSubnetB"
         }
       }
     },
@@ -456,7 +456,7 @@
           "Ref": "DbSubnetRouteTable"
         },
         "SubnetId": {
-          "Ref": "DbSubnetA"
+          "Ref": "PrivateSubnetA"
         }
       }
     },
@@ -467,7 +467,7 @@
           "Ref": "DbSubnetRouteTable"
         },
         "SubnetId": {
-          "Ref": "DbSubnetB"
+          "Ref": "PrivateSubnetB"
         }
       }
     },
@@ -676,10 +676,38 @@
           ",",
           [
             {
-              "Ref": "AppSubnetA"
+              "Ref": "PublicSubnetA"
             },
             {
-              "Ref": "AppSubnetB"
+              "Ref": "PublicSubnetB"
+            }
+          ]
+        ]
+      }
+    },
+    "TvaritS3BucketOutParam": {
+      "Description": "The s3 bucket used for all automation/artifact purposes",
+      "Value": {
+        "Ref": "TvaritS3Bucket"
+      }
+    },
+    "DeployerLambdaFunctionSecurityGroupsOutParam": {
+      "Description": "The security group for lamdba function",
+      "Value": {
+        "Ref": "SgDefault"
+      }
+    },
+    "DeployerLambdaFunctionSubnetIdsOutParam": {
+      "Description": "The subnet ids for lamdba function",
+      "Value": {
+        "Fn::Join": [
+          ",",
+          [
+            {
+              "Ref": "PrivateSubnetA"
+            },
+            {
+              "Ref": "PrivateSubnetB"
             }
           ]
         ]
