@@ -294,34 +294,6 @@
         }
       }
     },
-    "TvaritS3Bucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "AccessControl": "Private",
-        "VersioningConfiguration": {
-          "Status": "Suspended"
-        },
-        "BucketName": {
-          "Ref": "ArtifactBucketNameParm"
-        },
-        "Tags": [
-          {
-            "Key": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "ProjectNameParm"
-                  },
-                  ":bucket"
-                ]
-              ]
-            },
-            "Value": ""
-          }
-        ]
-      }
-    },
     "SgDefault": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -579,9 +551,7 @@
     },
     "S3Endpoint": {
       "Type": "AWS::EC2::VPCEndpoint",
-      "DependsOn": [
-        "TvaritS3Bucket"
-      ],
+
       "Properties": {
         "RouteTableIds": [
           {
@@ -655,11 +625,6 @@
       "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
       "AllowedPattern": "[a-zA-Z][-a-zA-Z0-9]*",
       "MinLength": "1"
-    },
-    "ArtifactBucketNameParm": {
-      "Type": "String",
-      "Description": "Enter a name for a new S3 bucket where that will be created for deployment via tvarit.",
-      "MinLength": "1"
     }
   },
   "Outputs": {
@@ -685,12 +650,7 @@
         ]
       }
     },
-    "TvaritS3BucketOutParam": {
-      "Description": "The s3 bucket used for all automation/artifact purposes",
-      "Value": {
-        "Ref": "TvaritS3Bucket"
-      }
-    },
+
     "DeployerLambdaFunctionSecurityGroupsOutParam": {
       "Description": "The security group for lamdba function",
       "Value": {

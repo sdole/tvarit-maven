@@ -47,9 +47,6 @@
                 }
               ]
             ]
-          },
-          "ArtifactBucketNameParm": {
-            "Ref": "ArtifactBucketNameParm"
           }
         }
       }
@@ -92,6 +89,12 @@
           "Ref": "DeployerLambdaTemplateUrl"
         },
         "Parameters": {
+          "ProjectNameParm": {
+            "Ref": "ProjectNameParm"
+          },
+          "ArtifactBucketNameParm": {
+            "Ref": "ArtifactBucketNameParm"
+          },
           "LambdaFunctionExecutionRoleParam": {
             "Fn::GetAtt": [
               "IAM",
