@@ -14,7 +14,7 @@
           }
         },
         "Handler": "deployer.deploy",
-        "Runtime": "Python2.7",
+        "Runtime": "python2.7",
         "Role": {
           "Ref": "LambdaFunctionExecutionRoleParam"
         },
@@ -49,7 +49,7 @@
     },
     "DeployerLambdaFunctionSecurityGroupsParam": {
       "Description": "The security groups applied to deployer lambda function.",
-      "Type": "List<AWS::EC2::SecurityGroup::Id>",
+      "Type": "AWS::EC2::SecurityGroup::Id",
       "MinLength": "1"
     },
     "DeployerLambdaFunctionSubnetIdsParam": {

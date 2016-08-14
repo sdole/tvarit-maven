@@ -7,6 +7,11 @@
       "Properties": {
         "TemplateURL": {
           "Ref": "IamTemplateUrl"
+        },
+        "Parameters": {
+          "ArtifactBucketNameParm": {
+            "Ref": "ArtifactBucketNameParm"
+          }
         }
       }
     },
@@ -83,7 +88,9 @@
     "DeployerLambda": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "DeployerLambdaTemplateUrl",
+        "TemplateURL": {
+          "Ref": "DeployerLambdaTemplateUrl"
+        },
         "Parameters": {
           "LambdaFunctionExecutionRoleParam": {
             "Fn::GetAtt": [
@@ -92,10 +99,7 @@
             ]
           },
           "DeployerLambdaFunctionCodeS3BucketParam": {
-            "Fn::GetAtt": [
-              "Network",
-              "Outputs.TvaritS3BucketOutParam"
-            ]
+            "Ref": "DeployerLambdaFunctionCodeS3BucketParam"
           },
           "DeployerLambdaFunctionCodeS3KeyParam": {
             "Ref": "DeployerLambdaFunctionCodeS3KeyParam"
@@ -163,6 +167,10 @@
     "DeployerLambdaFunctionCodeS3KeyParam": {
       "Type": "String",
       "Description": "The key name where the lambda function code is stored/uploaded."
+    },
+    "DeployerLambdaFunctionCodeS3BucketParam": {
+      "Type": "String",
+      "Description": "The bucket name where the lambda function code is stored/uploaded."
     }
   },
   "Outputs": {

@@ -45,7 +45,7 @@
         ]
       }
     },
-    "tvaritRolePolicy": {
+    "LambdaFunctionExecutionRole": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyName": {

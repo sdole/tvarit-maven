@@ -33,13 +33,138 @@
           ]
         }
       }
+    },
+    "LambdaFunctionExecutionRolePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "tvarit_lambda_deployer_iam_policy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Sid": "Stmt1457233272000",
+              "Effect": "Allow",
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectAcl",
+                "s3:ListBucket",
+                "s3:PutObject",
+                "s3:GetBucketLocation"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "ArtifactBucketNameParm"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Sid": "Stmt1457233341000",
+              "Effect": "Allow",
+              "Action": [
+                "cloudformation:*"
+              ],
+              "Resource": [
+                "*"
+              ]
+            },
+            {
+              "Sid": "Stmt1457233476000",
+              "Effect": "Allow",
+              "Action": [
+                "iam:PassRole",
+                "iam:ListInstanceProfiles",
+                "ec2:*"
+              ],
+              "Resource": [
+                "*"
+              ]
+            },
+            {
+              "Sid": "Stmt1457233833000",
+              "Effect": "Allow",
+              "Action": [
+                "autoscaling:AttachInstances",
+                "autoscaling:CompleteLifecycleAction",
+                "autoscaling:CreateOrUpdateTags",
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:DetachInstances",
+                "autoscaling:EnterStandby",
+                "autoscaling:ExitStandby",
+                "autoscaling:PutScalingPolicy",
+                "autoscaling:ResumeProcesses",
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:SuspendProcesses",
+                "autoscaling:TerminateInstanceInAutoScalingGroup"
+              ],
+              "Resource": [
+                "*"
+              ]
+            },
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:logs:*:*:*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": "*"
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "LambdaFunctionExecutionRole"
+          }
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "ArtifactBucketNameParm": {
+      "Type": "String",
+      "Description": "The bucket name where artifacts will be stored. IAM role will have access to this bucket.",
+      "MinLength": "1"
     }
   },
   "Outputs": {
     "TvaritRoleOutParam": {
       "Description": "The IAM role that will be used to run lambda functions",
       "Value": {
-        "Ref": "LambdaFunctionExecutionRole"
+        "Fn::GetAtt": [
+          "LambdaFunctionExecutionRole",
+          "Arn"
+        ]
       }
     }
   }

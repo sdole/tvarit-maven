@@ -21,7 +21,7 @@ public class MakeBaseInfrastructureDelegate {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        createVpcStackRequest.withTemplateURL(url.toString()).withStackName("tvarit-base-infrastructure");
+        createVpcStackRequest.withTemplateURL(url.toString()).withStackName("tvarit-base-infrastructure3");
         List<Parameter> makeVpcParameters = new MakeBaseInfrastructureParameterMaker().make();
         createVpcStackRequest.withParameters(makeVpcParameters).withCapabilities(Capability.CAPABILITY_IAM);
         amazonCloudFormationClient.createStack(createVpcStackRequest);
