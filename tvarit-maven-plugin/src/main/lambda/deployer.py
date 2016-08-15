@@ -1,8 +1,12 @@
 from __future__ import print_function
 
+import json
 import os
 
 import boto3
+import datetime
+
+json.JSONEncoder.default = lambda self, obj: (obj.isoformat() if isinstance(obj, datetime.datetime) else None)
 
 cfn = boto3.client('cloudformation')
 s3 = boto3.client('s3')
@@ -29,7 +33,9 @@ def do_instances_exist(app_instance_tag):
 
 def do_router_exists():
     instances = ec2.describe_instances(Filters=[{'Name': 'tag-key', 'Values': ["tvarit::router"]}])
-    return len(instances['Reservations'][0]['Instances']) > 0
+    print(json.dumps(instances))
+
+    return len(instances['Reservations']) > 0 and len(instances['Reservations'][0]['Instances']) > 0
 
 
 def start_router_auto_scaling_group():
@@ -126,7 +132,7 @@ def get_app_metadata(event):
         Bucket=bucket_name,
         Key=key_name
     )
-    print(all_metadata)
+    print(json.dumps(all_metadata))
     return all_metadata
 
 
@@ -143,6 +149,7 @@ def deploy(event, context):
                 3.b.i. find template, copy to local, create
     '''
     print("Starting deploy process")
+    print(json.dumps(event))
     all_metadata = get_app_metadata(event)
     if not do_router_exists():
         start_router_auto_scaling_group()
@@ -161,3 +168,43 @@ def deploy(event, context):
         #     find_template()  # find the template that is used to start the autoscaling group for this app/version
         #     modify_template()  # copy the launch config into a variable, modify the launch config logical name
         #     execute_stack()  # execute the new stack from memory (no need to save it in S3)
+
+
+deploy({
+    "Records": [
+        {
+            "eventVersion": "2.0",
+            "eventTime": "2016-08-15T12:40:54.623Z",
+            "requestParameters": {
+                "sourceIPAddress": "70.194.73.255"
+            },
+            "s3": {
+                "configurationId": "4334e041-7e25-4fcb-80dd-2852b9d84e05",
+                "object": {
+                    "eTag": "b39a33b8bfa97f473337ff5af051c1b1",
+                    "sequencer": "0057B1B8567534B9AC",
+                    "key": "deployables/Capture.war",
+                    "size": 72804
+                },
+                "bucket": {
+                    "arn": "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test",
+                    "name": "tvarit-tvarit-tomcat-plugin-test",
+                    "ownerIdentity": {
+                        "principalId": "A1QW81VB1IU6AT"
+                    }
+                },
+                "s3SchemaVersion": "1.0"
+            },
+            "responseElements": {
+                "x-amz-id-2": "LVxXRpJkMOwK0znpxC5Bddu1/IsNGDVU6iJB1qCZqf8L1Sv7J0tktyHLpypJdZ8K",
+                "x-amz-request-id": "C80A5A089D74B47E"
+            },
+            "awsRegion": "us-east-1",
+            "eventName": "ObjectCreated:Put",
+            "userIdentity": {
+                "principalId": "A1QW81VB1IU6AT"
+            },
+            "eventSource": "aws:s3"
+        }
+    ]
+}, {})
