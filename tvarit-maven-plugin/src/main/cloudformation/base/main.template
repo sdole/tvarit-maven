@@ -89,12 +89,6 @@
           "Ref": "DeployerLambdaTemplateUrl"
         },
         "Parameters": {
-          "ProjectNameParm": {
-            "Ref": "ProjectNameParm"
-          },
-          "ArtifactBucketNameParm": {
-            "Ref": "ArtifactBucketNameParm"
-          },
           "LambdaFunctionExecutionRoleParam": {
             "Fn::GetAtt": [
               "IAM",
@@ -121,12 +115,40 @@
           }
         }
       }
+    },
+    "TvaritArtifactBucket": {
+      "Type": "AWS::CloudFormation::Stack",
+      "DependsOn": "DeployerLambda",
+      "Properties": {
+        "TemplateURL": {
+          "Ref": "TvaritArtifactBucketTemplateUrl"
+        },
+        "Parameters": {
+          "ProjectNameParm": {
+            "Ref": "ProjectNameParm"
+          },
+          "ArtifactBucketNameParm": {
+            "Ref": "ArtifactBucketNameParm"
+          },
+          "DeployerLambdaFunctionArn": {
+            "Fn::GetAtt": [
+              "DeployerLambda",
+              "Outputs.DeployerLambdaFunctionArnOutParam"
+            ]
+          }
+        }
+      }
     }
   },
   "Parameters": {
     "NetworkTemplateUrl": {
       "Type": "String",
       "Description": "The URL to the cloudformation template describing all network assets.",
+      "MinLength": "1"
+    },
+    "TvaritArtifactBucketTemplateUrl": {
+      "Type": "String",
+      "Description": "The URL to the cloudformation template describing the Tvarit Artifact Bucket",
       "MinLength": "1"
     },
     "IamTemplateUrl": {

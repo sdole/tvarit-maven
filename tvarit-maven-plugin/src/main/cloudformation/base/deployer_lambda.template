@@ -2,34 +2,6 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "",
   "Resources": {
-    "TvaritS3Bucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "AccessControl": "Private",
-        "VersioningConfiguration": {
-          "Status": "Suspended"
-        },
-        "BucketName": {
-          "Ref": "ArtifactBucketNameParm"
-        },
-        "Tags": [
-          {
-            "Key": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "ProjectNameParm"
-                  },
-                  ":bucket"
-                ]
-              ]
-            },
-            "Value": ""
-          }
-        ]
-      }
-    },
     "DeployerLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -57,14 +29,25 @@
           }
         }
       }
+    },
+    "PermissionForS3ToInvokeLamnda": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DeployerLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": {
+          "Ref": "AWS::AccountId"
+        }
+      }
     }
   },
   "Parameters": {
-    "ArtifactBucketNameParm": {
-      "Type": "String",
-      "Description": "Enter a name for a new S3 bucket where that will be created for deployment via tvarit.",
-      "MinLength": "1"
-    },
     "LambdaFunctionExecutionRoleParam": {
       "Description": "The IAM role ARN with which to run the lambda function.",
       "Type": "String",
@@ -89,19 +72,16 @@
       "Description": "The subnets (ids) where the deployer lambda function will be deployed.",
       "Type": "List<AWS::EC2::Subnet::Id>",
       "MinLength": "1"
-    },
-    "ProjectNameParm": {
-      "Type": "String",
-      "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
-      "AllowedPattern": "[a-zA-Z][-a-zA-Z0-9]*",
-      "MinLength": "1"
     }
   },
   "Outputs": {
-    "TvaritS3BucketOutParam": {
-      "Description": "The s3 bucket used for all automation/artifact purposes",
+    "DeployerLambdaFunctionArnOutParam": {
+      "Description": "The Lambda function for deployment",
       "Value": {
-        "Ref": "TvaritS3Bucket"
+        "Fn::GetAtt": [
+          "DeployerLambdaFunction",
+          "Arn"
+        ]
       }
     }
   }

@@ -26,16 +26,19 @@ class MakeBaseInfrastructureParameterMaker {
         String iamTemplateUrl;
         String networkTemplateUrl;
         String deployerLambdaTemplateUrl;
+        String tvaritArtifactBucketTemplateUrl;
         String deployerLambdaFunctionCodeS3Key = "default/io.tvarit/tvarit-maven-plugin/0.1.2-SNAPSHOT/lambda/tvarit-lambda.zip";
         try {
             iamTemplateUrl = new TemplateUrlMaker().makeUrl("base/iam.template").toString();
             deployerLambdaTemplateUrl = new TemplateUrlMaker().makeUrl("base/deployer_lambda.template").toString();
             networkTemplateUrl = new TemplateUrlMaker().makeUrl("base/network.template").toString();
             routerTemplateUrl = new TemplateUrlMaker().makeUrl("base/router.template").toString();
+            tvaritArtifactBucketTemplateUrl = new TemplateUrlMaker().makeUrl("base/artifact_bucket.template").toString();
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
         final Parameter deployerLambdaFunctionCodeS3BucketParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3BucketParam").withParameterValue("tvarit");
+        final Parameter tvaritArtifactBucketS3BucketParam = new Parameter().withParameterKey("TvaritArtifactBucketTemplateUrl").withParameterValue(tvaritArtifactBucketTemplateUrl);
         final Parameter routerTemplateUrlParm = new Parameter().withParameterKey("NetworkTemplateUrl").withParameterValue(networkTemplateUrl);
         final Parameter networkTemplateUrlParm = new Parameter().withParameterKey("RouterTemplateUrl").withParameterValue(routerTemplateUrl);
         final Parameter iamTemplateUrlParm = new Parameter().withParameterKey("IamTemplateUrl").withParameterValue(iamTemplateUrl);
@@ -53,6 +56,7 @@ class MakeBaseInfrastructureParameterMaker {
         listOfParms.add(deployerLambdaTemplateUrlParm);
         listOfParms.add(deployerLambdaFunctionCodeS3KeyParam);
         listOfParms.add(deployerLambdaFunctionCodeS3BucketParam);
+        listOfParms.add(tvaritArtifactBucketS3BucketParam);
         final List<String> stringifiedListOfParms = listOfParms.stream().map(parameter -> parameter.getParameterKey() + " : " + parameter.getParameterValue()).collect(Collectors.toList());
         TvaritEnvironment.getInstance().getLogger().info("Parameters for main template are: \n\t" + String.join("\n\t", stringifiedListOfParms));
         return listOfParms;

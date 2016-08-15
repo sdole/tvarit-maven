@@ -1,0 +1,80 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "",
+  "Resources": {
+    "TvaritS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "ArtifactBucketNameParm"
+        },
+        "NotificationConfiguration": {
+          "LambdaConfigurations": [
+            {
+              "Event": "s3:ObjectCreated:*",
+              "Filter": {
+                "S3Key": {
+                  "Rules": [
+                    {
+                      "Name": "prefix",
+                      "Value": "deployables"
+                    },
+                    {
+                      "Name": "suffix",
+                      "Value": ".war"
+                    }
+                  ]
+                }
+              },
+              "Function": {
+                "Ref": "DeployerLambdaFunctionArn"
+              }
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectNameParm"
+                  },
+                  ":bucket"
+                ]
+              ]
+            },
+            "Value": ""
+          }
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "DeployerLambdaFunctionArn": {
+      "Type": "String",
+      "Description": "Arn of the deployer lambda function",
+      "MinLength": "1"
+    },
+    "ArtifactBucketNameParm": {
+      "Type": "String",
+      "Description": "Enter a name for a new S3 bucket where that will be created for deployment via tvarit.",
+      "MinLength": "1"
+    },
+    "ProjectNameParm": {
+      "Type": "String",
+      "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
+      "AllowedPattern": "[a-zA-Z][-a-zA-Z0-9]*",
+      "MinLength": "1"
+    }
+  },
+  "Outputs": {
+    "TvaritS3BucketOutParam": {
+      "Description": "The s3 bucket used for all automation/artifact purposes",
+      "Value": {
+        "Ref": "TvaritS3Bucket"
+      }
+    }
+  }
+}
