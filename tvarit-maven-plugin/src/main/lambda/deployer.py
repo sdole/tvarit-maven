@@ -154,6 +154,13 @@ def deploy(event, context):
         print("started routers as none were running. Continuing with deploy")
     else:
         print("router instances found. Continuing with deploy.")
+
+    # TODO Done till here!
+    '''
+    We got till here. now, we need to find the asg for the deployable with the right version by the asg tag.
+    if it already exists, update the launch config name so all instances are replaced with new war file if it
+    does not exist, create new asg.
+    '''
     key_name = event["Records"][0]["s3"]["object"]["key"]
     key_name_split = key_name.split("/")
     instance_tag = "tvarit::" + key_name_split[1] + "::" + key_name_split[2] + "::" + key_name_split[3]
