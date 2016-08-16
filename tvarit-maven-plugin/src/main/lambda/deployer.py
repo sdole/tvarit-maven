@@ -43,25 +43,23 @@ def start_router_auto_scaling_group():
     TODO describe stack that has the reverse proxy, find the autoscaling group in it. We have to do this because, when an autoscaling group is created in a cf stack, we cannnot specify a specific
     name. it is created dynamically by cloudformation. so, we need to dump the name in the stack outputs - TBD and then query that over here. then, we increment the instance counts in that asg to 2.
     '''
-    tvarit_vpc_stack = cfn.describe_stacks("tvarit-vpc")
-    router_auto_scaling_group_name = None
-    for anOutput in tvarit_vpc_stack['Stacks']['Outputs']:
-        if anOutput['OutputKey'] == 'ReverseProxyRouterAutoScalingGroupName':
-            router_auto_scaling_group_name = anOutput['OutputValue']
-            break
-    if not router_auto_scaling_group_name:
-        raise Exception("No router auto scaling group found!")
+    asg_client = boto3.client('autoscaling')
+    tags = asg_client.describe_tags(Filters=[
+        {
+            "Name": "key",
+            "Values": ["tvarit:purpose"]
+        },
+        {
+            "Name": "value",
+            "Values": ["router"]
+        }
+    ])
 
-    router_auto_scaling_group = autoscaling.describe_auto_scaling_groups(
-        AutoScalingGroupNames=router_auto_scaling_group_name
-    )
+    router_asg_name = tags['Tags'][0]['ResourceId']
 
-    autoscaling.update_auto_scaling_group(
-        AutoScalingGroupName=router_auto_scaling_group,
-        MinSize=2,
-        MaxSize=10,
-        DesiredCapacity=2
-    )
+    auto_scaling_groups = asg_client.describe_auto_scaling_groups(AutoScalingGroupNames=[router_asg_name])
+    if auto_scaling_groups['AutoScalingGroups'][0]['MaxSize'] == 0:
+        asg_client.update_auto_scaling_group(AutoScalingGroupName=router_asg_name, MinSize=2, MaxSize=6)
 
 
 def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_metadata):
