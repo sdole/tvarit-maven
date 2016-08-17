@@ -86,24 +86,19 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     instance_profile = war_file_metadata["instance_profile"]
     s3_region = '' if region_name == "us-east-1" else '-' + region_name
 
-    # TODO Done till here!
-    '''
-    We got till here. here, we need to create the new app asg. currently, we have code to do so, but, it
-    has the wrong template url and none of params are set right. need to fix that using the new lambda_config
-    python file that is being printed out.
-    '''
 
     cfn_template_s3_url = (
         "https://s3" +
         s3_region +
-        '.amazonaws.com' +
-        '/' +
-        automation_bucket_name +
-        '/' + group_id + artifact_id + "/" + version +
-        '/' + "/cloudformation/" +
-        "app.template"
+        ".amazonaws.com/tvarit/default/" +
+        plugin_config.plugin_config['groupId'] + "/" + plugin_config.plugin_config['artifactId'] + "/" + plugin_config.plugin_config['version'] +
+        "/cloudformation/app/app.template"
     )
 
+    # TODO Done till here!
+    '''
+    We got till here. Need to fix the stack parameters.
+    '''
     cfn.create_stack(
         StackName=(group_id + artifact_id + version).replace(".", "-"),
         TemplateURL=cfn_template_s3_url,
@@ -189,8 +184,7 @@ def deploy(event, context):
 
         # TODO Done till here!
         '''
-        We got till here. Here, we looked for an asg for the app version using metadata on the war file.
-        We did not find any, so, we will deploy a new asg with this app. need new asg template.
+        We got till here. Stack creation is started, but it fails because none of the parameters are being set correctly.
         '''
 
     router_asg_name = tags['Tags'][0]['ResourceId']
