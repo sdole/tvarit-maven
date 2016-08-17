@@ -93,6 +93,11 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     # TODO Done till here!
     '''
     We got till here. Need to fix the stack parameters.
+
+    It looks like, to fix stack params, we need to get outputs from our base infrastructure template. right now, it is in nested stacks, which means
+    we have to get nested stacks from the parent stack and then find outputs within nested stacks. too much work! so, firstly, i am going to convert
+    into single stack.
+
     '''
 
     cfn.create_stack(
