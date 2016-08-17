@@ -11,7 +11,7 @@
           }
         ],
         "Subnets": {
-          "Ref": "AppSubnets"
+          "Ref": "AppElbSubnets"
         },
         "HealthCheck": {
           "HealthyThreshold": "10",
@@ -187,7 +187,7 @@
       "Type": "String",
       "Description": "The IAM role that will be used for all tvarit instances."
     },
-    "AppSubnets": {
+    "AppElbSubnets": {
       "Type": "CommaDelimitedList",
       "Description": "Enter exactly 2 subnet ids that are publicly accessible. ELBs and app servers will be placed in these two subnets."
     },

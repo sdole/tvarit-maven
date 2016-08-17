@@ -634,7 +634,7 @@
         "Ref": "TvaritVpc"
       }
     },
-    "AppSubnets": {
+    "AppElbSubnets": {
       "Description": "The two subnets for applications",
       "Value": {
         "Fn::Join": [

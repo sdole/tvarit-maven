@@ -52,10 +52,6 @@ def do_router_exists():
 
 
 def ensure_router_auto_scaling_group_has_instances():
-    '''
-    TODO describe stack that has the reverse proxy, find the autoscaling group in it. We have to do this because, when an autoscaling group is created in a cf stack, we cannnot specify a specific
-    name. it is created dynamically by cloudformation. so, we need to dump the name in the stack outputs - TBD and then query that over here. then, we increment the instance counts in that asg to 2.
-    '''
     tags = asg_client.describe_tags(Filters=[
         {
             "Name": "key",
@@ -86,7 +82,6 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     instance_profile = war_file_metadata["instance_profile"]
     s3_region = '' if region_name == "us-east-1" else '-' + region_name
 
-
     cfn_template_s3_url = (
         "https://s3" +
         s3_region +
@@ -99,8 +94,9 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     '''
     We got till here. Need to fix the stack parameters.
     '''
+
     cfn.create_stack(
-        StackName=(group_id + artifact_id + version).replace(".", "-"),
+        StackName=(group_id + "-" + artifact_id + "-" + version).replace(".", "-"),
         TemplateURL=cfn_template_s3_url,
         Parameters=[
             {
@@ -109,14 +105,14 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
             },
             {
                 "ParameterKey": "AvailabilityZones",
-                "ParameterValue": ""
+                "ParameterValue": war_file_metadata['availability_zones']
             },
             {
                 "ParameterKey": "AppSecurityGroup",
-                "ParameterValue": ""
+                "ParameterValue": war_file_metadata['security_groups']
             },
             {
-                "ParameterKey": "AppSubnets",
+                "ParameterKey": "AppElbSubnets",
                 "ParameterValue": ""
             },
             {
@@ -184,23 +180,9 @@ def deploy(event, context):
 
         # TODO Done till here!
         '''
-        We got till here. Stack creation is started, but it fails because none of the parameters are being set correctly.
+        We got till here. Stack creation for the app is started in method create_app_auto_scaling_group, but it fails because
+        none of the parameters are being set correctly. Once that is fixed, we can continue from here on to fix routing rules.
         '''
-
-    router_asg_name = tags['Tags'][0]['ResourceId']
-
-    key_name = key_of_deployable
-    key_name_split = key_name.split("/")
-    instance_tag = "tvarit::" + key_name_split[1] + "::" + key_name_split[2] + "::" + key_name_split[3]
-    if not do_instances_exist(instance_tag):
-        print("no instances found for " + key_name + " " + instance_tag + ". will attempt to start.")
-        create_app_auto_scaling_group(os.environ['AWS_DEFAULT_REGION'], event["Records"][0]["s3"]["bucket"]["name"], all_metadata['group_id'])
-        print("done starting new autoscaling group.")
-        # modify_router_rules()
-        # else:
-        #     find_template()  # find the template that is used to start the autoscaling group for this app/version
-        #     modify_template()  # copy the launch config into a variable, modify the launch config logical name
-        #     execute_stack()  # execute the new stack from memory (no need to save it in S3)
 
 
 print(plugin_config.plugin_config)
