@@ -83,6 +83,13 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     version = war_file_metadata["version"]
     instance_profile = war_file_metadata["instance_profile"]
     s3_region = '' if region_name == "us-east-1" else '-' + region_name
+
+    # TODO Done till here!
+    '''
+    We got till here. here, we need to create the new app asg. currently, we have code to do so, but, it
+    has the wrong template url and none of params are set right. need to fix that.
+    '''
+
     cfn_template_s3_url = (
         "https://s3" +
         s3_region +
@@ -159,12 +166,7 @@ def deploy(event, context):
     all_metadata = get_app_metadata(event)
     ensure_router_auto_scaling_group_has_instances()
 
-    # TODO Done till here!
-    '''
-    We got till here. now, we need to find the asg for the deployable with the right version by the asg tag.
-    if it already exists, update the launch config name so all instances are replaced with new war file if it
-    does not exist, create new asg.
-    '''
+
 
     key_of_deployable = event["Records"][0]["s3"]["object"]["key"]
     deployable_name = key_of_deployable.split("/")[1]
@@ -182,6 +184,8 @@ def deploy(event, context):
 
     if len(tags['Tags']) == 0:
         print("no asg found for " + key_of_deployable + " " + deployable_version)
+        create_app_auto_scaling_group(os.environ['AWS_DEFAULT_REGION'], event["Records"][0]["s3"]["bucket"]["name"], all_metadata['Metadata'])
+
         # TODO Done till here!
         '''
         We got till here. Here, we looked for an asg for the app version using metadata on the war file.
@@ -203,7 +207,7 @@ def deploy(event, context):
         #     modify_template()  # copy the launch config into a variable, modify the launch config logical name
         #     execute_stack()  # execute the new stack from memory (no need to save it in S3)
 
-
+os.environ['AWS_DEFAULT_REGION']='us-east-1'
 deploy({
     "Records": [
         {
