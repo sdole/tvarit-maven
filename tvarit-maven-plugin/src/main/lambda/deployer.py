@@ -89,7 +89,8 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     # TODO Done till here!
     '''
     We got till here. here, we need to create the new app asg. currently, we have code to do so, but, it
-    has the wrong template url and none of params are set right. need to fix that.
+    has the wrong template url and none of params are set right. need to fix that using the new lambda_config
+    python file that is being printed out.
     '''
 
     cfn_template_s3_url = (
