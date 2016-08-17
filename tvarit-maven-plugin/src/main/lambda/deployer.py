@@ -10,7 +10,7 @@ json.JSONEncoder.default = lambda self, obj: (obj.isoformat() if isinstance(obj,
 
 cfn = boto3.client('cloudformation')
 s3 = boto3.client('s3')
-autoscaling = boto3.client('autoscaling')
+asg_client = boto3.client('autoscaling')
 ec2 = boto3.client('ec2')
 
 
@@ -32,18 +32,28 @@ def do_instances_exist(app_instance_tag):
 
 
 def do_router_exists():
-    instances = ec2.describe_instances(Filters=[{'Name': 'tag-key', 'Values': ["tvarit::router"]}])
+    tags = asg_client.describe_tags(Filters=[
+        {
+            "Name": "key",
+            "Values": ["tvarit:purpose"]
+        },
+        {
+            "Name": "value",
+            "Values": ["router"]
+        }
+    ])
+
+    instances = ec2.describe_instances(Filters=[{'Name': 'tag:key', 'Values': ["tvarit:purpose=router"]}])
     print(json.dumps(instances))
 
     return len(instances['Reservations']) > 0 and len(instances['Reservations'][0]['Instances']) > 0
 
 
-def start_router_auto_scaling_group():
+def ensure_router_auto_scaling_group_has_instances():
     '''
     TODO describe stack that has the reverse proxy, find the autoscaling group in it. We have to do this because, when an autoscaling group is created in a cf stack, we cannnot specify a specific
     name. it is created dynamically by cloudformation. so, we need to dump the name in the stack outputs - TBD and then query that over here. then, we increment the instance counts in that asg to 2.
     '''
-    asg_client = boto3.client('autoscaling')
     tags = asg_client.describe_tags(Filters=[
         {
             "Name": "key",
@@ -130,7 +140,6 @@ def get_app_metadata(event):
         Bucket=bucket_name,
         Key=key_name
     )
-    print(json.dumps(all_metadata))
     return all_metadata
 
 
@@ -147,13 +156,8 @@ def deploy(event, context):
                 3.b.i. find template, copy to local, create
     '''
     print("Starting deploy process")
-    print(json.dumps(event))
     all_metadata = get_app_metadata(event)
-    if not do_router_exists():
-        start_router_auto_scaling_group()
-        print("started routers as none were running. Continuing with deploy")
-    else:
-        print("router instances found. Continuing with deploy.")
+    ensure_router_auto_scaling_group_has_instances()
 
     # TODO Done till here!
     '''
@@ -161,7 +165,32 @@ def deploy(event, context):
     if it already exists, update the launch config name so all instances are replaced with new war file if it
     does not exist, create new asg.
     '''
-    key_name = event["Records"][0]["s3"]["object"]["key"]
+
+    key_of_deployable = event["Records"][0]["s3"]["object"]["key"]
+    deployable_name = key_of_deployable.split("/")[1]
+    deployable_version = all_metadata['Metadata']['tvarit-app-version']
+    tags = asg_client.describe_tags(Filters=[
+        {
+            "Name": "key",
+            "Values": ["tvarit:app:version", "tvarit:app:name"]
+        },
+        {
+            "Name": "value",
+            "Values": [deployable_version, deployable_name]
+        }
+    ])
+
+    if len(tags['Tags']) == 0:
+        print("no asg found for " + key_of_deployable + " " + deployable_version)
+        # TODO Done till here!
+        '''
+        We got till here. Here, we looked for an asg for the app version using metadata on the war file.
+        We did not find any, so, we will deploy a new asg with this app. need new asg template.
+        '''
+
+    router_asg_name = tags['Tags'][0]['ResourceId']
+
+    key_name = key_of_deployable
     key_name_split = key_name.split("/")
     instance_tag = "tvarit::" + key_name_split[1] + "::" + key_name_split[2] + "::" + key_name_split[3]
     if not do_instances_exist(instance_tag):
