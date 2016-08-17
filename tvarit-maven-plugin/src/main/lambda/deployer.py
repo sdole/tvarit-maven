@@ -6,6 +6,8 @@ import os
 import boto3
 import datetime
 
+import plugin_config
+
 json.JSONEncoder.default = lambda self, obj: (obj.isoformat() if isinstance(obj, datetime.datetime) else None)
 
 cfn = boto3.client('cloudformation')
@@ -166,8 +168,6 @@ def deploy(event, context):
     all_metadata = get_app_metadata(event)
     ensure_router_auto_scaling_group_has_instances()
 
-
-
     key_of_deployable = event["Records"][0]["s3"]["object"]["key"]
     deployable_name = key_of_deployable.split("/")[1]
     deployable_version = all_metadata['Metadata']['tvarit-app-version']
@@ -207,7 +207,9 @@ def deploy(event, context):
         #     modify_template()  # copy the launch config into a variable, modify the launch config logical name
         #     execute_stack()  # execute the new stack from memory (no need to save it in S3)
 
-os.environ['AWS_DEFAULT_REGION']='us-east-1'
+
+print(plugin_config.plugin_config)
+os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
 deploy({
     "Records": [
         {
