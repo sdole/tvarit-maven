@@ -40,6 +40,42 @@
         ]
       }
     },
+    "AppSubnetA": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.120.0/24",
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        },
+        "MapPublicIpOnLaunch": true,
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Ref": "AvailabilityZones"
+            }
+          ]
+        }
+      }
+    },
+    "AppSubnetB": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.220.0/24",
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        },
+        "MapPublicIpOnLaunch": true,
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Ref": "AvailabilityZones"
+            }
+          ]
+        }
+      }
+    },
     "PrivateSubnetA": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
@@ -443,42 +479,6 @@
         }
       }
     },
-    "PubSubnetA": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.120.0/24",
-        "VpcId": {
-          "Ref": "TvaritVpc"
-        },
-        "MapPublicIpOnLaunch": true,
-        "AvailabilityZone": {
-          "Fn::Select": [
-            0,
-            {
-              "Ref": "AvailabilityZones"
-            }
-          ]
-        }
-      }
-    },
-    "PubSubnetB": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.220.0/24",
-        "VpcId": {
-          "Ref": "TvaritVpc"
-        },
-        "MapPublicIpOnLaunch": true,
-        "AvailabilityZone": {
-          "Fn::Select": [
-            1,
-            {
-              "Ref": "AvailabilityZones"
-            }
-          ]
-        }
-      }
-    },
     "IpForNatA": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
@@ -498,7 +498,7 @@
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "SubnetId": {
-          "Ref": "PubSubnetA"
+          "Ref": "AppSubnetA"
         },
         "AllocationId": {
           "Fn::GetAtt": [
@@ -515,7 +515,7 @@
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "SubnetId": {
-          "Ref": "PubSubnetB"
+          "Ref": "AppSubnetB"
         },
         "AllocationId": {
           "Fn::GetAtt": [

@@ -10,7 +10,7 @@ import plugin_config
 
 json.JSONEncoder.default = lambda self, obj: (obj.isoformat() if isinstance(obj, datetime.datetime) else None)
 
-cfn = boto3.client('cloudformation')
+cfn_client = boto3.client('cloudformation')
 s3 = boto3.client('s3')
 asg_client = boto3.client('autoscaling')
 ec2 = boto3.client('ec2')
@@ -70,6 +70,13 @@ def ensure_router_auto_scaling_group_has_instances():
         asg_client.update_auto_scaling_group(AutoScalingGroupName=router_asg_name, MinSize=2, MaxSize=6)
 
 
+def make_map_from_list(key_in_list_objects, value_in_list_of_objects, list_of_objects):
+    converted_map = {}
+    for each_obj_in_list in list_of_objects:
+        converted_map[each_obj_in_list[key_in_list_objects]] = each_obj_in_list[value_in_list_of_objects]
+    return converted_map
+
+
 def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_metadata):
     '''
     Here, we know that the app auto scaling group does not exist. so, we find template url for autoscaling group, set
@@ -79,7 +86,8 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     group_id = war_file_metadata["group_id"]
     artifact_id = war_file_metadata["artifact_id"]
     version = war_file_metadata["version"]
-    instance_profile = war_file_metadata["instance_profile"]
+    health_check_url = war_file_metadata["health_check_url"]
+
     s3_region = '' if region_name == "us-east-1" else '-' + region_name
 
     cfn_template_s3_url = (
@@ -90,17 +98,24 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
         "/cloudformation/app/app.template"
     )
 
+    all_top_level_resources = cfn_client.describe_stack_resources(StackName="tvarit-base-infrastructure", LogicalResourceId="Network")
+    print(json.dumps(all_top_level_resources, indent=4, sort_keys=True))
+    network_resources = cfn_client.describe_stacks(StackName=all_top_level_resources["StackResources"][0]["PhysicalResourceId"])
+
+    map_logical_resource_id_to_logical_resource = make_map_from_list("OutputKey", network_resources["Stacks"][0]["Outputs"])
     # TODO Done till here!
     '''
     We got till here. Need to fix the stack parameters.
 
-    It looks like, to fix stack params, we need to get outputs from our base infrastructure template. right now, it is in nested stacks, which means
-    we have to get nested stacks from the parent stack and then find outputs within nested stacks. too much work! so, firstly, i am going to convert
-    into single stack.
-
+    Now we we have all stack outputs for the network stack in a map that is keyed by the OutputKey and value is OutputValue
     '''
 
-    cfn.create_stack(
+    availability_zones = map_logical_resource_id_to_logical_resource["AvailabilityZones"]
+    security_groups = map_logical_resource_id_to_logical_resource["SgDefault"]
+    app_elb_subnets = map_logical_resource_id_to_logical_resource["AppElbSubnets"]
+    app_elb_security_groups = map_logical_resource_id_to_logical_resource["AppSecurityGroups"]
+    instance_profile = map_logical_resource_id_to_logical_resource["AppInstanceProfile"]
+    cfn_client.create_stack(
         StackName=(group_id + "-" + artifact_id + "-" + version).replace(".", "-"),
         TemplateURL=cfn_template_s3_url,
         Parameters=[
@@ -110,23 +125,23 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
             },
             {
                 "ParameterKey": "AvailabilityZones",
-                "ParameterValue": war_file_metadata['availability_zones']
+                "ParameterValue": availability_zones
             },
             {
                 "ParameterKey": "AppSecurityGroup",
-                "ParameterValue": war_file_metadata['security_groups']
+                "ParameterValue": security_groups
             },
             {
                 "ParameterKey": "AppElbSubnets",
-                "ParameterValue": ""
+                "ParameterValue": app_elb_subnets
             },
             {
                 "ParameterKey": "HealthCheckAbsoluteUrl",
-                "ParameterValue": ""
+                "ParameterValue": health_check_url
             },
             {
                 "ParameterKey": "AppElbSecurityGroup",
-                "ParameterValue": ""
+                "ParameterValue": app_elb_security_groups
             }
         ]
     )
