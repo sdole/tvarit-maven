@@ -551,7 +551,6 @@
     },
     "S3Endpoint": {
       "Type": "AWS::EC2::VPCEndpoint",
-
       "Properties": {
         "RouteTableIds": [
           {
@@ -628,14 +627,26 @@
     }
   },
   "Outputs": {
-    "TvaritVpcId": {
+    "TvaritVpcIdOutput": {
       "Description": "The vpc created for Tvarit",
       "Value": {
         "Ref": "TvaritVpc"
       }
     },
-    "AppElbSubnets": {
-      "Description": "The two subnets for applications",
+    "ElbSecurityGroupsOutput": {
+      "Description": "The security groups subnets for apps",
+      "Value": {
+        "Ref": "SgDefault"
+      }
+    },
+    "AppSecurityGroupsOutput": {
+      "Description": "The security groups subnets for apps",
+      "Value": {
+        "Ref": "SgDefault"
+      }
+    },
+    "ElbSubnetsOutput": {
+      "Description": "The two subnets for elbs",
       "Value": {
         "Fn::Join": [
           ",",
@@ -650,14 +661,13 @@
         ]
       }
     },
-
-    "DeployerLambdaFunctionSecurityGroupsOutParam": {
+    "DeployerLambdaFunctionSecurityGroupsOutput": {
       "Description": "The security group for lamdba function",
       "Value": {
         "Ref": "SgDefault"
       }
     },
-    "DeployerLambdaFunctionSubnetIdsOutParam": {
+    "DeployerLambdaFunctionSubnetIdsOutput": {
       "Description": "The subnet ids for lamdba function",
       "Value": {
         "Fn::Join": [

@@ -2,6 +2,34 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "",
   "Resources": {
+    "AppInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "AppInstanceRole"
+          }
+        ],
+        "Path": "/"
+      }
+    },
+    "AppInstanceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2008-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      }
+    },
     "LambdaFunctionExecutionRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -158,11 +186,20 @@
     }
   },
   "Outputs": {
-    "TvaritRoleOutParam": {
+    "LambdaExecutionRoleOutput": {
       "Description": "The IAM role that will be used to run lambda functions",
       "Value": {
         "Fn::GetAtt": [
           "LambdaFunctionExecutionRole",
+          "Arn"
+        ]
+      }
+    },
+    "AppInstanceProfileOutput": {
+      "Description": "The instance profile that will be used on instances that deploy the app",
+      "Value": {
+        "Fn::GetAtt": [
+          "AppInstanceProfile",
           "Arn"
         ]
       }

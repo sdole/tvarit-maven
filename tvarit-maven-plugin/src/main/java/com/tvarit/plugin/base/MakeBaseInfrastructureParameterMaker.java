@@ -20,7 +20,7 @@ class MakeBaseInfrastructureParameterMaker {
         final Parameter bucketNameParm = new Parameter().withParameterKey("ArtifactBucketNameParm").withParameterValue(artifactBucketName);
         final Parameter projectNameParm = new Parameter().withParameterKey("ProjectNameParm").withParameterValue(projectName);
         final Parameter availabilityZonesParm = new Parameter().withParameterKey("AvailabilityZones").withParameterValue(availabilityZones);
-        final Parameter elbHealthCheckAbsoluteUrlParm = new Parameter().withParameterKey("ElbHealthCheckAbsoluteUrl").withParameterValue("/to_be_fixed.html");
+        final Parameter elbHealthCheckAbsoluteUrlParm = new Parameter().withParameterKey("ElbHealthCheckUrl").withParameterValue("/to_be_fixed.html");
         final Parameter sshKeyParm = new Parameter().withParameterKey("SshKeyPairName").withParameterValue(TvaritEnvironment.getInstance().<MakeBaseInfrastructureMojo>getMojo().getSshKeyPairName());
         String routerTemplateUrl;
         String iamTemplateUrl;

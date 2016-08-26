@@ -61,13 +61,13 @@
           "VpcId": {
             "Fn::GetAtt": [
               "Network",
-              "Outputs.TvaritVpcId"
+              "Outputs.TvaritVpcIdOutput"
             ]
           },
           "RouterSubnets": {
             "Fn::GetAtt": [
               "Network",
-              "Outputs.AppSubnets"
+              "Outputs.ElbSubnetsOutput"
             ]
           },
           "ProjectName": {
@@ -77,7 +77,7 @@
             "Ref": "SshKeyPairName"
           },
           "ElbHealthCheckAbsoluteUrl": {
-            "Ref": "ElbHealthCheckAbsoluteUrl"
+            "Ref": "ElbHealthCheckUrl"
           }
         }
       }
@@ -92,7 +92,7 @@
           "LambdaFunctionExecutionRoleParam": {
             "Fn::GetAtt": [
               "IAM",
-              "Outputs.TvaritRoleOutParam"
+              "Outputs.LambdaExecutionRoleOutput"
             ]
           },
           "DeployerLambdaFunctionCodeS3BucketParam": {
@@ -104,13 +104,13 @@
           "DeployerLambdaFunctionSecurityGroupsParam": {
             "Fn::GetAtt": [
               "Network",
-              "Outputs.DeployerLambdaFunctionSecurityGroupsOutParam"
+              "Outputs.DeployerLambdaFunctionSecurityGroupsOutput"
             ]
           },
           "DeployerLambdaFunctionSubnetIdsParam": {
             "Fn::GetAtt": [
               "Network",
-              "Outputs.DeployerLambdaFunctionSubnetIdsOutParam"
+              "Outputs.DeployerLambdaFunctionSubnetIdsOutput"
             ]
           }
         }
@@ -181,7 +181,7 @@
       "Description": "Enter a name for a new S3 bucket where that will be created for deployment via tvarit.",
       "MinLength": "1"
     },
-    "ElbHealthCheckAbsoluteUrl": {
+    "ElbHealthCheckUrl": {
       "Type": "String",
       "Description": "Enter a url to the router reverse proxy that indicates an instance's health"
     },

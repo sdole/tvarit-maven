@@ -98,11 +98,13 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
         "/cloudformation/app/app.template"
     )
 
-    all_top_level_resources = cfn_client.describe_stack_resources(StackName="tvarit-base-infrastructure", LogicalResourceId="Network")
-    print(json.dumps(all_top_level_resources, indent=4, sort_keys=True))
-    network_resources = cfn_client.describe_stacks(StackName=all_top_level_resources["StackResources"][0]["PhysicalResourceId"])
+    network_stack_info = cfn_client.describe_stack_resources(StackName="tvarit-base-infrastructure", LogicalResourceId="Network")
+    network_resources = cfn_client.describe_stacks(StackName=network_stack_info["StackResources"][0]["PhysicalResourceId"])
+    iam_stack_info = cfn_client.describe_stack_resources(StackName="tvarit-base-infrastructure", LogicalResourceId="IAM")
+    iam_resources = cfn_client.describe_stacks(StackName=iam_stack_info["StackResources"][0]["PhysicalResourceId"])
 
-    map_logical_resource_id_to_logical_resource = make_map_from_list("OutputKey", network_resources["Stacks"][0]["Outputs"])
+    network_resources = make_map_from_list("OutputKey", "OutputValue", network_resources["Stacks"][0]["Outputs"])
+    iam_resources = make_map_from_list("OutputKey", "OutputValue", iam_resources["Stacks"][0]["Outputs"])
     # TODO Done till here!
     '''
     We got till here. Need to fix the stack parameters.
@@ -110,37 +112,37 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     Now we we have all stack outputs for the network stack in a map that is keyed by the OutputKey and value is OutputValue
     '''
 
-    availability_zones = map_logical_resource_id_to_logical_resource["AvailabilityZones"]
-    security_groups = map_logical_resource_id_to_logical_resource["SgDefault"]
-    app_elb_subnets = map_logical_resource_id_to_logical_resource["AppElbSubnets"]
-    app_elb_security_groups = map_logical_resource_id_to_logical_resource["AppSecurityGroups"]
-    instance_profile = map_logical_resource_id_to_logical_resource["AppInstanceProfile"]
+    availability_zones = network_resources["AvailabilityZonesOutput"]
+    app_security_groups = network_resources["AppSecurityGroupOutput"]
+    app_elb_subnets = network_resources["AppElbSubnetsOutput"]
+    app_elb_security_groups = network_resources["ElbSecurityGroupsOutput"]
+    instance_profile = iam_resources["AppInstanceProfileOutput"]
     cfn_client.create_stack(
         StackName=(group_id + "-" + artifact_id + "-" + version).replace(".", "-"),
         TemplateURL=cfn_template_s3_url,
         Parameters=[
             {
-                "ParameterKey": "AppInstanceProfile",
+                "ParameterKey": "AppInstanceProfileParam",
                 "ParameterValue": instance_profile
             },
             {
-                "ParameterKey": "AvailabilityZones",
+                "ParameterKey": "AvailabilityZonesParam",
                 "ParameterValue": availability_zones
             },
             {
-                "ParameterKey": "AppSecurityGroup",
-                "ParameterValue": security_groups
+                "ParameterKey": "AppSecurityGroupParam",
+                "ParameterValue": app_security_groups
             },
             {
-                "ParameterKey": "AppElbSubnets",
+                "ParameterKey": "AppElbSubnetsParam",
                 "ParameterValue": app_elb_subnets
             },
             {
-                "ParameterKey": "HealthCheckAbsoluteUrl",
+                "ParameterKey": "HealthCheckUrlParam",
                 "ParameterValue": health_check_url
             },
             {
-                "ParameterKey": "AppElbSecurityGroup",
+                "ParameterKey": "AppElbSecurityGroupParam",
                 "ParameterValue": app_elb_security_groups
             }
         ]
@@ -205,43 +207,43 @@ def deploy(event, context):
         '''
 
 
-print(plugin_config.plugin_config)
-os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
-deploy({
-    "Records": [
-        {
-            "eventVersion": "2.0",
-            "eventTime": "2016-08-15T12:40:54.623Z",
-            "requestParameters": {
-                "sourceIPAddress": "70.194.73.255"
-            },
-            "s3": {
-                "configurationId": "4334e041-7e25-4fcb-80dd-2852b9d84e05",
-                "object": {
-                    "eTag": "b39a33b8bfa97f473337ff5af051c1b1",
-                    "sequencer": "0057B1B8567534B9AC",
-                    "key": "deployables/Capture.war",
-                    "size": 72804
-                },
-                "bucket": {
-                    "arn": "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test",
-                    "name": "tvarit-tvarit-tomcat-plugin-test",
-                    "ownerIdentity": {
-                        "principalId": "A1QW81VB1IU6AT"
-                    }
-                },
-                "s3SchemaVersion": "1.0"
-            },
-            "responseElements": {
-                "x-amz-id-2": "LVxXRpJkMOwK0znpxC5Bddu1/IsNGDVU6iJB1qCZqf8L1Sv7J0tktyHLpypJdZ8K",
-                "x-amz-request-id": "C80A5A089D74B47E"
-            },
-            "awsRegion": "us-east-1",
-            "eventName": "ObjectCreated:Put",
-            "userIdentity": {
-                "principalId": "A1QW81VB1IU6AT"
-            },
-            "eventSource": "aws:s3"
-        }
-    ]
-}, {})
+# print(plugin_config.plugin_config)
+# os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
+# deploy({
+#     "Records": [
+#         {
+#             "eventVersion": "2.0",
+#             "eventTime": "2016-08-15T12:40:54.623Z",
+#             "requestParameters": {
+#                 "sourceIPAddress": "70.194.73.255"
+#             },
+#             "s3": {
+#                 "configurationId": "4334e041-7e25-4fcb-80dd-2852b9d84e05",
+#                 "object": {
+#                     "eTag": "b39a33b8bfa97f473337ff5af051c1b1",
+#                     "sequencer": "0057B1B8567534B9AC",
+#                     "key": "deployables/Capture.war",
+#                     "size": 72804
+#                 },
+#                 "bucket": {
+#                     "arn": "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test",
+#                     "name": "tvarit-tvarit-tomcat-plugin-test",
+#                     "ownerIdentity": {
+#                         "principalId": "A1QW81VB1IU6AT"
+#                     }
+#                 },
+#                 "s3SchemaVersion": "1.0"
+#             },
+#             "responseElements": {
+#                 "x-amz-id-2": "LVxXRpJkMOwK0znpxC5Bddu1/IsNGDVU6iJB1qCZqf8L1Sv7J0tktyHLpypJdZ8K",
+#                 "x-amz-request-id": "C80A5A089D74B47E"
+#             },
+#             "awsRegion": "us-east-1",
+#             "eventName": "ObjectCreated:Put",
+#             "userIdentity": {
+#                 "principalId": "A1QW81VB1IU6AT"
+#             },
+#             "eventSource": "aws:s3"
+#         }
+#     ]
+# }, {})
