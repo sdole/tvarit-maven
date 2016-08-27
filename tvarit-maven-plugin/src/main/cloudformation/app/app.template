@@ -11,21 +11,13 @@
           }
         ],
         "Subnets": {
-          "Ref": "AppElbSubnets"
+          "Ref": "ElbSubnetsParam"
         },
         "HealthCheck": {
           "HealthyThreshold": "10",
           "Interval": "30",
           "Target": {
-            "Fn::Join": [
-              "",
-              [
-                "HTTP:8080",
-                {
-                  "Ref": "HealthCheckAbsoluteUrl"
-                }
-              ]
-            ]
+            "Ref": "HealthCheckUrlParam"
           },
           "Timeout": "5",
           "UnhealthyThreshold": "2"
@@ -40,7 +32,7 @@
         "CrossZone": "true",
         "SecurityGroups": [
           {
-            "Ref": "AppElbSecurityGroup"
+            "Ref": "ElbSecurityGroupParam"
           }
         ],
         "Listeners": [
@@ -59,8 +51,8 @@
     "AppAutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
-        "AvailabilityZones": {
-          "Ref": "AvailabilityZones"
+        "VPCZoneIdentifier": {
+          "Ref": "ElbSubnetsParam"
         },
         "Cooldown": "300",
         "DesiredCapacity": "0",
@@ -88,11 +80,11 @@
         "InstanceType": "t2.micro",
         "KeyName": "trelair",
         "IamInstanceProfile": {
-          "Ref": "AppInstanceProfile"
+          "Ref": "AppInstanceProfileParam"
         },
         "SecurityGroups": [
           {
-            "Ref": "AppSecurityGroup"
+            "Ref": "AppSecurityGroupParam"
           }
         ],
         "BlockDeviceMappings": [
@@ -175,27 +167,31 @@
     }
   },
   "Parameters": {
-    "AppInstanceProfile": {
+    "AppInstanceProfileParam": {
       "Type": "String",
       "Description": "The IAM role that will be used for all tvarit instances."
     },
-    "AvailabilityZones": {
+    "AvailabilityZonesParam": {
       "Type": "CommaDelimitedList",
       "Description": "Enter exactly 2 availability zone ids where the ELBs and app servers will be deployed."
     },
-    "AppSecurityGroup": {
+    "AppSecurityGroupParam": {
       "Type": "String",
-      "Description": "The IAM role that will be used for all tvarit instances."
+      "Description": "The security group to be used for the app."
     },
-    "AppElbSubnets": {
+    "ElbSubnetsParam": {
       "Type": "CommaDelimitedList",
-      "Description": "Enter exactly 2 subnet ids that are publicly accessible. ELBs and app servers will be placed in these two subnets."
+      "Description": "Enter exactly 2 subnet ids that are publicly accessible. ELBs will be placed in these two subnets."
     },
-    "HealthCheckAbsoluteUrl": {
+    "AppSubnetsParam": {
+      "Type": "CommaDelimitedList",
+      "Description": "Enter exactly 2 subnet ids where app instances will be launched."
+    },
+    "HealthCheckUrlParam": {
       "Type": "String",
       "Description": "Enter the health check absolute url for the app servers. "
     },
-    "AppElbSecurityGroup": {
+    "ElbSecurityGroupParam": {
       "Type": "String",
       "Description": "Enter the health check absolute url for the app servers. "
     }

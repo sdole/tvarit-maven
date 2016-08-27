@@ -88,6 +88,8 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     version = war_file_metadata["version"]
     health_check_url = war_file_metadata["health_check_url"]
 
+    print(json.dumps(war_file_metadata, indent=True, sort_keys=True))
+
     s3_region = '' if region_name == "us-east-1" else '-' + region_name
 
     cfn_template_s3_url = (
@@ -113,14 +115,19 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     '''
 
     availability_zones = network_resources["AvailabilityZonesOutput"]
-    app_security_groups = network_resources["AppSecurityGroupOutput"]
-    app_elb_subnets = network_resources["AppElbSubnetsOutput"]
+    app_security_groups = network_resources["AppSecurityGroupsOutput"]
+    elb_subnets = network_resources["ElbSubnetsOutput"]
+    app_subnets = network_resources["AppSubnetsOutput"]
     app_elb_security_groups = network_resources["ElbSecurityGroupsOutput"]
     instance_profile = iam_resources["AppInstanceProfileOutput"]
     cfn_client.create_stack(
         StackName=(group_id + "-" + artifact_id + "-" + version).replace(".", "-"),
         TemplateURL=cfn_template_s3_url,
         Parameters=[
+            {
+                "ParameterKey": "AppSubnetsParam",
+                "ParameterValue": app_subnets
+            },
             {
                 "ParameterKey": "AppInstanceProfileParam",
                 "ParameterValue": instance_profile
@@ -134,15 +141,15 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
                 "ParameterValue": app_security_groups
             },
             {
-                "ParameterKey": "AppElbSubnetsParam",
-                "ParameterValue": app_elb_subnets
+                "ParameterKey": "ElbSubnetsParam",
+                "ParameterValue": elb_subnets
             },
             {
                 "ParameterKey": "HealthCheckUrlParam",
                 "ParameterValue": health_check_url
             },
             {
-                "ParameterKey": "AppElbSecurityGroupParam",
+                "ParameterKey": "ElbSecurityGroupParam",
                 "ParameterValue": app_elb_security_groups
             }
         ]
@@ -184,7 +191,7 @@ def deploy(event, context):
 
     key_of_deployable = event["Records"][0]["s3"]["object"]["key"]
     deployable_name = key_of_deployable.split("/")[1]
-    deployable_version = all_metadata['Metadata']['tvarit-app-version']
+    deployable_version = all_metadata['Metadata']['version']
     tags = asg_client.describe_tags(Filters=[
         {
             "Name": "key",
@@ -207,43 +214,43 @@ def deploy(event, context):
         '''
 
 
-# print(plugin_config.plugin_config)
-# os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
-# deploy({
-#     "Records": [
-#         {
-#             "eventVersion": "2.0",
-#             "eventTime": "2016-08-15T12:40:54.623Z",
-#             "requestParameters": {
-#                 "sourceIPAddress": "70.194.73.255"
-#             },
-#             "s3": {
-#                 "configurationId": "4334e041-7e25-4fcb-80dd-2852b9d84e05",
-#                 "object": {
-#                     "eTag": "b39a33b8bfa97f473337ff5af051c1b1",
-#                     "sequencer": "0057B1B8567534B9AC",
-#                     "key": "deployables/Capture.war",
-#                     "size": 72804
-#                 },
-#                 "bucket": {
-#                     "arn": "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test",
-#                     "name": "tvarit-tvarit-tomcat-plugin-test",
-#                     "ownerIdentity": {
-#                         "principalId": "A1QW81VB1IU6AT"
-#                     }
-#                 },
-#                 "s3SchemaVersion": "1.0"
-#             },
-#             "responseElements": {
-#                 "x-amz-id-2": "LVxXRpJkMOwK0znpxC5Bddu1/IsNGDVU6iJB1qCZqf8L1Sv7J0tktyHLpypJdZ8K",
-#                 "x-amz-request-id": "C80A5A089D74B47E"
-#             },
-#             "awsRegion": "us-east-1",
-#             "eventName": "ObjectCreated:Put",
-#             "userIdentity": {
-#                 "principalId": "A1QW81VB1IU6AT"
-#             },
-#             "eventSource": "aws:s3"
-#         }
-#     ]
-# }, {})
+print(plugin_config.plugin_config)
+os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
+deploy({
+    "Records": [
+        {
+            "eventVersion": "2.0",
+            "eventTime": "2016-08-15T12:40:54.623Z",
+            "requestParameters": {
+                "sourceIPAddress": "70.194.73.255"
+            },
+            "s3": {
+                "configurationId": "4334e041-7e25-4fcb-80dd-2852b9d84e05",
+                "object": {
+                    "eTag": "b39a33b8bfa97f473337ff5af051c1b1",
+                    "sequencer": "0057B1B8567534B9AC",
+                    "key": "deployables/Capture.war",
+                    "size": 72804
+                },
+                "bucket": {
+                    "arn": "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test",
+                    "name": "tvarit-tvarit-tomcat-plugin-test",
+                    "ownerIdentity": {
+                        "principalId": "A1QW81VB1IU6AT"
+                    }
+                },
+                "s3SchemaVersion": "1.0"
+            },
+            "responseElements": {
+                "x-amz-id-2": "LVxXRpJkMOwK0znpxC5Bddu1/IsNGDVU6iJB1qCZqf8L1Sv7J0tktyHLpypJdZ8K",
+                "x-amz-request-id": "C80A5A089D74B47E"
+            },
+            "awsRegion": "us-east-1",
+            "eventName": "ObjectCreated:Put",
+            "userIdentity": {
+                "principalId": "A1QW81VB1IU6AT"
+            },
+            "eventSource": "aws:s3"
+        }
+    ]
+}, {})

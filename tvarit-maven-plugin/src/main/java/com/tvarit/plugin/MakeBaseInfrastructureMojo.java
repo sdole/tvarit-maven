@@ -24,6 +24,7 @@ public class MakeBaseInfrastructureMojo extends AbstractTvaritMojo {
     public String getAvailabilityZones() {
         return availabilityZones;
     }
+
     public String getSshKeyPairName() {
 
         return sshKeyPairName;

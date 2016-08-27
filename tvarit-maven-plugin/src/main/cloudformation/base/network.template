@@ -661,6 +661,28 @@
         ]
       }
     },
+    "AvailabilityZonesOutput": {
+      "Description": "The two availability zones for elbs",
+      "Value": {
+        "Fn::Join": [
+          ",",
+          [
+            {
+              "Fn::GetAtt": [
+                "AppSubnetA",
+                "AvailabilityZone"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "AppSubnetB",
+                "AvailabilityZone"
+              ]
+            }
+          ]
+        ]
+      }
+    },
     "DeployerLambdaFunctionSecurityGroupsOutput": {
       "Description": "The security group for lamdba function",
       "Value": {
@@ -678,6 +700,22 @@
             },
             {
               "Ref": "PrivateSubnetB"
+            }
+          ]
+        ]
+      }
+    },
+    "AppSubnetsOutput": {
+      "Description": "Subnets where apps will be launched",
+      "Value": {
+        "Fn::Join": [
+          ",",
+          [
+            {
+              "Ref": "AppSubnetA"
+            },
+            {
+              "Ref": "AppSubnetB"
             }
           ]
         ]
