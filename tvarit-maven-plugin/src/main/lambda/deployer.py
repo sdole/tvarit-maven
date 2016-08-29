@@ -198,10 +198,6 @@ def deploy(event, context):
 
         modify_router_rules()
 
-        # TODO
-        '''
-        How do the newly started instances get added automatically to the AppElb?
-        '''
     else:
         # TODO
         '''
