@@ -77,9 +77,9 @@ def make_map_from_list(key_in_list_objects, value_in_list_of_objects, list_of_ob
     return converted_map
 
 
-def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_metadata):
+def create_app_auto_scaling_group(region_name, war_file_metadata):
     '''
-    Here, we know that the app auto scaling group does not exist. so, we find template url for autoscaling group, set
+    Here, we know that the app auto scaling group does not exist. so, we find template url for app autoscaling group, set
     parameters on it from s3 war file metadata and execute it.
     :return:
     '''
@@ -107,12 +107,6 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
 
     network_resources = make_map_from_list("OutputKey", "OutputValue", network_resources["Stacks"][0]["Outputs"])
     iam_resources = make_map_from_list("OutputKey", "OutputValue", iam_resources["Stacks"][0]["Outputs"])
-    # TODO Done till here!
-    '''
-    We got till here. Need to fix the stack parameters.
-
-    Now we we have all stack outputs for the network stack in a map that is keyed by the OutputKey and value is OutputValue
-    '''
 
     availability_zones = network_resources["AvailabilityZonesOutput"]
     app_security_groups = network_resources["AppSecurityGroupsOutput"]
@@ -120,39 +114,19 @@ def create_app_auto_scaling_group(region_name, automation_bucket_name, war_file_
     app_subnets = network_resources["AppSubnetsOutput"]
     app_elb_security_groups = network_resources["ElbSecurityGroupsOutput"]
     instance_profile = iam_resources["AppInstanceProfileOutput"]
+    app_stack_parameters = [
+        {"ParameterKey": "AppSubnetsParam", "ParameterValue": app_subnets},
+        {"ParameterKey": "AppInstanceProfileParam", "ParameterValue": instance_profile},
+        {"ParameterKey": "AvailabilityZonesParam", "ParameterValue": availability_zones},
+        {"ParameterKey": "AppSecurityGroupParam", "ParameterValue": app_security_groups},
+        {"ParameterKey": "ElbSubnetsParam", "ParameterValue": elb_subnets},
+        {"ParameterKey": "HealthCheckUrlParam", "ParameterValue": health_check_url},
+        {"ParameterKey": "ElbSecurityGroupParam", "ParameterValue": app_elb_security_groups}
+    ]
     cfn_client.create_stack(
         StackName=(group_id + "-" + artifact_id + "-" + version).replace(".", "-"),
         TemplateURL=cfn_template_s3_url,
-        Parameters=[
-            {
-                "ParameterKey": "AppSubnetsParam",
-                "ParameterValue": app_subnets
-            },
-            {
-                "ParameterKey": "AppInstanceProfileParam",
-                "ParameterValue": instance_profile
-            },
-            {
-                "ParameterKey": "AvailabilityZonesParam",
-                "ParameterValue": availability_zones
-            },
-            {
-                "ParameterKey": "AppSecurityGroupParam",
-                "ParameterValue": app_security_groups
-            },
-            {
-                "ParameterKey": "ElbSubnetsParam",
-                "ParameterValue": elb_subnets
-            },
-            {
-                "ParameterKey": "HealthCheckUrlParam",
-                "ParameterValue": health_check_url
-            },
-            {
-                "ParameterKey": "ElbSecurityGroupParam",
-                "ParameterValue": app_elb_security_groups
-            }
-        ]
+        Parameters=app_stack_parameters
     )
 
 
@@ -161,6 +135,7 @@ def modify_router_rules():
     add the newly created application asg into the router rules.
     '''
     print("do router")
+
 
 
 def get_app_metadata(event):
@@ -181,9 +156,15 @@ def deploy(event, context):
                 2.a.i create router.
         3. find if instance for app/version already exists.
             3.a. if version already exists,
-                3.a.i. find its template on S3, modify it, create change set and execute
+                3.a.i.  read appsec file if it exists and start all dependencies recursively if they have not
+                already been started - this step may need some architecture around sqs and more lambda functions.
+                3.a.ii  find its template on S3,
+                3.a.ii  modify it, create change set and execute
             3.b. if version does not exist,
-                3.b.i. find template, copy to local, create
+                3.b.i.  read appsec file if it exists and start all dependencies recursively if they have not
+                already been started - this step may need some architecture around sqs and more lambda functions.
+                3.b.ii. find template, create stack
+                3.b.iii. add this new version to version rules
     '''
     print("Starting deploy process")
     all_metadata = get_app_metadata(event)
@@ -205,12 +186,31 @@ def deploy(event, context):
 
     if len(tags['Tags']) == 0:
         print("no asg found for " + key_of_deployable + " " + deployable_version)
-        create_app_auto_scaling_group(os.environ['AWS_DEFAULT_REGION'], event["Records"][0]["s3"]["bucket"]["name"], all_metadata['Metadata'])
-
+        create_app_auto_scaling_group(
+            os.environ['AWS_DEFAULT_REGION'],
+            all_metadata['Metadata']
+        )
         # TODO Done till here!
         '''
-        We got till here. Stack creation for the app is started in method create_app_auto_scaling_group, but it fails because
-        none of the parameters are being set correctly. Once that is fixed, we can continue from here on to fix routing rules.
+        Stack creation for the app is started in method create_app_auto_scaling_group,
+        continue from here on to modify routing rules.
+        '''
+
+        modify_router_rules()
+
+        # TODO
+        '''
+        How do the newly started instances get added automatically to the AppElb?
+        '''
+    else:
+        # TODO
+        '''
+        at this point, it is known that there already is a version of the same app. The developer's
+        probable intention was to replace the running code with new code for the same version. So,
+        find the app template in S3, change the logical name for the launch config, save it to
+        another folder named revisions within the same version name folder and then execute that
+        changeset. This step might also create new dependency versions. If so, create stacks for
+        all those dependencues.
         '''
 
 
