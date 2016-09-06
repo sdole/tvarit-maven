@@ -1,0 +1,33 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "",
+  "Resources": {
+    "AppDB": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "AllocatedStorage": "50",
+        "MultiAZ": "true",
+        "DBInstanceClass": "t2.micro",
+        "DBSubnetGroupName": {
+          "Ref": "DbSubnetGroup"
+        }
+      }
+    },
+    "DbSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "A subnet group for high availability app database."
+        "SubnetIds": {
+          "Ref": "DbSubnets"
+        }
+      }
+    }
+  }
+  "Parameters": {
+    "DbSubnets": {
+      "Type": "List<AWS::VPC::Subnet:Id>",
+      "Description": "a list of subnets where app db will be started",
+      "MinLength": "1"
+    }
+  }
+}

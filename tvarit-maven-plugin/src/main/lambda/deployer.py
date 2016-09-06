@@ -7,6 +7,7 @@ import boto3
 import datetime
 
 import plugin_config
+import util
 
 json.JSONEncoder.default = lambda self, obj: (obj.isoformat() if isinstance(obj, datetime.datetime) else None)
 
@@ -137,17 +138,6 @@ def modify_router_rules():
     print("do router")
 
 
-
-def get_app_metadata(event):
-    bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
-    key_name = event["Records"][0]["s3"]["object"]["key"]
-    all_metadata = s3.head_object(
-        Bucket=bucket_name,
-        Key=key_name
-    )
-    return all_metadata
-
-
 def deploy(event, context):
     '''
 
@@ -167,7 +157,7 @@ def deploy(event, context):
                 3.b.iii. add this new version to version rules
     '''
     print("Starting deploy process")
-    all_metadata = get_app_metadata(event)
+    all_metadata = util.get_app_metadata(event)
     ensure_router_auto_scaling_group_has_instances()
 
     key_of_deployable = event["Records"][0]["s3"]["object"]["key"]
