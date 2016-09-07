@@ -11,7 +11,7 @@
         "DBSubnetGroupName": {
           "Ref": "DbSubnetGroup"
         },
-        "Engine": "aurora",
+        "Engine": "postgres",
         "MasterUsername":"tvarit",
         "MasterUserPassword":"tvarit123"
       }
