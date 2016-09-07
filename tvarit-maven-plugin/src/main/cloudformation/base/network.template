@@ -236,6 +236,22 @@
         ]
       }
     },
+    "DbSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "A subnet group for high availability app database.",
+        "SubnetIds": {
+          "Fn::Join": [
+            {
+              "Ref": "PrivateSubnetA"
+            },
+            {
+              "Ref": "PrivateSubnetB"
+            }
+          ]
+        }
+      }
+    },
     "IgForVpc": {
       "Type": "AWS::EC2::InternetGateway",
       "Properties": {
@@ -645,20 +661,10 @@
         "Ref": "SgDefault"
       }
     },
-    "DbSubnetsOutput": {
-      "Description": "The two subnets for elbs",
+    "DbSubnetGroupOutput": {
+      "Description": "The subnet group for for database",
       "Value": {
-        "Fn::Join": [
-          ",",
-          [
-            {
-              "Ref": "PrivateSubnetA"
-            },
-            {
-              "Ref": "PrivateSubnetB"
-            }
-          ]
-        ]
+        "Ref": "DbSubnetGroup"
       }
     },
     "ElbSubnetsOutput": {

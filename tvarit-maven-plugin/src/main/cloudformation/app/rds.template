@@ -9,27 +9,18 @@
         "MultiAZ": "true",
         "DBInstanceClass": "db.t2.micro",
         "DBSubnetGroupName": {
-          "Ref": "DbSubnetGroup"
+          "Ref": "DbSubnetGroupNameParm"
         },
         "Engine": "postgres",
         "MasterUsername":"tvarit",
         "MasterUserPassword":"tvarit123"
       }
-    },
-    "DbSubnetGroup": {
-      "Type": "AWS::RDS::DBSubnetGroup",
-      "Properties": {
-        "DBSubnetGroupDescription": "A subnet group for high availability app database.",
-        "SubnetIds": {
-          "Ref": "DbSubnets"
-        }
-      }
     }
   },
   "Parameters": {
-    "DbSubnets": {
-      "Type": "List<AWS::EC2::Subnet::Id>",
-      "Description": "a list of subnets where app db will be started",
+    "DbSubnetGroupNameParm": {
+      "Type": "String",
+      "Description": "the db subnet group for db instances",
       "MinLength": "1"
     }
   }

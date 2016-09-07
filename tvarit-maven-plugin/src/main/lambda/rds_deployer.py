@@ -32,17 +32,18 @@ def handler(event, context):
         artifact_id = app_metadata['Metadata']["artifact-id"]
         version = app_metadata['Metadata']["version"]
         network_resources = util.make_resources_map_from_cfn("Network")
-        db_subnets = network_resources["DbSubnetsOutput"]
+        db_subnet_group = network_resources["DbSubnetGroupOutput"]
 
         rds_stack_parameters = [
-            {"ParameterKey": "DbSubnets", "ParameterValue": db_subnets},
+            {"ParameterKey": "DbSubnetGroupNameParm", "ParameterValue": db_subnet_group},
         ]
 
         stack_name = ("rds" + group_id + "-" + artifact_id + "-" + version).replace(".", "-")
         cfn_client.create_stack(
             StackName=stack_name,
             TemplateURL=rds_template,
-            Parameters=rds_stack_parameters
+            Parameters=rds_stack_parameters,
+            NotificationARNs=[]
         )
 
 
