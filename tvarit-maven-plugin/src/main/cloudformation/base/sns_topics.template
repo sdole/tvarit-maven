@@ -1,0 +1,19 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "",
+  "Resources": {
+    "ProvisioningDone": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+      }
+    }
+  },
+  "Outputs": {
+    "ProvisioningAutomationSnsTopic": {
+      "Description": "Notify here when provisoning done",
+      "Value": {
+        "Ref": "ProvisioningDone"
+      }
+    }
+  }
+}
