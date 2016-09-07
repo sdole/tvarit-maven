@@ -10,7 +10,7 @@
   },
   "Outputs": {
     "ProvisioningAutomationSnsTopic": {
-      "Description": "Notify here when provisoning done",
+      "Description": "Notify here when provisoning done ",
       "Value": {
         "Ref": "ProvisioningDone"
       }
