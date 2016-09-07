@@ -27,8 +27,10 @@ class MakeBaseInfrastructureParameterMaker {
         String networkTemplateUrl;
         String deployerLambdaTemplateUrl;
         String tvaritArtifactBucketTemplateUrl;
+        String snsTopicsUrl;
         String deployerLambdaFunctionCodeS3Key = "default/io.tvarit/tvarit-maven-plugin/0.1.2-SNAPSHOT/lambda/tvarit-lambda.zip";
         try {
+            snsTopicsUrl = new TemplateUrlMaker().makeUrl("base/sns_topics.template").toString();
             iamTemplateUrl = new TemplateUrlMaker().makeUrl("base/iam.template").toString();
             deployerLambdaTemplateUrl = new TemplateUrlMaker().makeUrl("base/deployer_lambda.template").toString();
             networkTemplateUrl = new TemplateUrlMaker().makeUrl("base/network.template").toString();
@@ -37,13 +39,14 @@ class MakeBaseInfrastructureParameterMaker {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        final Parameter deployerLambdaFunctionCodeS3BucketParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3BucketParam").withParameterValue("tvarit");
+        final Parameter deployerLambdaFunctionCodeS3BucketParam = new Parameter().withParameterKey("RdsDeployerLambdaFunctionCodeS3BucketParam").withParameterValue("tvarit");
         final Parameter tvaritArtifactBucketS3BucketParam = new Parameter().withParameterKey("TvaritArtifactBucketTemplateUrl").withParameterValue(tvaritArtifactBucketTemplateUrl);
         final Parameter routerTemplateUrlParm = new Parameter().withParameterKey("NetworkTemplateUrl").withParameterValue(networkTemplateUrl);
         final Parameter networkTemplateUrlParm = new Parameter().withParameterKey("RouterTemplateUrl").withParameterValue(routerTemplateUrl);
         final Parameter iamTemplateUrlParm = new Parameter().withParameterKey("IamTemplateUrl").withParameterValue(iamTemplateUrl);
-        final Parameter deployerLambdaTemplateUrlParm = new Parameter().withParameterKey("DeployerLambdaTemplateUrl").withParameterValue(deployerLambdaTemplateUrl);
-        final Parameter deployerLambdaFunctionCodeS3KeyParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3KeyParam").withParameterValue(deployerLambdaFunctionCodeS3Key);
+        final Parameter deployerLambdaTemplateUrlParm = new Parameter().withParameterKey("RdsDeployerLambdaTemplateUrl").withParameterValue(deployerLambdaTemplateUrl);
+        final Parameter deployerLambdaFunctionCodeS3KeyParam = new Parameter().withParameterKey("RdsDeployerLambdaFunctionCodeS3KeyParam").withParameterValue(deployerLambdaFunctionCodeS3Key);
+        final Parameter snsTopicsUrlParam = new Parameter().withParameterKey("SnsTopicsTemplateUrl").withParameterValue(snsTopicsUrl);
         final ArrayList<Parameter> listOfParms = new ArrayList<>();
         listOfParms.add(bucketNameParm);
         listOfParms.add(projectNameParm);
@@ -57,6 +60,7 @@ class MakeBaseInfrastructureParameterMaker {
         listOfParms.add(deployerLambdaFunctionCodeS3KeyParam);
         listOfParms.add(deployerLambdaFunctionCodeS3BucketParam);
         listOfParms.add(tvaritArtifactBucketS3BucketParam);
+        listOfParms.add(snsTopicsUrlParam);
         final List<String> stringifiedListOfParms = listOfParms.stream().map(parameter -> parameter.getParameterKey() + " : " + parameter.getParameterValue()).collect(Collectors.toList());
         TvaritEnvironment.getInstance().getLogger().info("Parameters for main template are: \n\t" + String.join("\n\t", stringifiedListOfParms));
         return listOfParms;

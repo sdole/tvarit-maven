@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 class LambdaConfigMaker {
-    void make(String[] args) throws IOException {
+    private void make(String[] args) throws IOException {
         final File configFile = new File(args[3] + "\\src\\main\\lambda\\plugin_config.py");
         try {
             final FileWriter lambdaConfigFile = new FileWriter(configFile);
@@ -44,12 +44,6 @@ class LambdaConfigMaker {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-//        final HashMap<String, Object> data = new HashMap<>();
-//        final ArrayList<Object> value = new ArrayList<>();
-//        value.add("value");
-//        value.add("value2");
-//        data.put("asfd", value);
-//        yaml.dump(data, new FileWriter(configFile));
     }
 
     public static void main(String[] args) throws IOException {

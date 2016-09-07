@@ -13,7 +13,7 @@
             "Ref": "DeployerLambdaFunctionCodeS3KeyParam"
           }
         },
-        "Handler": "deployer.deploy",
+        "Handler": "rds_deployer.deploy",
         "Runtime": "python2.7",
         "Role": {
           "Ref": "LambdaFunctionExecutionRoleParam"

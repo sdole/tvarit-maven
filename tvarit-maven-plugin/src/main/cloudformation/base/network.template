@@ -240,16 +240,14 @@
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
         "DBSubnetGroupDescription": "A subnet group for high availability app database.",
-        "SubnetIds": {
-          "Fn::Join": [
-            {
-              "Ref": "PrivateSubnetA"
-            },
-            {
-              "Ref": "PrivateSubnetB"
-            }
-          ]
-        }
+        "SubnetIds": [
+          {
+            "Ref": "PrivateSubnetA"
+          },
+          {
+            "Ref": "PrivateSubnetB"
+          }
+        ]
       }
     },
     "IgForVpc": {

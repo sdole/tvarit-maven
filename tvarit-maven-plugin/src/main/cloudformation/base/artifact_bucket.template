@@ -27,7 +27,7 @@
                 }
               },
               "Function": {
-                "Ref": "DeployerLambdaFunctionArn"
+                "Ref": "RdsDeployerLambdaFunctionArnParm"
               }
             }
           ]
@@ -52,7 +52,7 @@
     }
   },
   "Parameters": {
-    "DeployerLambdaFunctionArn": {
+    "RdsDeployerLambdaFunctionArnParm": {
       "Type": "String",
       "Description": "Arn of the deployer lambda function",
       "MinLength": "1"

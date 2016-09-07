@@ -7,7 +7,7 @@ import boto3
 import util
 
 
-def handler(event, context):
+def deploy(event, context):
     app_metadata = util.get_app_metadata(event)
     rds_version = app_metadata['Metadata']['db-version']
     rds_client = boto3.client("rds")
@@ -49,7 +49,7 @@ def handler(event, context):
 
 if __name__ == "__main__":
     os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
-    handler({
+    deploy({
         "Records": [
             {
                 "eventVersion": "2.0",
