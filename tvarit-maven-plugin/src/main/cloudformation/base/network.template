@@ -645,6 +645,22 @@
         "Ref": "SgDefault"
       }
     },
+    "DbSubnetsOutput": {
+      "Description": "The two subnets for elbs",
+      "Value": {
+        "Fn::Join": [
+          ",",
+          [
+            {
+              "Ref": "PrivateSubnetA"
+            },
+            {
+              "Ref": "PrivateSubnetB"
+            }
+          ]
+        ]
+      }
+    },
     "ElbSubnetsOutput": {
       "Description": "The two subnets for elbs",
       "Value": {

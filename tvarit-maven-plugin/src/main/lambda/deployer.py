@@ -6,7 +6,6 @@ import os
 import boto3
 import datetime
 
-import plugin_config
 import util
 
 json.JSONEncoder.default = lambda self, obj: (obj.isoformat() if isinstance(obj, datetime.datetime) else None)
@@ -71,14 +70,7 @@ def ensure_router_auto_scaling_group_has_instances():
         asg_client.update_auto_scaling_group(AutoScalingGroupName=router_asg_name, MinSize=2, MaxSize=6)
 
 
-def make_map_from_list(key_in_list_objects, value_in_list_of_objects, list_of_objects):
-    converted_map = {}
-    for each_obj_in_list in list_of_objects:
-        converted_map[each_obj_in_list[key_in_list_objects]] = each_obj_in_list[value_in_list_of_objects]
-    return converted_map
-
-
-def create_app_auto_scaling_group(region_name, war_file_metadata):
+def create_app_auto_scaling_group(war_file_metadata):
     '''
     Here, we know that the app auto scaling group does not exist. so, we find template url for app autoscaling group, set
     parameters on it from s3 war file metadata and execute it.
@@ -91,23 +83,9 @@ def create_app_auto_scaling_group(region_name, war_file_metadata):
 
     print(json.dumps(war_file_metadata, indent=True, sort_keys=True))
 
-    s3_region = '' if region_name == "us-east-1" else '-' + region_name
-
-    cfn_template_s3_url = (
-        "https://s3" +
-        s3_region +
-        ".amazonaws.com/tvarit/default/" +
-        plugin_config.plugin_config['groupId'] + "/" + plugin_config.plugin_config['artifactId'] + "/" + plugin_config.plugin_config['version'] +
-        "/cloudformation/app/app.template"
-    )
-
-    network_stack_info = cfn_client.describe_stack_resources(StackName="tvarit-base-infrastructure", LogicalResourceId="Network")
-    network_resources = cfn_client.describe_stacks(StackName=network_stack_info["StackResources"][0]["PhysicalResourceId"])
-    iam_stack_info = cfn_client.describe_stack_resources(StackName="tvarit-base-infrastructure", LogicalResourceId="IAM")
-    iam_resources = cfn_client.describe_stacks(StackName=iam_stack_info["StackResources"][0]["PhysicalResourceId"])
-
-    network_resources = make_map_from_list("OutputKey", "OutputValue", network_resources["Stacks"][0]["Outputs"])
-    iam_resources = make_map_from_list("OutputKey", "OutputValue", iam_resources["Stacks"][0]["Outputs"])
+    cfn_template_s3_url = util.make_cfn_url("app/app.template")
+    network_resources = util.make_resources_map_from_cfn("Network")
+    iam_resources = util.make_resources_map_from_cfn("IAM")
 
     availability_zones = network_resources["AvailabilityZonesOutput"]
     app_security_groups = network_resources["AppSecurityGroupsOutput"]
@@ -177,7 +155,6 @@ def deploy(event, context):
     if len(tags['Tags']) == 0:
         print("no asg found for " + key_of_deployable + " " + deployable_version)
         create_app_auto_scaling_group(
-            os.environ['AWS_DEFAULT_REGION'],
             all_metadata['Metadata']
         )
         # TODO Done till here!
@@ -200,43 +177,43 @@ def deploy(event, context):
         '''
 
 
-print(plugin_config.plugin_config)
-os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
-deploy({
-    "Records": [
-        {
-            "eventVersion": "2.0",
-            "eventTime": "2016-08-15T12:40:54.623Z",
-            "requestParameters": {
-                "sourceIPAddress": "70.194.73.255"
-            },
-            "s3": {
-                "configurationId": "4334e041-7e25-4fcb-80dd-2852b9d84e05",
-                "object": {
-                    "eTag": "b39a33b8bfa97f473337ff5af051c1b1",
-                    "sequencer": "0057B1B8567534B9AC",
-                    "key": "deployables/Capture.war",
-                    "size": 72804
+if __name__ == "__main__":
+    os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
+    deploy({
+        "Records": [
+            {
+                "eventVersion": "2.0",
+                "eventTime": "2016-08-15T12:40:54.623Z",
+                "requestParameters": {
+                    "sourceIPAddress": "70.194.73.255"
                 },
-                "bucket": {
-                    "arn": "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test",
-                    "name": "tvarit-tvarit-tomcat-plugin-test",
-                    "ownerIdentity": {
-                        "principalId": "A1QW81VB1IU6AT"
-                    }
+                "s3": {
+                    "configurationId": "4334e041-7e25-4fcb-80dd-2852b9d84e05",
+                    "object": {
+                        "eTag": "b39a33b8bfa97f473337ff5af051c1b1",
+                        "sequencer": "0057B1B8567534B9AC",
+                        "key": "deployables/Capture.war",
+                        "size": 72804
+                    },
+                    "bucket": {
+                        "arn": "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test",
+                        "name": "tvarit-tvarit-tomcat-plugin-test",
+                        "ownerIdentity": {
+                            "principalId": "A1QW81VB1IU6AT"
+                        }
+                    },
+                    "s3SchemaVersion": "1.0"
                 },
-                "s3SchemaVersion": "1.0"
-            },
-            "responseElements": {
-                "x-amz-id-2": "LVxXRpJkMOwK0znpxC5Bddu1/IsNGDVU6iJB1qCZqf8L1Sv7J0tktyHLpypJdZ8K",
-                "x-amz-request-id": "C80A5A089D74B47E"
-            },
-            "awsRegion": "us-east-1",
-            "eventName": "ObjectCreated:Put",
-            "userIdentity": {
-                "principalId": "A1QW81VB1IU6AT"
-            },
-            "eventSource": "aws:s3"
-        }
-    ]
-}, {})
+                "responseElements": {
+                    "x-amz-id-2": "LVxXRpJkMOwK0znpxC5Bddu1/IsNGDVU6iJB1qCZqf8L1Sv7J0tktyHLpypJdZ8K",
+                    "x-amz-request-id": "C80A5A089D74B47E"
+                },
+                "awsRegion": "us-east-1",
+                "eventName": "ObjectCreated:Put",
+                "userIdentity": {
+                    "principalId": "A1QW81VB1IU6AT"
+                },
+                "eventSource": "aws:s3"
+            }
+        ]
+    }, {})

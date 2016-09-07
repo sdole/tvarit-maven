@@ -16,16 +16,16 @@
     "DbSubnetGroup": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
-        "DBSubnetGroupDescription": "A subnet group for high availability app database."
+        "DBSubnetGroupDescription": "A subnet group for high availability app database.",
         "SubnetIds": {
           "Ref": "DbSubnets"
         }
       }
     }
-  }
+  },
   "Parameters": {
     "DbSubnets": {
-      "Type": "List<AWS::VPC::Subnet:Id>",
+      "Type": "List<AWS::EC2::Subnet::Id>",
       "Description": "a list of subnets where app db will be started",
       "MinLength": "1"
     }
