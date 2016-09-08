@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 class MakeBaseInfrastructureParameterMaker {
+    private static final String TVARIT_BUCKET_NAME = "tvarit";
+
     List<Parameter> make() {
         String projectName = TvaritEnvironment.getInstance().getProjectName();
         final String artifactId = TvaritEnvironment.getInstance().getMavenProject().getArtifactId();
@@ -28,7 +30,7 @@ class MakeBaseInfrastructureParameterMaker {
         String deployerLambdaTemplateUrl;
         String tvaritArtifactBucketTemplateUrl;
         String snsTopicsUrl;
-        String deployerLambdaFunctionCodeS3Key = "default/io.tvarit/tvarit-maven-plugin/0.1.2-SNAPSHOT/lambda/tvarit-lambda.zip";
+        String allDeployerLambdaFunctionCodeS3Key = "default/io.tvarit/tvarit-maven-plugin/0.1.2-SNAPSHOT/lambda/tvarit-lambda.zip";
         try {
             snsTopicsUrl = new TemplateUrlMaker().makeUrl("base/sns_topics.template").toString();
             iamTemplateUrl = new TemplateUrlMaker().makeUrl("base/iam.template").toString();
@@ -39,13 +41,13 @@ class MakeBaseInfrastructureParameterMaker {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        final Parameter deployerLambdaFunctionCodeS3BucketParam = new Parameter().withParameterKey("RdsDeployerLambdaFunctionCodeS3BucketParam").withParameterValue("tvarit");
-        final Parameter tvaritArtifactBucketS3BucketParam = new Parameter().withParameterKey("TvaritArtifactBucketTemplateUrl").withParameterValue(tvaritArtifactBucketTemplateUrl);
         final Parameter routerTemplateUrlParm = new Parameter().withParameterKey("NetworkTemplateUrl").withParameterValue(networkTemplateUrl);
         final Parameter networkTemplateUrlParm = new Parameter().withParameterKey("RouterTemplateUrl").withParameterValue(routerTemplateUrl);
         final Parameter iamTemplateUrlParm = new Parameter().withParameterKey("IamTemplateUrl").withParameterValue(iamTemplateUrl);
-        final Parameter deployerLambdaTemplateUrlParm = new Parameter().withParameterKey("RdsDeployerLambdaTemplateUrl").withParameterValue(deployerLambdaTemplateUrl);
-        final Parameter deployerLambdaFunctionCodeS3KeyParam = new Parameter().withParameterKey("RdsDeployerLambdaFunctionCodeS3KeyParam").withParameterValue(deployerLambdaFunctionCodeS3Key);
+        final Parameter deployerLambdaTemplateUrlParm = new Parameter().withParameterKey("DeployerLambdaTemplateUrl").withParameterValue(deployerLambdaTemplateUrl);
+        final Parameter tvaritArtifactBucketS3BucketParam = new Parameter().withParameterKey("TvaritArtifactBucketTemplateUrl").withParameterValue(tvaritArtifactBucketTemplateUrl);
+        final Parameter deployerLambdaFunctionCodeS3BucketParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3BucketParam").withParameterValue(TVARIT_BUCKET_NAME);
+        final Parameter deployerLambdaFunctionCodeS3KeyParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3KeyParam").withParameterValue(allDeployerLambdaFunctionCodeS3Key);
         final Parameter snsTopicsUrlParam = new Parameter().withParameterKey("SnsTopicsTemplateUrl").withParameterValue(snsTopicsUrl);
         final ArrayList<Parameter> listOfParms = new ArrayList<>();
         listOfParms.add(bucketNameParm);

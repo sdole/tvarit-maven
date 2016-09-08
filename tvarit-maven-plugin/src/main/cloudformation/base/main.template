@@ -90,11 +90,11 @@
         }
       }
     },
-    "RdsDeployerLambda": {
+    "DeployerLambda": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": {
-          "Ref": "RdsDeployerLambdaTemplateUrl"
+          "Ref": "DeployerLambdaTemplateUrl"
         },
         "Parameters": {
           "LambdaFunctionExecutionRoleParam": {
@@ -104,10 +104,10 @@
             ]
           },
           "DeployerLambdaFunctionCodeS3BucketParam": {
-            "Ref": "RdsDeployerLambdaFunctionCodeS3BucketParam"
+            "Ref": "DeployerLambdaFunctionCodeS3BucketParam"
           },
           "DeployerLambdaFunctionCodeS3KeyParam": {
-            "Ref": "RdsDeployerLambdaFunctionCodeS3KeyParam"
+            "Ref": "DeployerLambdaFunctionCodeS3KeyParam"
           },
           "DeployerLambdaFunctionSecurityGroupsParam": {
             "Fn::GetAtt": [
@@ -126,7 +126,7 @@
     },
     "TvaritArtifactBucket": {
       "Type": "AWS::CloudFormation::Stack",
-      "DependsOn": "RdsDeployerLambda",
+      "DependsOn": "DeployerLambda",
       "Properties": {
         "TemplateURL": {
           "Ref": "TvaritArtifactBucketTemplateUrl"
@@ -138,9 +138,9 @@
           "ArtifactBucketNameParm": {
             "Ref": "ArtifactBucketNameParm"
           },
-          "RdsDeployerLambdaFunctionArnParm": {
+          "DeployerLambdaFunctionArnParm": {
             "Fn::GetAtt": [
-              "RdsDeployerLambda",
+              "DeployerLambda",
               "Outputs.DeployerLambdaFunctionArnOutParam"
             ]
           }
@@ -164,7 +164,7 @@
       "Description": "The URL to the cloudformation template describing all IAM assets.",
       "MinLength": "1"
     },
-    "RdsDeployerLambdaTemplateUrl": {
+    "DeployerLambdaTemplateUrl": {
       "Type": "String",
       "Description": "The URL to the cloudformation template describing the deployer lambda function.",
       "MinLength": "1"
@@ -202,13 +202,13 @@
       "Type": "AWS::EC2::KeyPair::KeyName",
       "Description": "The key pair name that can be used for logging on to the router instances."
     },
-    "RdsDeployerLambdaFunctionCodeS3KeyParam": {
+    "DeployerLambdaFunctionCodeS3KeyParam": {
       "Type": "String",
-      "Description": "The key name where the lambda function code is stored/uploaded."
+      "Description": "The key name where the rds deployer lambda function code is stored/uploaded."
     },
-    "RdsDeployerLambdaFunctionCodeS3BucketParam": {
+    "DeployerLambdaFunctionCodeS3BucketParam": {
       "Type": "String",
-      "Description": "The bucket name where the lambda function code is stored/uploaded."
+      "Description": "The bucket name where the rds deployer lambda function code is stored/uploaded."
     }
   },
   "Outputs": {
