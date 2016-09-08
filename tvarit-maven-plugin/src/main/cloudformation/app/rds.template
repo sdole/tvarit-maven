@@ -6,7 +6,7 @@
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
         "AllocatedStorage": "50",
-        "MultiAZ": "true",
+        "MultiAZ": "false",
         "DBInstanceClass": "db.t2.micro",
         "DBSubnetGroupName": {
           "Ref": "DbSubnetGroupNameParm"

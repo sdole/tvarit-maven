@@ -6,6 +6,8 @@ import boto3
 
 import util
 
+cfn_client = boto3.client("cloudformation")
+
 
 def deploy(event, context):
     app_metadata = util.get_app_metadata(event)
@@ -27,7 +29,6 @@ def deploy(event, context):
 
     if not found_db:
         rds_template = util.make_cfn_url("app/rds.template")
-        cfn_client = boto3.client("cloudformation")
         group_id = app_metadata['Metadata']["group-id"]
         artifact_id = app_metadata['Metadata']["artifact-id"]
         version = app_metadata['Metadata']["version"]
@@ -37,13 +38,15 @@ def deploy(event, context):
         rds_stack_parameters = [
             {"ParameterKey": "DbSubnetGroupNameParm", "ParameterValue": db_subnet_group},
         ]
+        sns_resources = util.make_resources_map_from_cfn("SnsTopics")
+        deploy_complete_topic = sns_resources["ProvisioningAutomationSnsTopic"]
 
         stack_name = ("rds" + group_id + "-" + artifact_id + "-" + version).replace(".", "-")
         cfn_client.create_stack(
             StackName=stack_name,
             TemplateURL=rds_template,
             Parameters=rds_stack_parameters,
-            NotificationARNs=[]
+            NotificationARNs=[deploy_complete_topic]
         )
 
 
