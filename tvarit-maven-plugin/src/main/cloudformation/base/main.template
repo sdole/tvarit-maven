@@ -20,6 +20,14 @@
       "Properties": {
         "TemplateURL": {
           "Ref": "SnsTopicsTemplateUrl"
+        },
+        "Parameters": {
+          "AppDeployerLambdaFunctionArnParm": {
+            "Fn::GetAtt": [
+              "DeployerLambda",
+              "Outputs.AppDeployerLambdaFunctionArnOutput"
+            ]
+          }
         }
       }
     },
@@ -141,7 +149,7 @@
           "DeployerLambdaFunctionArnParm": {
             "Fn::GetAtt": [
               "DeployerLambda",
-              "Outputs.DeployerLambdaFunctionArnOutParam"
+              "Outputs.RdsDeployerLambdaFunctionArnOutput"
             ]
           }
         }

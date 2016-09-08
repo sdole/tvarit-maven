@@ -5,7 +5,21 @@
     "ProvisioningDoneNotificationTopic": {
       "Type": "AWS::SNS::Topic",
       "Properties": {
+        "Subscription": [
+          {
+            "Endpoint": {
+              "Ref": "AppDeployerLambdaFunctionArnParm"
+            },
+            "Protocol": "lambda"
+          }
+        ]
       }
+    }
+  },
+  "Parameters": {
+    "AppDeployerLambdaFunctionArnParm": {
+      "Description": "The arn of the lambda function that will deploy the app",
+      "Type": "String"
     }
   },
   "Outputs": {

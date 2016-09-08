@@ -119,7 +119,16 @@
     }
   },
   "Outputs": {
-    "DeployerLambdaFunctionArnOutParam": {
+    "AppDeployerLambdaFunctionArnOutput": {
+      "Description": "The Lambda function for rds deployment",
+      "Value": {
+        "Fn::GetAtt": [
+          "AppDeployerLambdaFunction",
+          "Arn"
+        ]
+      }
+    },
+    "RdsDeployerLambdaFunctionArnOutput": {
       "Description": "The Lambda function for rds deployment",
       "Value": {
         "Fn::GetAtt": [
