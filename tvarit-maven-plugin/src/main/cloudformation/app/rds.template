@@ -28,9 +28,7 @@
     "AppDbEndpoint": {
       "Value": {
         "Fn::GetAtt": [
-          {
-            "Ref": "AppDB"
-          },
+          "AppDB",
           "Endpoint.Address"
         ]
       }

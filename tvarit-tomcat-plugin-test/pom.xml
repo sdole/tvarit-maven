@@ -105,7 +105,7 @@
                                 <phase>deploy</phase>
                                 <configuration>
                                     <ssh-key-name>trelair</ssh-key-name>
-                                    <db-version>1.0.0</db-version>
+                                    <db-version>1.0.1</db-version>
                                 </configuration>
                             </execution>
                         </executions>

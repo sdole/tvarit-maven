@@ -167,6 +167,23 @@
                 "logs:PutLogEvents"
               ],
               "Resource": "*"
+            },
+            {
+              "Sid": "Stmt1473564181448",
+              "Action": [
+                "rds:DescribeDBInstances",
+                "rds:CreateDBInstance"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Sid": "Stmt1473566289186",
+              "Action": [
+                "sns:Publish"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure-SnsTopics*"
             }
           ]
         },
