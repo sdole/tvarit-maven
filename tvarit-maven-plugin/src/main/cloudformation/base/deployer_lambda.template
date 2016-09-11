@@ -15,6 +15,7 @@
         },
         "Handler": "rds_deployer.deploy",
         "Runtime": "python2.7",
+        "Timeout": "300",
         "Role": {
           "Ref": "LambdaFunctionExecutionRoleParam"
         },
@@ -59,6 +60,7 @@
         },
         "Handler": "deployer.deploy",
         "Runtime": "python2.7",
+        "Timeout": "300",
         "Role": {
           "Ref": "LambdaFunctionExecutionRoleParam"
         },

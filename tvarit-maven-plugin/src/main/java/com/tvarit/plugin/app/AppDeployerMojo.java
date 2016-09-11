@@ -11,6 +11,8 @@ public class AppDeployerMojo extends AbstractTvaritMojo {
 
     @Parameter(name = "ssh-key-name")
     private String sshKeyName;
+    @Parameter(name = "db-version")
+    private String dbVersion;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -22,4 +24,7 @@ public class AppDeployerMojo extends AbstractTvaritMojo {
         return sshKeyName;
     }
 
+    public String getDbVersion() {
+        return dbVersion;
+    }
 }

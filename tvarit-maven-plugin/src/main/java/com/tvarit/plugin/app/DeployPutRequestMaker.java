@@ -38,12 +38,16 @@ class DeployPutRequestMaker {
         final String projectGroupId = tvaritEnvironment.getMavenProject().getGroupId();
         final String key = "deployables/" + projectGroupId + "/" + projectArtifactId + "/" + projectVersion + "/" + warFile.getName();
 
-        final String bucketName = tvaritEnvironment.<AppDeployerMojo>getMojo().getArtifactBucketName();
+        final String bucketName = tvaritEnvironment.getArtifactBucketName();
         final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, warFile);
         final ObjectMetadata metadata = new ObjectMetadata();
         final Map<String, String> userMetadata = new HashMap<>();
         userMetadata.put("project_name", tvaritEnvironment.getProjectName());
         userMetadata.put("private_key_name", tvaritEnvironment.<AppDeployerMojo>getMojo().getSshKeyName());
+        userMetadata.put("private_key_name", tvaritEnvironment.<AppDeployerMojo>getMojo().getDbVersion());
+        userMetadata.put("group-id", tvaritEnvironment.getMavenProject().getGroupId());
+        userMetadata.put("artifact-id", tvaritEnvironment.getMavenProject().getArtifactId());
+        userMetadata.put("version", tvaritEnvironment.getMavenProject().getVersion());
         metadata.setUserMetadata(userMetadata);
         putObjectRequest.withMetadata(metadata);
         return putObjectRequest;

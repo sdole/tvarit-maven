@@ -12,8 +12,8 @@
           "Ref": "DbSubnetGroupNameParm"
         },
         "Engine": "postgres",
-        "MasterUsername":"tvarit",
-        "MasterUserPassword":"tvarit123"
+        "MasterUsername": "tvarit",
+        "MasterUserPassword": "tvarit123"
       }
     }
   },
@@ -22,6 +22,18 @@
       "Type": "String",
       "Description": "the db subnet group for db instances",
       "MinLength": "1"
+    }
+  },
+  "Outputs": {
+    "AppDbEndpoint": {
+      "Value": {
+        "Fn::GetAtt": [
+          {
+            "Ref": "AppDB"
+          },
+          "Endpoint.Address"
+        ]
+      }
     }
   }
 }
