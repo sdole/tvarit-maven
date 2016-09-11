@@ -25,7 +25,8 @@ def deploy(event, context):
         for each_db_instance in all_db_instances['DBInstances']:
             print("inside if - iterating over dbs")
             all_tags = each_db_instance['Tags'] if "Tags" in each_db_instance else {}
-            if "version" in all_tags and all_tags['version'] == rds_version:
+            print(json.dumps(all_tags, indent=4, sort_keys=True, default=lambda x: str(x)))
+            if "tvarit_version" in all_tags and all_tags['tvarit_version'] == rds_version:
                 print("found the version tag and it was same as rds version " + rds_version)
                 # version found... no need to create new - just send sns notification to kick off app deploy
                 found_db = True
@@ -47,6 +48,7 @@ def deploy(event, context):
 
         rds_stack_parameters = [
             {"ParameterKey": "DbSubnetGroupNameParm", "ParameterValue": db_subnet_group},
+            {"ParameterKey": "DbVersionParm", "ParameterValue": rds_version}
         ]
         print("printing rds_stack_parameters")
         print(json.dumps(rds_stack_parameters, indent=4, sort_keys=True, default=lambda x: str(x)))
@@ -60,7 +62,8 @@ def deploy(event, context):
             Parameters=rds_stack_parameters,
             NotificationARNs=[deploy_complete_topic]
         )
-    print("found db of same version, so nothing to do.")
+    else:
+        print("found db of same version, so nothing to do.")
 
 
 if __name__ == "__main__":

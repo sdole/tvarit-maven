@@ -13,7 +13,15 @@
         },
         "Engine": "postgres",
         "MasterUsername": "tvarit",
-        "MasterUserPassword": "tvarit123"
+        "MasterUserPassword": "tvarit123",
+        "Tags": [
+          {
+            "Key": "tvarit_version",
+            "Value": {
+              "Ref": "DbVersionParm"
+            }
+          }
+        ]
       }
     }
   },
@@ -22,6 +30,10 @@
       "Type": "String",
       "Description": "the db subnet group for db instances",
       "MinLength": "1"
+    },
+    "DbVersionParm": {
+      "Type": "String",
+      "Description": "DB version"
     }
   },
   "Outputs": {
