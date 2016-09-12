@@ -31,7 +31,7 @@
         }
       }
     },
-    "PermissionForS3ToInvokeRdsDeployerLamnda": {
+    "PermissionForS3ToInvokeRdsDeployerLambda": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -86,10 +86,7 @@
             "Arn"
           ]
         },
-        "Principal": "sns.amazonaws.com",
-        "SourceAccount": {
-          "Ref": "AWS::AccountId"
-        }
+        "Principal": "sns.amazonaws.com"
       }
     }
   },

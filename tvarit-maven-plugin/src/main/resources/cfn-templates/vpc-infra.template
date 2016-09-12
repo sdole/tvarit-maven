@@ -227,7 +227,7 @@
         ]
       }
     },
-    "PrivateSubnetA": {
+    "DbSubnetA": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.10.0/24",
@@ -308,7 +308,7 @@
         "MapPublicIpOnLaunch": true
       }
     },
-    "PrivateSubnetB": {
+    "DbSubnetB": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.20.0/24",

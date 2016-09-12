@@ -121,7 +121,9 @@
               "Action": [
                 "iam:PassRole",
                 "iam:ListInstanceProfiles",
-                "ec2:*"
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DeleteNetworkInterface"
               ],
               "Resource": [
                 "*"

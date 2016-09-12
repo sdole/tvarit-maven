@@ -55,7 +55,37 @@
               "Ref": "AvailabilityZones"
             }
           ]
-        }
+        },
+        "Tags": [
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectNameParm"
+                  },
+                  ":app"
+                ]
+              ]
+            },
+            "Value": ""
+          },
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectNameParm"
+                  },
+                  "-app-a"
+                ]
+              ]
+            }
+          }
+        ]
       }
     },
     "AppSubnetB": {
@@ -73,10 +103,40 @@
               "Ref": "AvailabilityZones"
             }
           ]
-        }
+        },
+        "Tags": [
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectNameParm"
+                  },
+                  ":app"
+                ]
+              ]
+            },
+            "Value": ""
+          },
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectNameParm"
+                  },
+                  "-app-b"
+                ]
+              ]
+            }
+          }
+        ]
       }
     },
-    "PrivateSubnetA": {
+    "DbSubnetA": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.10.0/24",
@@ -112,6 +172,46 @@
               ]
             },
             "Value": ""
+          }
+        ]
+      }
+    },
+    "DbSubnetB": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.20.0/24",
+        "AvailabilityZone": "us-east-1d",
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        },
+        "Tags": [
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectNameParm"
+                  },
+                  ":db"
+                ]
+              ]
+            },
+            "Value": ""
+          },
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectNameParm"
+                  },
+                  "-db-b"
+                ]
+              ]
+            }
           }
         ]
       }
@@ -156,46 +256,6 @@
         ]
       }
     },
-    "PrivateSubnetB": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.20.0/24",
-        "AvailabilityZone": "us-east-1d",
-        "VpcId": {
-          "Ref": "TvaritVpc"
-        },
-        "Tags": [
-          {
-            "Key": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "ProjectNameParm"
-                  },
-                  ":db"
-                ]
-              ]
-            },
-            "Value": ""
-          },
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "ProjectNameParm"
-                  },
-                  "-db-b"
-                ]
-              ]
-            }
-          }
-        ]
-      }
-    },
     "PublicSubnetB": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
@@ -236,64 +296,15 @@
         ]
       }
     },
-    "DbSubnetGroup": {
-      "Type": "AWS::RDS::DBSubnetGroup",
-      "Properties": {
-        "DBSubnetGroupDescription": "A subnet group for high availability app database.",
-        "SubnetIds": [
-          {
-            "Ref": "PrivateSubnetA"
-          },
-          {
-            "Ref": "PrivateSubnetB"
-          }
-        ]
-      }
-    },
-    "IgForVpc": {
-      "Type": "AWS::EC2::InternetGateway",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "ProjectNameParm"
-                  },
-                  "-ig"
-                ]
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "TvaritVpcDhcpOpts": {
-      "Type": "AWS::EC2::DHCPOptions",
-      "Properties": {
-        "DomainName": "ec2.internal",
-        "DomainNameServers": [
-          "AmazonProvidedDNS"
-        ]
-      }
-    },
-    "DefaultTvaritVpcNacl": {
-      "Type": "AWS::EC2::NetworkAcl",
-      "Properties": {
-        "VpcId": {
-          "Ref": "TvaritVpc"
-        }
-      }
-    },
+
+
     "AppSubnetRouteTable": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
           "Ref": "TvaritVpc"
         },
+
         "Tags": [
           {
             "Key": "Name",
@@ -334,6 +345,190 @@
             }
           }
         ]
+      }
+    },
+    "PubSubnetRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectNameParm"
+                  },
+                  "-pub-internet-rt"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+
+
+    "AppSubnetARouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "AppSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "AppSubnetA"
+        }
+      }
+    },
+    "AppSubnetBRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "AppSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "AppSubnetB"
+        }
+      }
+    },
+    "DbSubnetARouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "DbSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "DbSubnetA"
+        }
+      }
+    },
+    "DbSubnetBRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "DbSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "DbSubnetB"
+        }
+      }
+    },
+    "PubSubnetARouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PubSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnetA"
+        }
+      }
+    },
+    "PubSubnetBRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PubSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnetB"
+        }
+      }
+    },
+
+
+    "AppSubnetAToNatGatewayRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "RouteTableId": {
+          "Ref": "AppSubnetRouteTable"
+        },
+        "NatGatewayId": {
+          "Ref": "NatGatewayA"
+        }
+      }
+    },
+    "PubSubnetAToNatGatewayRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "RouteTableId": {
+          "Ref": "PubSubnetRouteTable"
+        },
+        "GatewayId": {
+          "Ref": "IgForVpc"
+        }
+      }
+    },
+    "DbSubnetBToNatRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "RouteTableId": {
+          "Ref": "DbSubnetRouteTable"
+        },
+        "NatGatewayId": {
+          "Ref": "NatGatewayA"
+        }
+      }
+    },
+
+
+    "DbSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "A subnet group for high availability app database.",
+        "SubnetIds": [
+          {
+            "Ref": "DbSubnetA"
+          },
+          {
+            "Ref": "DbSubnetB"
+          }
+        ]
+      }
+    },
+    "IgForVpc": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectNameParm"
+                  },
+                  "-ig"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "TvaritVpcDhcpOpts": {
+      "Type": "AWS::EC2::DHCPOptions",
+      "Properties": {
+        "DomainName": "ec2.internal",
+        "DomainNameServers": [
+          "AmazonProvidedDNS"
+        ]
+      }
+    },
+    "DefaultTvaritVpcNacl": {
+      "Type": "AWS::EC2::NetworkAcl",
+      "Properties": {
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        }
       }
     },
     "TvaritVpcDefaultRouteTable": {
@@ -412,7 +607,7 @@
           "Ref": "DefaultTvaritVpcNacl"
         },
         "SubnetId": {
-          "Ref": "PrivateSubnetB"
+          "Ref": "DbSubnetB"
         }
       }
     },
@@ -423,7 +618,7 @@
           "Ref": "DefaultTvaritVpcNacl"
         },
         "SubnetId": {
-          "Ref": "PrivateSubnetA"
+          "Ref": "DbSubnetA"
         }
       }
     },
@@ -446,50 +641,6 @@
         },
         "InternetGatewayId": {
           "Ref": "IgForVpc"
-        }
-      }
-    },
-    "AppSubnetARouteTableAssociation": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "AppSubnetRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "PublicSubnetA"
-        }
-      }
-    },
-    "AppSubnetBRouteTableAssociation": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "AppSubnetRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "PublicSubnetB"
-        }
-      }
-    },
-    "DbSubnetARouteTableAssociation": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "DbSubnetRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "PrivateSubnetA"
-        }
-      }
-    },
-    "DbSubnetBRouteTableAssociation": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "DbSubnetRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "PrivateSubnetB"
         }
       }
     },
@@ -536,30 +687,6 @@
             "IpForNatB",
             "AllocationId"
           ]
-        }
-      }
-    },
-    "AppSubnetAToNatGatewayRoute": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "RouteTableId": {
-          "Ref": "AppSubnetRouteTable"
-        },
-        "NatGatewayId": {
-          "Ref": "NatGatewayA"
-        }
-      }
-    },
-    "DbSubnetBToNatRoute": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "RouteTableId": {
-          "Ref": "DbSubnetRouteTable"
-        },
-        "NatGatewayId": {
-          "Ref": "NatGatewayA"
         }
       }
     },
@@ -716,10 +843,10 @@
           ",",
           [
             {
-              "Ref": "PrivateSubnetA"
+              "Ref": "AppSubnetA"
             },
             {
-              "Ref": "PrivateSubnetB"
+              "Ref": "AppSubnetB"
             }
           ]
         ]
