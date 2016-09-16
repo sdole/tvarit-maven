@@ -77,12 +77,10 @@
                 "logs:DescribeLogStreams",
                 "logs:PutLogEvents"
               ],
-              "Effect": "Allow",
-              "Resource": "*"
+              "Resource": "*",
+              "Effect": "Allow"
             },
             {
-              "Sid": "Stmt1457233272000",
-              "Effect": "Allow",
               "Action": [
                 "s3:GetObject",
                 "s3:GetObjectAcl",
@@ -91,47 +89,37 @@
                 "s3:GetBucketLocation"
               ],
               "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:aws:s3:::",
-                      {
-                        "Ref": "ArtifactBucketNameParm"
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
+                "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test/*"
+              ],
+              "Effect": "Allow",
+              "Sid": "Stmt1457233272000"
             },
             {
-              "Sid": "Stmt1457233341000",
-              "Effect": "Allow",
               "Action": [
                 "cloudformation:*"
               ],
               "Resource": [
                 "*"
-              ]
+              ],
+              "Effect": "Allow",
+              "Sid": "Stmt1457233341000"
             },
             {
-              "Sid": "Stmt1457233476000",
-              "Effect": "Allow",
               "Action": [
                 "iam:PassRole",
                 "iam:ListInstanceProfiles",
                 "ec2:CreateNetworkInterface",
                 "ec2:DescribeNetworkInterfaces",
-                "ec2:DeleteNetworkInterface"
+                "ec2:DeleteNetworkInterface",
+                "ec2:DescribeAccountAttributes"
               ],
               "Resource": [
                 "*"
-              ]
+              ],
+              "Effect": "Allow",
+              "Sid": "Stmt1457233476000"
             },
             {
-              "Sid": "Stmt1457233833000",
-              "Effect": "Allow",
               "Action": [
                 "autoscaling:AttachInstances",
                 "autoscaling:CompleteLifecycleAction",
@@ -150,7 +138,9 @@
               ],
               "Resource": [
                 "*"
-              ]
+              ],
+              "Effect": "Allow",
+              "Sid": "Stmt1457233833000"
             },
             {
               "Action": [
@@ -158,34 +148,34 @@
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
-              "Effect": "Allow",
-              "Resource": "arn:aws:logs:*:*:*"
+              "Resource": "arn:aws:logs:*:*:*",
+              "Effect": "Allow"
             },
             {
-              "Effect": "Allow",
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
-              "Resource": "*"
+              "Resource": "*",
+              "Effect": "Allow"
             },
             {
-              "Sid": "Stmt1473564181448",
               "Action": [
                 "rds:DescribeDBInstances",
                 "rds:CreateDBInstance"
               ],
+              "Resource": "*",
               "Effect": "Allow",
-              "Resource": "*"
+              "Sid": "Stmt1473564181448"
             },
             {
-              "Sid": "Stmt1473566289186",
               "Action": [
                 "sns:Publish"
               ],
+              "Resource": "arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure2-SnsTopics*",
               "Effect": "Allow",
-              "Resource": "arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure-SnsTopics*"
+              "Sid": "Stmt1473566289186"
             }
           ]
         },

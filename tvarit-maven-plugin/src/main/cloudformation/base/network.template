@@ -663,7 +663,7 @@
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "SubnetId": {
-          "Ref": "AppSubnetA"
+          "Ref": "PublicSubnetA"
         },
         "AllocationId": {
           "Fn::GetAtt": [
@@ -680,7 +680,7 @@
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "SubnetId": {
-          "Ref": "AppSubnetB"
+          "Ref": "PublicSubnetB"
         },
         "AllocationId": {
           "Fn::GetAtt": [
