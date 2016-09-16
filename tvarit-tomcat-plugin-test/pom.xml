@@ -113,5 +113,26 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>deploy-eb-app</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.tvarit</groupId>
+                        <artifactId>tvarit-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <goals>
+                                    <goal>deploy-eb</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 </project>

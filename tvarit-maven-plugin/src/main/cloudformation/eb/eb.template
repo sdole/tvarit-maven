@@ -1,0 +1,23 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "",
+  "Resources": {
+    "App": {
+      "Type": "AWS::ElasticBeanstalk::Application",
+      "Properties": {
+        "ApplicationName": "appname",
+        "Description": "test from cf"
+      }
+    },
+    "AppEnv": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "SolutionStackName": "64bit Amazon Linux 2016.03 v2.2.0 running Tomcat 8 Java 8",
+        "ApplicationName": {
+          "Ref": "App"
+        },
+        "EnvironmentName": "envname"
+      }
+    }
+  }
+}

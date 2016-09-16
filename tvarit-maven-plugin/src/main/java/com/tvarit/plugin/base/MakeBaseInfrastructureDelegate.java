@@ -4,6 +4,7 @@ import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 import com.amazonaws.services.cloudformation.model.Capability;
 import com.amazonaws.services.cloudformation.model.CreateStackRequest;
 import com.amazonaws.services.cloudformation.model.Parameter;
+import com.amazonaws.services.elasticbeanstalk.AWSElasticBeanstalkClient;
 import com.tvarit.plugin.env.TvaritEnvironment;
 
 import java.net.MalformedURLException;
