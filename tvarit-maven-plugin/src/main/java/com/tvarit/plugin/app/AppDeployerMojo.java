@@ -13,6 +13,8 @@ public class AppDeployerMojo extends AbstractTvaritMojo {
     private String sshKeyName;
     @Parameter(name = "db-version")
     private String dbVersion;
+    @Parameter(name = "health-check-url")
+    private String healthCheckUrl;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -26,5 +28,9 @@ public class AppDeployerMojo extends AbstractTvaritMojo {
 
     public String getDbVersion() {
         return dbVersion;
+    }
+
+    public String getHealthCheckUrl() {
+        return healthCheckUrl;
     }
 }

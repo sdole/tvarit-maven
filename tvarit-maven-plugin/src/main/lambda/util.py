@@ -2,6 +2,7 @@ import os
 
 import boto3
 
+import constants
 import plugin_config
 
 cfn_client = boto3.client('cloudformation')
@@ -9,9 +10,7 @@ cfn_client = boto3.client('cloudformation')
 s3 = boto3.client('s3')
 
 
-def get_app_metadata(event):
-    bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
-    key_name = event["Records"][0]["s3"]["object"]["key"]
+def get_app_metadata(bucket_name, key_name):
     all_metadata = s3.head_object(
         Bucket=bucket_name,
         Key=key_name
@@ -34,7 +33,7 @@ def make_cfn_url(template_file):
 
 
 def make_resources_map_from_cfn(sub_stack_name):
-    network_stack_info = cfn_client.describe_stack_resources(StackName="tvarit-base-infrastructure", LogicalResourceId=sub_stack_name)
+    network_stack_info = cfn_client.describe_stack_resources(StackName=constants.BASE_STACK_NAME, LogicalResourceId=sub_stack_name)
     network_resources = cfn_client.describe_stacks(StackName=network_stack_info["StackResources"][0]["PhysicalResourceId"])
     network_resources = make_map_from_list("OutputKey", "OutputValue", network_resources["Stacks"][0]["Outputs"])
     return network_resources

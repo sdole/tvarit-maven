@@ -13,7 +13,12 @@ rds_client = boto3.client("rds")
 
 def deploy(event, context):
     print(json.dumps(event, indent=4, sort_keys=True, default=lambda x: str(x)))
-    app_metadata = util.get_app_metadata(event)
+    deployable_bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
+    deployable_key_name = event["Records"][0]["s3"]["object"]["key"]
+    app_metadata = util.get_app_metadata(
+        deployable_bucket_name,
+        deployable_key_name
+    )
     print(json.dumps(app_metadata, indent=4, sort_keys=True, default=lambda x: str(x)))
     rds_version = app_metadata['Metadata']['db-version']
     print("rds version is: " + str(rds_version))
@@ -60,7 +65,8 @@ def deploy(event, context):
             StackName=stack_name,
             TemplateURL=rds_template,
             Parameters=rds_stack_parameters,
-            NotificationARNs=[deploy_complete_topic]
+            NotificationARNs=[deploy_complete_topic],
+            Tags=[{"Key": "app_file_object", "Value": deployable_bucket_name + "::" + deployable_key_name}]
         )
     else:
         print("found db of same version, so nothing to do.")

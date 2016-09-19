@@ -43,6 +43,7 @@ class DeployPutRequestMaker {
         final ObjectMetadata metadata = new ObjectMetadata();
         final Map<String, String> userMetadata = new HashMap<>();
         userMetadata.put("project_name", tvaritEnvironment.getProjectName());
+        userMetadata.put("health_check_url", tvaritEnvironment.<AppDeployerMojo>getMojo().getHealthCheckUrl());
         userMetadata.put("private_key_name", tvaritEnvironment.<AppDeployerMojo>getMojo().getSshKeyName());
         userMetadata.put("db-version", tvaritEnvironment.<AppDeployerMojo>getMojo().getDbVersion());
         userMetadata.put("group-id", tvaritEnvironment.getMavenProject().getGroupId());

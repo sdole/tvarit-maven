@@ -81,6 +81,8 @@
                                 <configuration>
                                     <availability-zones>us-east-1a,us-east-1c</availability-zones>
                                     <ssh-key-pair-name>trelair</ssh-key-pair-name>
+
+
                                 </configuration>
                             </execution>
                         </executions>
@@ -106,6 +108,7 @@
                                 <configuration>
                                     <ssh-key-name>trelair</ssh-key-name>
                                     <db-version>1.0.1</db-version>
+                                    <health-check-url>/</health-check-url>
                                 </configuration>
                             </execution>
                         </executions>
