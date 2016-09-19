@@ -140,13 +140,9 @@ def deploy(event, context):
     create_complete = False
     for each_part in message_parts:
         each_part_split = each_part.split("=")
-        print("--"+each_part_split[0]+"--")
-        # print("--"+each_part_split[1]+"--")
         if each_part_split[0] == "ResourceStatus" and each_part_split[1] == "'CREATE_COMPLETE'":
             create_complete = True
             break
-        else:
-            print("no")
     if not create_complete:
         return
     for each_part in message_parts:
