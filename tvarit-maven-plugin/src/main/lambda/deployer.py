@@ -70,7 +70,7 @@ def ensure_router_auto_scaling_group_has_instances():
         asg_client.update_auto_scaling_group(AutoScalingGroupName=router_asg_name, MinSize=2, MaxSize=6)
 
 
-def create_app_auto_scaling_group(war_file_metadata):
+def create_app_auto_scaling_group(bucket_name, war_file_metadata):
     '''
     Here, we know that the app auto scaling group does not exist. so, we find template url for app autoscaling group, set
     parameters on it from s3 war file metadata and execute it.
@@ -93,6 +93,7 @@ def create_app_auto_scaling_group(war_file_metadata):
     app_subnets = network_resources["AppSubnetsOutput"]
     app_elb_security_groups = network_resources["ElbSecurityGroupsOutput"]
     instance_profile = iam_resources["AppInstanceProfileOutput"]
+    app_setup_role = iam_resources["AppSetupRoleOutput"]
     app_stack_parameters = [
         {"ParameterKey": "AppSubnetsParam", "ParameterValue": app_subnets},
         {"ParameterKey": "AppInstanceProfileParam", "ParameterValue": instance_profile},
@@ -100,7 +101,9 @@ def create_app_auto_scaling_group(war_file_metadata):
         {"ParameterKey": "AppSecurityGroupParam", "ParameterValue": app_security_groups},
         {"ParameterKey": "ElbSubnetsParam", "ParameterValue": elb_subnets},
         {"ParameterKey": "HealthCheckUrlParam", "ParameterValue": health_check_url},
-        {"ParameterKey": "ElbSecurityGroupParam", "ParameterValue": app_elb_security_groups}
+        {"ParameterKey": "ElbSecurityGroupParam", "ParameterValue": app_elb_security_groups},
+        {"ParameterKey": "ArtifactBucketNameParam", "ParameterValue": bucket_name},
+        {"ParameterKey": "AppSetupRoleParam", "ParameterValue": app_setup_role}
     ]
     cfn_client.create_stack(
         StackName=(group_id + "-" + artifact_id + "-" + version).replace(".", "-"),
@@ -178,6 +181,7 @@ def deploy(event, context):
     if len(tags['Tags']) == 0:
         print("no asg found for " + key_of_deployable + " " + deployable_version)
         create_app_auto_scaling_group(
+            bucket_name,
             all_metadata['Metadata']
         )
         # TODO Done till here!

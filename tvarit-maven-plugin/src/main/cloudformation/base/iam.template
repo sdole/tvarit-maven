@@ -212,6 +212,15 @@
           "Arn"
         ]
       }
+    },
+    "AppSetupRoleOutput": {
+      "Description": "The role that will be used by cloudformation on new instances to set it up.",
+      "Value": {
+        "Fn::GetAtt": [
+          "AppInstanceRole",
+          "Arn"
+        ]
+      }
     }
   }
 }

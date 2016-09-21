@@ -76,7 +76,7 @@
     "LaunchConfiguration": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-0c6f5f64",
+        "ImageId": "ami-15502902",
         "InstanceType": "t2.micro",
         "KeyName": "trelair",
         "IamInstanceProfile": {
@@ -94,7 +94,96 @@
               "VolumeSize": 8
             }
           }
-        ]
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -v\n",
+                "/opt/aws/bin/cfn-init -v -s ",
+                {
+                  "Ref": "AWS::StackName"
+                },
+                "         --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                " --role ",
+                {
+                  "Ref": "AppInstanceProfileParam"
+                },
+                " -r ",
+                " LaunchConfiguration ",
+                " -c ",
+                " main ",
+                "\n",
+                "/opt/aws/bin/cfn-signal -e $? ",
+                "         --stack ",
+                {
+                  "Ref": "AWS::StackName"
+                },
+                "         --resource LaunchConfiguration ",
+                "         --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "87161bad-9eaa-44ae-a5bd-fecbcfec37fd"
+        },
+        "AWS::CloudFormation::Authentication": {
+          "S3AccessCreds": {
+            "type": "S3",
+            "buckets": [
+              {
+                "Ref": "ArtifactBucketNameParam"
+              }
+            ],
+            "roleName": {
+              "Ref": "AppSetupRoleParam"
+            }
+          }
+        },
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "main": [
+              "downloadWar",
+              "startTomcat"
+            ]
+          },
+
+          "downloadWar": {
+            "files": {
+              "/var/lib/tomcat8/webapps/tvarit.war": {
+                "source": {
+                  "Ref": "WarFileUrlParam"
+                },
+                "owner": "tomcat",
+                "group": "tomcat",
+                "mode": "000755",
+                "authentication": "S3AccessCreds"
+              }
+            }
+          },
+          "startTomcat": {
+            "commands": {
+              "03": {
+                "command": [
+                  "systemctl",
+                  "start",
+                  "tomcat"
+                ]
+              }
+            }
+          }
+        }
       }
     },
     "ScalingPolicyDecreaseSize": {
@@ -194,6 +283,14 @@
     "ElbSecurityGroupParam": {
       "Type": "String",
       "Description": "Enter the health check absolute url for the app servers. "
+    },
+    "ArtifactBucketNameParam": {
+      "Type": "String",
+      "Description": "The bucket name where deployale artifacts are saved."
+    },
+    "AppSetupRoleParam": {
+      "Type": "String",
+      "Description": "The role that will be used to provision instances"
     }
   }
 }
