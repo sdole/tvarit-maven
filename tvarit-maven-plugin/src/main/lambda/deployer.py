@@ -93,7 +93,7 @@ def create_app_auto_scaling_group(war_file_info):
     app_subnets = network_resources["AppSubnetsOutput"]
     app_elb_security_groups = network_resources["ElbSecurityGroupsOutput"]
     instance_profile = iam_resources["AppInstanceProfileOutput"]
-    app_setup_role = iam_resources["AppSetupRoleOutput"]
+    app_setup_role = iam_resources["AppSetupRoleOutput"].split("/")[1]
     war_file_url = util.make_s3_base_url() + "/" + war_file_info["bucket_name"] + "/" + war_file_info["key"]
     app_stack_parameters = [
         {"ParameterKey": "AppSubnetsParam", "ParameterValue": app_subnets},
