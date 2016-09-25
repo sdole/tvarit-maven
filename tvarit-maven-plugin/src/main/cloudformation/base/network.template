@@ -140,7 +140,14 @@
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.10.0/24",
-        "AvailabilityZone": "us-east-1c",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Ref": "AvailabilityZones"
+            }
+          ]
+        },
         "VpcId": {
           "Ref": "TvaritVpc"
         },
@@ -180,7 +187,14 @@
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.20.0/24",
-        "AvailabilityZone": "us-east-1d",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Ref": "AvailabilityZones"
+            }
+          ]
+        },
         "VpcId": {
           "Ref": "TvaritVpc"
         },
@@ -220,7 +234,14 @@
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.1.0/24",
-        "AvailabilityZone": "us-east-1a",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Ref": "AvailabilityZones"
+            }
+          ]
+        },
         "MapPublicIpOnLaunch": true,
         "VpcId": {
           "Ref": "TvaritVpc"
@@ -261,7 +282,14 @@
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "CidrBlock": "10.0.2.0/24",
-        "AvailabilityZone": "us-east-1e",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Ref": "AvailabilityZones"
+            }
+          ]
+        },
         "MapPublicIpOnLaunch": true,
         "VpcId": {
           "Ref": "TvaritVpc"
@@ -532,31 +560,6 @@
         }
       }
     },
-    "BastionSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "default VPC security group",
-        "VpcId": {
-          "Ref": "TvaritVpc"
-        },
-        "Tags": [
-          {
-            "Key": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "ProjectNameParm"
-                  },
-                  ":appSg"
-                ]
-              ]
-            },
-            "Value": ""
-          }
-        ]
-      }
-    },
     "SgDefault": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -770,21 +773,6 @@
         },
         "IpProtocol": "-1",
         "CidrIp": "0.0.0.0/0"
-      }
-    },
-    "defaultSgInRule": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "GroupId": {
-          "Ref": "SgDefault"
-        },
-        "IpProtocol": "-1",
-        "SourceSecurityGroupId": {
-          "Ref": "SgDefault"
-        },
-        "SourceSecurityGroupOwnerId": {
-          "Ref": "AWS::AccountId"
-        }
       }
     }
   },
