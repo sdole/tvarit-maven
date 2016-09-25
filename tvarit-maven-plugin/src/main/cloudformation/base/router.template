@@ -33,7 +33,7 @@
     "RouterSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "sg for tvarit app servers",
+        "GroupDescription": "sg for router",
         "VpcId": {
           "Ref": "VpcId"
         },

@@ -560,31 +560,6 @@
         }
       }
     },
-    "SgDefault": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "default VPC security group",
-        "VpcId": {
-          "Ref": "TvaritVpc"
-        },
-        "Tags": [
-          {
-            "Key": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "ProjectNameParm"
-                  },
-                  ":appSg"
-                ]
-              ]
-            },
-            "Value": ""
-          }
-        ]
-      }
-    },
     "NaclDefaultRule1": {
       "Type": "AWS::EC2::NetworkAclEntry",
       "Properties": {
@@ -750,6 +725,31 @@
         }
       }
     },
+    "SgDefault": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "default VPC security group",
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        },
+        "Tags": [
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "ProjectNameParm"
+                  },
+                  ":appSg"
+                ]
+              ]
+            },
+            "Value": ""
+          }
+        ]
+      }
+    },
     "defaultSgInRule": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
@@ -774,6 +774,73 @@
         "IpProtocol": "-1",
         "CidrIp": "0.0.0.0/0"
       }
+    },
+    "ElbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "80",
+            "ToPort": "80",
+            "IpProtocol": "tcp"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "443",
+            "ToPort": "443",
+            "IpProtocol": "tcp"
+          }
+        ],
+        "GroupDescription": "For elbs to be allowed http access from www",
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        }
+      }
+    },
+    "AppSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "SecurityGroupIngress": [
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "ElbSecurityGroup"
+            },
+            "FromPort": "8080",
+            "ToPort": "8080",
+            "IpProtocol": "tcp"
+          },
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "ElbSecurityGroup"
+            },
+            "FromPort": "8443",
+            "ToPort": "8443",
+            "IpProtocol": "tcp"
+          }
+        ],
+        "GroupDescription": "For app servers to be allowed http access from www",
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        }
+      }
+    },
+    "BastionSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "22",
+            "ToPort": "22",
+            "IpProtocol": "tcp"
+          }
+        ],
+        "GroupDescription": "For bastion host to allow ssh access from www",
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        }
+      }
     }
   },
   "Parameters": {
@@ -796,15 +863,21 @@
       }
     },
     "ElbSecurityGroupsOutput": {
-      "Description": "The security groups subnets for apps",
+      "Description": "The security groups subnets for elb",
       "Value": {
-        "Ref": "SgDefault"
+        "Ref": "ElbSecurityGroup"
+      }
+    },
+    "BastionSecurityGroupOuput": {
+      "Description": "The security groups subnets for bastion",
+      "Value": {
+        "Ref": "BastionSecurityGroup"
       }
     },
     "AppSecurityGroupsOutput": {
       "Description": "The security groups subnets for apps",
       "Value": {
-        "Ref": "SgDefault"
+        "Ref": "AppSecurityGroup"
       }
     },
     "DbSubnetGroupOutput": {
