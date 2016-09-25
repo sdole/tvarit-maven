@@ -25,7 +25,6 @@ import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import org.apache.maven.project.MavenProject;
 
-import javax.inject.Named;
 import java.util.Arrays;
 import java.util.List;
 

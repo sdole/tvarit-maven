@@ -65,7 +65,7 @@ public class EbMojo extends AbstractTvaritMojo {
         try {
             url = new TemplateUrlMaker().makeUrl("eb/eb.template");
         } catch (MalformedURLException e) {
-            throw new MojoExecutionException("fail",e);
+            throw new MojoExecutionException("fail", e);
         }
         final CreateStackRequest createStackRequest = new CreateStackRequest();
         createStackRequest.withStackName("testapppstack");

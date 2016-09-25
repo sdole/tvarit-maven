@@ -30,7 +30,6 @@
         ]
       }
     },
-
     "RouterSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {

@@ -30,14 +30,13 @@
         }
       }
     },
-    "AppInstanceRolePolicy":{
+    "AppInstanceRolePolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyName": "tvarit_lambda_deployer_iam_policy",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
-
             {
               "Action": [
                 "s3:GetObject",

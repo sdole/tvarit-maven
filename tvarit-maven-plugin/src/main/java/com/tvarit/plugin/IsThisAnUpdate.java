@@ -1,12 +1,9 @@
 package com.tvarit.plugin;
 
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
-import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
-import com.amazonaws.services.autoscaling.model.DescribeAutoScalingGroupsRequest;
 import com.amazonaws.services.autoscaling.model.DescribeAutoScalingGroupsResult;
 import com.amazonaws.services.autoscaling.model.TagDescription;
 
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 class IsThisAnUpdate {
@@ -27,6 +24,6 @@ class IsThisAnUpdate {
                                 tagDescription.getKey().equals("tvarit:asg:app:mvn:group:artifact:version")
                                         &&
                                         tagDescription.getValue().equals(projectGroupId + ":" + projectArtifactId + ":" + projectVersion)));
-        return doesAGroupExist?new UpdateStackDeployer(null):new CreateStackDeployer();
+        return doesAGroupExist ? new UpdateStackDeployer(null) : new CreateStackDeployer();
     }
 }

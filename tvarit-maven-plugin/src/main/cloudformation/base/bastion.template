@@ -5,19 +5,22 @@
     "LaunchConfiguration": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-
-
-
         "ImageId": "ami-46d3a951",
         "InstanceType": "t2.micro",
         "KeyName": "trelair",
+        "AssociatePublicIpAddress": "true",
+        "SecurityGroups": [
+          {
+            "Ref": "BastionSecurityGroupParam"
+          }
+        ]
       }
     },
     "AppAutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "VPCZoneIdentifier": {
-          "Ref": "ElbSubnetsParam"
+          "Ref": "PubSubnetsParam"
         },
         "Cooldown": "300",
         "DesiredCapacity": "0",
@@ -37,6 +40,14 @@
           "Default"
         ]
       }
+    }
+  },
+  "Parameters": {
+    "BastionSecurityGroupParam": {
+      "Type": "String"
+    },
+    "PubSubnetsParam": {
+      "Type": "String"
     }
   }
 }

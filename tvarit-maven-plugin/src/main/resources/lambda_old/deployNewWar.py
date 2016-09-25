@@ -1,7 +1,8 @@
 from __future__ import print_function
 
-import boto3
 import logging
+
+import boto3
 
 logger = logging.getLogger("Tvarit")
 logger.setLevel(logging.DEBUG)

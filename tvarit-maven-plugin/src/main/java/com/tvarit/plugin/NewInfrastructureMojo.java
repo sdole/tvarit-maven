@@ -61,9 +61,9 @@ public class NewInfrastructureMojo extends AbstractMojo {
 
         if (templateUrl == null) {
             try {
-                templateUrl  = new TemplateUrlMaker().makeUrl(project,"vpc-infra.template").toString();
+                templateUrl = new TemplateUrlMaker().makeUrl(project, "vpc-infra.template").toString();
             } catch (MalformedURLException e) {
-                throw new MojoExecutionException("Could not create default url for templates. Please open an issue on github.",e);
+                throw new MojoExecutionException("Could not create default url for templates. Please open an issue on github.", e);
             }
         }
         final CreateStackRequest createStackRequest =
