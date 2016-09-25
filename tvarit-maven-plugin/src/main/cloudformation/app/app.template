@@ -52,7 +52,7 @@
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "VPCZoneIdentifier": {
-          "Ref": "ElbSubnetsParam"
+          "Ref": "AppSubnetsParam"
         },
         "Cooldown": "300",
         "DesiredCapacity": "0",
@@ -76,7 +76,7 @@
     "LaunchConfiguration": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-15502902",
+        "ImageId": "ami-46d3a951",
         "InstanceType": "t2.micro",
         "KeyName": "trelair",
         "IamInstanceProfile": {
@@ -101,7 +101,7 @@
               "",
               [
                 "#!/bin/bash -v\n",
-                "/opt/aws/bin/cfn-init -v -s ",
+                "/usr/local/bin/cfn-init -v -s ",
                 {
                   "Ref": "AWS::StackName"
                 },
@@ -111,14 +111,14 @@
                 },
                 " --role ",
                 {
-                  "Ref": "AppInstanceProfileParam"
+                  "Ref": "AppSetupRoleParam"
                 },
                 " -r ",
                 " LaunchConfiguration ",
                 " -c ",
                 " main ",
                 "\n",
-                "/opt/aws/bin/cfn-signal -e $? ",
+                "/usr/local/bin/cfn-signal -e $? ",
                 "         --stack ",
                 {
                   "Ref": "AWS::StackName"
@@ -135,9 +135,6 @@
         }
       },
       "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "87161bad-9eaa-44ae-a5bd-fecbcfec37fd"
-        },
         "AWS::CloudFormation::Authentication": {
           "S3AccessCreds": {
             "type": "S3",
@@ -158,7 +155,6 @@
               "startTomcat"
             ]
           },
-
           "downloadWar": {
             "files": {
               "/var/lib/tomcat8/webapps/tvarit.war": {
@@ -291,6 +287,10 @@
     "AppSetupRoleParam": {
       "Type": "String",
       "Description": "The role that will be used to provision instances"
+    },
+    "WarFileUrlParam": {
+      "Type": "String",
+      "Description": "The S3 url of the war file"
     }
   }
 }

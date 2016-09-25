@@ -18,18 +18,25 @@ def get_app_metadata(bucket_name, key_name):
     return all_metadata
 
 
-def make_cfn_url(template_file):
+def make_s3_base_url():
     region_name = os.environ['AWS_DEFAULT_REGION']
     s3_region = '' if region_name == "us-east-1" else '-' + region_name
-    cfn_template_s3_url = (
-        "https://s3" +
-        s3_region +
-        ".amazonaws.com/tvarit/default/" +
-        plugin_config.plugin_config['groupId'] + "/" + plugin_config.plugin_config['artifactId'] + "/" + plugin_config.plugin_config['version'] +
+    s3_base_url = "https://s3" + s3_region + ".amazonaws.com"
+    return s3_base_url
+
+
+def make_cfn_url(template_file):
+    return (
+        make_s3_base_url() +
+        "/tvarit/default/" +
+        plugin_config.plugin_config['groupId'] +
+        "/" +
+        plugin_config.plugin_config['artifactId'] +
+        "/" +
+        plugin_config.plugin_config['version'] +
         "/cloudformation/" +
         template_file
     )
-    return cfn_template_s3_url
 
 
 def make_resources_map_from_cfn(sub_stack_name):

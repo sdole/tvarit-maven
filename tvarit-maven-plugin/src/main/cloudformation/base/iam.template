@@ -30,6 +30,45 @@
         }
       }
     },
+    "AppInstanceProfilePolicy":{
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "tvarit_lambda_deployer_iam_policy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectAcl",
+                "s3:ListBucket"
+              ],
+              "Resource": [
+                "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test/*"
+              ],
+              "Effect": "Allow",
+              "Sid": "Stmt1457233272000"
+            },
+            {
+              "Action": [
+                "cloudformation:*"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "Stmt1457233341000"
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "AppInstanceRole"
+          }
+        ]
+      }
+    },
     "LambdaFunctionExecutionRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -173,7 +212,7 @@
               "Action": [
                 "sns:Publish"
               ],
-              "Resource": "arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure2-SnsTopics*",
+              "Resource": "arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure-SnsTopics*",
               "Effect": "Allow",
               "Sid": "Stmt1473566289186"
             }

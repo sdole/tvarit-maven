@@ -108,7 +108,7 @@
                                 <configuration>
                                     <ssh-key-name>trelair</ssh-key-name>
                                     <db-version>1.0.1</db-version>
-                                    <health-check-url>HTTPS:443/</health-check-url>
+                                    <health-check-url>HTTP:8080/</health-check-url>
                                 </configuration>
                             </execution>
                         </executions>

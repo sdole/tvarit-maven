@@ -70,18 +70,18 @@ def ensure_router_auto_scaling_group_has_instances():
         asg_client.update_auto_scaling_group(AutoScalingGroupName=router_asg_name, MinSize=2, MaxSize=6)
 
 
-def create_app_auto_scaling_group(bucket_name, war_file_metadata):
+def create_app_auto_scaling_group(war_file_info):
     '''
     Here, we know that the app auto scaling group does not exist. so, we find template url for app autoscaling group, set
     parameters on it from s3 war file metadata and execute it.
     :return:
     '''
-    group_id = war_file_metadata["group-id"]
-    artifact_id = war_file_metadata["artifact-id"]
-    version = war_file_metadata["version"]
-    health_check_url = war_file_metadata["health_check_url"]
+    group_id = war_file_info["metadata"]["group-id"]
+    artifact_id = war_file_info["metadata"]["artifact-id"]
+    version = war_file_info["metadata"]["version"]
+    health_check_url = war_file_info["metadata"]["health_check_url"]
 
-    print(json.dumps(war_file_metadata, indent=True, sort_keys=True))
+    print(json.dumps(war_file_info, indent=True, sort_keys=True))
 
     cfn_template_s3_url = util.make_cfn_url("app/app.template")
     network_resources = util.make_resources_map_from_cfn("Network")
@@ -94,6 +94,7 @@ def create_app_auto_scaling_group(bucket_name, war_file_metadata):
     app_elb_security_groups = network_resources["ElbSecurityGroupsOutput"]
     instance_profile = iam_resources["AppInstanceProfileOutput"]
     app_setup_role = iam_resources["AppSetupRoleOutput"]
+    war_file_url = util.make_s3_base_url() + "/" + war_file_info["bucket_name"] + "/" + war_file_info["key"]
     app_stack_parameters = [
         {"ParameterKey": "AppSubnetsParam", "ParameterValue": app_subnets},
         {"ParameterKey": "AppInstanceProfileParam", "ParameterValue": instance_profile},
@@ -102,7 +103,8 @@ def create_app_auto_scaling_group(bucket_name, war_file_metadata):
         {"ParameterKey": "ElbSubnetsParam", "ParameterValue": elb_subnets},
         {"ParameterKey": "HealthCheckUrlParam", "ParameterValue": health_check_url},
         {"ParameterKey": "ElbSecurityGroupParam", "ParameterValue": app_elb_security_groups},
-        {"ParameterKey": "ArtifactBucketNameParam", "ParameterValue": bucket_name},
+        {"ParameterKey": "ArtifactBucketNameParam", "ParameterValue": war_file_info["bucket_name"]},
+        {"ParameterKey": "WarFileUrlParam", "ParameterValue": war_file_url},
         {"ParameterKey": "AppSetupRoleParam", "ParameterValue": app_setup_role}
     ]
     cfn_client.create_stack(
@@ -153,16 +155,20 @@ def deploy(event, context):
         if each_part_split[0] == "StackName":
             rds_stack_name = each_part_split[1][1:-1]
 
-    rds_stack = cfn_client.describe_stacks(StackName=rds_stack_name)
-    tags_on_rds_stack = rds_stack['Stacks'][0]['Tags']
-    map_of_tags_on_rds_stack = util.make_map_from_list("Key", "Value", tags_on_rds_stack)
-    app_file_object_parm = map_of_tags_on_rds_stack['app_file_object']
-    bucket_name = app_file_object_parm.split("::")[0]
-    key_of_deployable = app_file_object_parm.split("::")[1]
+    # rds_stack = cfn_client.describe_stacks(StackName=rds_stack_name)
+    # tags_on_rds_stack = rds_stack['Stacks'][0]['Tags']
+    # map_of_tags_on_rds_stack = util.make_map_from_list("Key", "Value", tags_on_rds_stack)
+    # app_file_object_parm = map_of_tags_on_rds_stack['app_file_object']
+    # bucket_name = app_file_object_parm.split("::")[0]
+    # key_of_deployable = app_file_object_parm.split("::")[1]
+    bucket_name = "tvarit-tvarit-tomcat-plugin-test"
+    key_of_deployable = "deployables/tvarit/tomcat-plugin-test/1.0.1-SNAPSHOT/tomcat-plugin-test-1.0.1-SNAPSHOT.war"
     # util.get_app_metadata(bucket_name)
     # bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
     # key_of_deployable = event["Records"][0]["s3"]["object"]["key"]
     all_metadata = util.get_app_metadata(bucket_name, key_of_deployable)
+    war_info_and_metadata = {"metadata": all_metadata['Metadata'], "bucket_name": bucket_name, "key": key_of_deployable}
+
     ensure_router_auto_scaling_group_has_instances()
 
     deployable_name = key_of_deployable.split("/")[1]
@@ -181,8 +187,7 @@ def deploy(event, context):
     if len(tags['Tags']) == 0:
         print("no asg found for " + key_of_deployable + " " + deployable_version)
         create_app_auto_scaling_group(
-            bucket_name,
-            all_metadata['Metadata']
+            war_info_and_metadata
         )
         # TODO Done till here!
         '''
@@ -210,7 +215,7 @@ if __name__ == "__main__":
         "Records": [
             {
                 "EventVersion": "1.0",
-                "EventSubscriptionArn": "arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure2-SnsTopics-JA32NGGO6G3E-ProvisioningDoneNotificationTopic-YFTWECZVHN5H:f6761cf5-2d2d-426f-adc1-a725dc454568",
+                "EventSubscriptionArn": "arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure-SnsTopics-JA32NGGO6G3E-ProvisioningDoneNotificationTopic-YFTWECZVHN5H:f6761cf5-2d2d-426f-adc1-a725dc454568",
                 "EventSource": "aws:sns",
                 "Sns": {
                     "SignatureVersion": "1",
@@ -218,11 +223,11 @@ if __name__ == "__main__":
                     "Signature": "jUlWCUWGp4pwfh6GRXq9PvK1cyUXIiUTAPFybKJjr8Gm/g2TZNdnpHT6JvsrMjg/PyuSSaETPXGpPTy+r7UMEwwFcfrPtjtpFluc/HT66leeJZyLAv+ekJ1pVNsFdo7SJw320hJqgVuj1BoqX5oyYLzuWuEPdQElQXSnA2TQvVl4PnSEqwSMV/3F0/DZd0Ij8cCAoAUTrV3NlTiUl6dYgkaKdcGuBr1IALEOjIfNvQUSvXb4/A8pG4gJoi1iWUZLWEGFkxMUEKP4WC0pyjyQxljjI9RdorFhiyG0Zvt3IWwhD71C1cytUZLwtVYtpM5lOO1i525NHCnnLLXHS10NxA==",
                     "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-b95095beb82e8f6a046b3aafc7f4149a.pem",
                     "MessageId": "ac3de2f1-e1a7-5875-bf0a-b2a8d1d8fe1e",
-                    "Message": "StackId='arn:aws:cloudformation:us-east-1:085224677438:stack/rdstvarit-tomcat-plugin-test-1-0-1-SNAPSHOT/7a794fa0-7dfc-11e6-8c76-50a686e4bb4a'\nTimestamp='2016-09-19T00:15:58.898Z'\nEventId='AppDB-CREATE_COMPLETE-2016-09-19T00:15:58.898Z'\nLogicalResourceId='AppDB'\nNamespace='085224677438'\nPhysicalResourceId='ravfjph4gdr3qv'\nResourceProperties='{\"MasterUserPassword\":\"tvarit123\",\"DBInstanceClass\":\"db.t2.micro\",\"MasterUsername\":\"tvarit\",\"DBSubnetGroupName\":\"tvarit-base-infrastructure2-network-yme8kmvckp6r-dbsubnetgroup-7d8icey2dutq\",\"MultiAZ\":\"false\",\"Engine\":\"postgres\",\"Tags\":[{\"Value\":\"1.0.1\",\"Key\":\"tvarit_version\"},{\"Value\":\"tvarit-tvarit-tomcat-plugin-test::deployables/tvarit/tomcat-plugin-test/1.0.1-SNAPSHOT/tomcat-plugin-test-1.0.1-SNAPSHOT.war\",\"Key\":\"app_file_object\"}],\"AllocatedStorage\":\"50\"}\n'\nResourceStatus='CREATE_COMPLETE'\nResourceStatusReason=''\nResourceType='AWS::RDS::DBInstance'\nStackName='rdstvarit-tomcat-plugin-test-1-0-1-SNAPSHOT'\n",
+                    "Message": "StackId='arn:aws:cloudformation:us-east-1:085224677438:stack/rdstvarit-tomcat-plugin-test-1-0-1-SNAPSHOT/7a794fa0-7dfc-11e6-8c76-50a686e4bb4a'\nTimestamp='2016-09-19T00:15:58.898Z'\nEventId='AppDB-CREATE_COMPLETE-2016-09-19T00:15:58.898Z'\nLogicalResourceId='AppDB'\nNamespace='085224677438'\nPhysicalResourceId='ravfjph4gdr3qv'\nResourceProperties='{\"MasterUserPassword\":\"tvarit123\",\"DBInstanceClass\":\"db.t2.micro\",\"MasterUsername\":\"tvarit\",\"DBSubnetGroupName\":\"tvarit-base-infrastructure-network-yme8kmvckp6r-dbsubnetgroup-7d8icey2dutq\",\"MultiAZ\":\"false\",\"Engine\":\"postgres\",\"Tags\":[{\"Value\":\"1.0.1\",\"Key\":\"tvarit_version\"},{\"Value\":\"tvarit-tvarit-tomcat-plugin-test::deployables/tvarit/tomcat-plugin-test/1.0.1-SNAPSHOT/tomcat-plugin-test-1.0.1-SNAPSHOT.war\",\"Key\":\"app_file_object\"}],\"AllocatedStorage\":\"50\"}\n'\nResourceStatus='CREATE_COMPLETE'\nResourceStatusReason=''\nResourceType='AWS::RDS::DBInstance'\nStackName='rdstvarit-tomcat-plugin-test-1-0-1-SNAPSHOT'\n",
                     "MessageAttributes": {},
                     "Type": "Notification",
-                    "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure2-SnsTopics-JA32NGGO6G3E-ProvisioningDoneNotificationTopic-YFTWECZVHN5H:f6761cf5-2d2d-426f-adc1-a725dc454568",
-                    "TopicArn": "arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure2-SnsTopics-JA32NGGO6G3E-ProvisioningDoneNotificationTopic-YFTWECZVHN5H",
+                    "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure-SnsTopics-JA32NGGO6G3E-ProvisioningDoneNotificationTopic-YFTWECZVHN5H:f6761cf5-2d2d-426f-adc1-a725dc454568",
+                    "TopicArn": "arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure-SnsTopics-JA32NGGO6G3E-ProvisioningDoneNotificationTopic-YFTWECZVHN5H",
                     "Subject": "AWS CloudFormation Notification"
                 }
             }
