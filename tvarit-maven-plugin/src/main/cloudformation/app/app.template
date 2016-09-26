@@ -61,7 +61,7 @@
         "MaxSize": "6",
         "MinSize": "0",
         "LaunchConfigurationName": {
-          "Ref": "LaunchConfiguration"
+          "Ref": "AppLaunchConfiguration"
         },
         "LoadBalancerNames": [
           {
@@ -73,7 +73,7 @@
         ]
       }
     },
-    "LaunchConfiguration": {
+    "AppLaunchConfiguration": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": "ami-46d3a951",

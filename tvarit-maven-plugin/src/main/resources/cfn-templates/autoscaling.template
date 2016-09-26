@@ -55,7 +55,7 @@
         ]
       }
     },
-    "AppAutoScalingGroup": {
+    "BastionAutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "AvailabilityZones": {
@@ -83,7 +83,7 @@
         ]
       }
     },
-    "LaunchConfiguration": {
+    "BastionLaunchConfiguration": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": "ami-0c6f5f64",

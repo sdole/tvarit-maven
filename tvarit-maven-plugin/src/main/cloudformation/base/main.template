@@ -38,6 +38,9 @@
           "Ref": "NetworkTemplateUrl"
         },
         "Parameters": {
+          "DomainNameParam": {
+            "Ref": "DomainNameParam"
+          },
           "ProjectNameParm": {
             "Ref": "ProjectNameParm"
           },
@@ -154,12 +157,38 @@
           }
         }
       }
+    },
+    "BastionHost": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Ref": "BastionHostTemplateUrlParam"
+        },
+        "Parameters": {
+          "PubSubnetsParam": {
+            "Fn::GetAtt": [
+              "Network",
+              "Outputs.ElbSubnetsOutput"
+            ]
+          },
+          "BastionSecurityGroupParam": {
+            "Fn::GetAtt": [
+              "Network",
+              "Outputs.BastionSecurityGroupOutput"
+            ]
+          }
+        }
+      }
     }
   },
   "Parameters": {
     "NetworkTemplateUrl": {
       "Type": "String",
       "Description": "The URL to the cloudformation template describing all network assets.",
+      "MinLength": "1"
+    },
+    "BastionHostTemplateUrlParam": {
+      "Type": "String",
       "MinLength": "1"
     },
     "TvaritArtifactBucketTemplateUrl": {
@@ -217,6 +246,9 @@
     "DeployerLambdaFunctionCodeS3BucketParam": {
       "Type": "String",
       "Description": "The bucket name where the rds deployer lambda function code is stored/uploaded."
+    },
+    "DomainNameParam": {
+      "Type": "String"
     }
   },
   "Outputs": {

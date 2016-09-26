@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "",
   "Resources": {
-    "LaunchConfiguration": {
+    "BastionLaunchConfiguration": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": "ami-46d3a951",
@@ -16,29 +16,20 @@
         ]
       }
     },
-    "AppAutoScalingGroup": {
+    "BastionAutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "VPCZoneIdentifier": {
           "Ref": "PubSubnetsParam"
         },
         "Cooldown": "300",
-        "DesiredCapacity": "0",
+        "DesiredCapacity": "1",
         "HealthCheckGracePeriod": "300",
-        "HealthCheckType": "ELB",
-        "MaxSize": "6",
-        "MinSize": "0",
+        "MaxSize": "1",
+        "MinSize": "1",
         "LaunchConfigurationName": {
-          "Ref": "LaunchConfiguration"
-        },
-        "LoadBalancerNames": [
-          {
-            "Ref": "AppElb"
-          }
-        ],
-        "TerminationPolicies": [
-          "Default"
-        ]
+          "Ref": "BastionLaunchConfiguration"
+        }
       }
     }
   },
@@ -47,7 +38,7 @@
       "Type": "String"
     },
     "PubSubnetsParam": {
-      "Type": "String"
+      "Type": "List<AWS::EC2::Subnet::Id>"
     }
   }
 }

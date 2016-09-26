@@ -19,6 +19,7 @@ class MakeBaseInfrastructureParameterMaker {
         final String projectVersion = TvaritEnvironment.getInstance().getMavenProject().getVersion();
         final String artifactBucketName = TvaritEnvironment.getInstance().getArtifactBucketName();
         final String availabilityZones = TvaritEnvironment.getInstance().<MakeBaseInfrastructureMojo>getMojo().getAvailabilityZones();
+        final String domainName = TvaritEnvironment.getInstance().<MakeBaseInfrastructureMojo>getMojo().getDomainName();
         final Parameter bucketNameParm = new Parameter().withParameterKey("ArtifactBucketNameParm").withParameterValue(artifactBucketName);
         final Parameter projectNameParm = new Parameter().withParameterKey("ProjectNameParm").withParameterValue(projectName);
         final Parameter availabilityZonesParm = new Parameter().withParameterKey("AvailabilityZones").withParameterValue(availabilityZones);
@@ -29,6 +30,7 @@ class MakeBaseInfrastructureParameterMaker {
         String networkTemplateUrl;
         String deployerLambdaTemplateUrl;
         String tvaritArtifactBucketTemplateUrl;
+        String bastionHostTemplateUrl;
         String snsTopicsUrl;
         String allDeployerLambdaFunctionCodeS3Key = "default/io.tvarit/tvarit-maven-plugin/0.1.2-SNAPSHOT/lambda/tvarit-lambda.zip";
         try {
@@ -38,17 +40,20 @@ class MakeBaseInfrastructureParameterMaker {
             networkTemplateUrl = new TemplateUrlMaker().makeUrl("base/network.template").toString();
             routerTemplateUrl = new TemplateUrlMaker().makeUrl("base/router.template").toString();
             tvaritArtifactBucketTemplateUrl = new TemplateUrlMaker().makeUrl("base/artifact_bucket.template").toString();
+            bastionHostTemplateUrl = new TemplateUrlMaker().makeUrl("base/bastion.template").toString();
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
         final Parameter routerTemplateUrlParm = new Parameter().withParameterKey("NetworkTemplateUrl").withParameterValue(networkTemplateUrl);
         final Parameter networkTemplateUrlParm = new Parameter().withParameterKey("RouterTemplateUrl").withParameterValue(routerTemplateUrl);
         final Parameter iamTemplateUrlParm = new Parameter().withParameterKey("IamTemplateUrl").withParameterValue(iamTemplateUrl);
+        final Parameter bastionHostTemplateUrlParam = new Parameter().withParameterKey("BastionHostTemplateUrlParam").withParameterValue(bastionHostTemplateUrl);
         final Parameter deployerLambdaTemplateUrlParm = new Parameter().withParameterKey("DeployerLambdaTemplateUrl").withParameterValue(deployerLambdaTemplateUrl);
         final Parameter tvaritArtifactBucketS3BucketParam = new Parameter().withParameterKey("TvaritArtifactBucketTemplateUrl").withParameterValue(tvaritArtifactBucketTemplateUrl);
         final Parameter deployerLambdaFunctionCodeS3BucketParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3BucketParam").withParameterValue(TVARIT_BUCKET_NAME);
         final Parameter deployerLambdaFunctionCodeS3KeyParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3KeyParam").withParameterValue(allDeployerLambdaFunctionCodeS3Key);
         final Parameter snsTopicsUrlParam = new Parameter().withParameterKey("SnsTopicsTemplateUrl").withParameterValue(snsTopicsUrl);
+        final Parameter domainNameParam = new Parameter().withParameterKey("DomainNameParam").withParameterValue(domainName);
         final ArrayList<Parameter> listOfParms = new ArrayList<>();
         listOfParms.add(bucketNameParm);
         listOfParms.add(projectNameParm);
@@ -57,6 +62,8 @@ class MakeBaseInfrastructureParameterMaker {
         listOfParms.add(networkTemplateUrlParm);
         listOfParms.add(elbHealthCheckAbsoluteUrlParm);
         listOfParms.add(sshKeyParm);
+        listOfParms.add(bastionHostTemplateUrlParam);
+        listOfParms.add(domainNameParam);
         listOfParms.add(iamTemplateUrlParm);
         listOfParms.add(deployerLambdaTemplateUrlParm);
         listOfParms.add(deployerLambdaFunctionCodeS3KeyParam);
