@@ -22,14 +22,18 @@ package com.tvarit.plugin.app;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.tvarit.plugin.TemplateUrlMaker;
 import com.tvarit.plugin.env.TvaritEnvironment;
+import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 class DeployPutRequestMaker {
-    PutObjectRequest makePutRequest() {
+    PutObjectRequest makePutRequest() throws MojoExecutionException {
         final TvaritEnvironment tvaritEnvironment = TvaritEnvironment.getInstance();
         tvaritEnvironment.<AppDeployerMojo>getMojo().getArtifactBucketName();
         final File warFile = tvaritEnvironment.getMavenProject().getArtifact().getFile();
@@ -49,6 +53,16 @@ class DeployPutRequestMaker {
         userMetadata.put("group-id", tvaritEnvironment.getMavenProject().getGroupId());
         userMetadata.put("artifact-id", tvaritEnvironment.getMavenProject().getArtifactId());
         userMetadata.put("version", tvaritEnvironment.getMavenProject().getVersion());
+        final String contextConfigUrl = tvaritEnvironment.<AppDeployerMojo>getMojo().getContextConfigUrl();
+        final URL url;
+        try {
+            url = new TemplateUrlMaker().makeUrl(contextConfigUrl);
+        } catch (MalformedURLException e) {
+            throw new MojoExecutionException("failed", e);
+        }
+        userMetadata.put("context_config_url", url.toString());
+        final String contextRoot = tvaritEnvironment.<AppDeployerMojo>getMojo().getContextRoot();
+        userMetadata.put("context_root", contextRoot.equals("/") ? "ROOT" : contextRoot);
         metadata.setUserMetadata(userMetadata);
         putObjectRequest.withMetadata(metadata);
         return putObjectRequest;

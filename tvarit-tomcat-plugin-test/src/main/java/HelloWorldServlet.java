@@ -38,12 +38,16 @@ public class HelloWorldServlet extends HttpServlet {
                 "<thead><th>Name</th><th>Value</th><th>Domain</th><th>Path</th><th>MaxAge</th>"
 
         );
-        Arrays.asList(cookies).forEach(cookie -> {
-            responseWriter.println(
-                    "<tr><td>" + cookie.getName() + "</td><td>" + cookie.getValue() + "</td><td>" + cookie.getDomain() + "</td><td>" + cookie.getPath() + "</td><td>" + cookie.getMaxAge() + "</td>" + "</tr>"
+        if (cookies != null) {
+            Arrays.asList(cookies).forEach(cookie -> {
+                responseWriter.println(
+                        "<tr><td>" + cookie.getName() + "</td><td>" + cookie.getValue() + "</td><td>" + cookie.getDomain() + "</td><td>" + cookie.getPath() + "</td><td>" + cookie.getMaxAge() + "</td>" + "</tr>"
 
-            );
-        });
+                );
+            })
+            ;
+        }
+
         responseWriter.println("</table>");
         responseWriter.println("<div>headers</div>");
         responseWriter.println("<table border=''>");

@@ -817,6 +817,14 @@
             "FromPort": "8443",
             "ToPort": "8443",
             "IpProtocol": "tcp"
+          },
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "BastionSecurityGroup"
+            },
+            "FromPort": "22",
+            "ToPort": "22",
+            "IpProtocol": "tcp"
           }
         ],
         "GroupDescription": "For app servers to be allowed http access from www",

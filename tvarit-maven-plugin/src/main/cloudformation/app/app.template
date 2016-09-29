@@ -76,7 +76,7 @@
     "AppLaunchConfiguration": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-46d3a951",
+        "ImageId": "ami-3c3f792b",
         "InstanceType": "t2.micro",
         "KeyName": "trelair",
         "IamInstanceProfile": {
@@ -114,7 +114,7 @@
                   "Ref": "AppSetupRoleParam"
                 },
                 " -r ",
-                " LaunchConfiguration ",
+                " AppLaunchConfiguration ",
                 " -c ",
                 " main ",
                 "\n",
@@ -123,7 +123,7 @@
                 {
                   "Ref": "AWS::StackName"
                 },
-                "         --resource LaunchConfiguration ",
+                "         --resource AppLaunchConfiguration ",
                 "         --region ",
                 {
                   "Ref": "AWS::Region"
@@ -165,11 +165,38 @@
                 "group": "tomcat",
                 "mode": "000755",
                 "authentication": "S3AccessCreds"
+              },
+              "/opt/tomcat/conf/Catalina/localhost/web_app.xml": {
+                "source": {
+                  "Ref": "AppConfigXmlUrlParm"
+                },
+                "owner": "tomcat",
+                "group": "tomcat",
+                "mode": "000755",
+                "authentication": "S3AccessCreds"
               }
             }
           },
           "startTomcat": {
             "commands": {
+              "01": {
+                "command": [
+                  "mv",
+                  "/opt/tomcat/conf/Catalina/localhost/web_app.xml",
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "/opt/tomcat/conf/Catalina/localhost/",
+                        {
+                          "Ref": "ContextRootParm"
+                        },
+                        ".xml"
+                      ]
+                    ]
+                  }
+                ]
+              },
               "03": {
                 "command": [
                   "systemctl",
@@ -291,6 +318,12 @@
     "WarFileUrlParam": {
       "Type": "String",
       "Description": "The S3 url of the war file"
+    },
+    "AppConfigXmlUrlParm": {
+      "Type": "String"
+    },
+    "ContextRootParm": {
+      "Type": "String"
     }
   }
 }

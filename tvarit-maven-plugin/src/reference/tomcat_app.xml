@@ -19,7 +19,9 @@
   -->
 
 <!--
-~   https://tomcat.apache.org/tomcat-8.0-doc/config/context.html#Common_Attributes
+~   Attributes for "Context" https://tomcat.apache.org/tomcat-8.0-doc/config/context.html#Common_Attributes
+~ "Resources" for database config. http://tomcat.apache.org/tomcat-8.0-doc/config/resources.html
+~ "Datasource" setup: https://tomcat.apache.org/tomcat-8.0-doc/jndi-resources-howto.html#JDBC_Data_Sources
 ~
 -->
 

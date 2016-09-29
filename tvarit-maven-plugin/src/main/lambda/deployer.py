@@ -79,6 +79,10 @@ def create_app_auto_scaling_group(war_file_info):
     group_id = war_file_info["metadata"]["group-id"]
     artifact_id = war_file_info["metadata"]["artifact-id"]
     version = war_file_info["metadata"]["version"]
+    app_context_root = war_file_info["metadata"]["context_root"]
+    if app_context_root == "/":
+        app_context_root = "ROOT"
+    context_config_url = war_file_info["metadata"]["context_config_url"]
     health_check_url = war_file_info["metadata"]["health_check_url"]
 
     print(json.dumps(war_file_info, indent=True, sort_keys=True))
@@ -105,7 +109,9 @@ def create_app_auto_scaling_group(war_file_info):
         {"ParameterKey": "ElbSecurityGroupParam", "ParameterValue": app_elb_security_groups},
         {"ParameterKey": "ArtifactBucketNameParam", "ParameterValue": war_file_info["bucket_name"]},
         {"ParameterKey": "WarFileUrlParam", "ParameterValue": war_file_url},
-        {"ParameterKey": "AppSetupRoleParam", "ParameterValue": app_setup_role}
+        {"ParameterKey": "AppSetupRoleParam", "ParameterValue": app_setup_role},
+        {"ParameterKey": "AppConfigXmlUrlParm", "ParameterValue": context_config_url},
+        {"ParameterKey": "ContextRootParm", "ParameterValue": app_context_root}
     ]
     cfn_client.create_stack(
         StackName=(group_id + "-" + artifact_id + "-" + version).replace(".", "-"),
