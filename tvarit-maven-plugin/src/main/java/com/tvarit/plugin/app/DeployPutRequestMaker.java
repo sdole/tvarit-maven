@@ -53,6 +53,7 @@ class DeployPutRequestMaker {
         userMetadata.put("group-id", tvaritEnvironment.getMavenProject().getGroupId());
         userMetadata.put("artifact-id", tvaritEnvironment.getMavenProject().getArtifactId());
         userMetadata.put("version", tvaritEnvironment.getMavenProject().getVersion());
+        userMetadata.put("app_fqdn", tvaritEnvironment.<AppDeployerMojo>getMojo().getAppFqdn());
         final String contextConfigUrl = tvaritEnvironment.<AppDeployerMojo>getMojo().getContextConfigUrl();
         final URL url;
         try {

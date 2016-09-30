@@ -38,9 +38,6 @@
           "Ref": "NetworkTemplateUrl"
         },
         "Parameters": {
-          "DomainNameParam": {
-            "Ref": "DomainNameParam"
-          },
           "ProjectNameParm": {
             "Ref": "ProjectNameParm"
           },
@@ -246,9 +243,6 @@
     "DeployerLambdaFunctionCodeS3BucketParam": {
       "Type": "String",
       "Description": "The bucket name where the rds deployer lambda function code is stored/uploaded."
-    },
-    "DomainNameParam": {
-      "Type": "String"
     }
   },
   "Outputs": {

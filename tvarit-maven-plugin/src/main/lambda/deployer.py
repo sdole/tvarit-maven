@@ -99,6 +99,9 @@ def create_app_auto_scaling_group(war_file_info):
     instance_profile = iam_resources["AppInstanceProfileOutput"]
     app_setup_role = iam_resources["AppSetupRoleOutput"].split("/")[1]
     war_file_url = util.make_s3_base_url() + "/" + war_file_info["bucket_name"] + "/" + war_file_info["key"]
+    app_fqdn = war_file_info["metadata"]["app_fqdn"]
+    index_of_first_dot = app_fqdn.index(".")
+    domain_name = app_fqdn[index_of_first_dot + 1:] + "."
     app_stack_parameters = [
         {"ParameterKey": "AppSubnetsParam", "ParameterValue": app_subnets},
         {"ParameterKey": "AppInstanceProfileParam", "ParameterValue": instance_profile},
@@ -110,8 +113,10 @@ def create_app_auto_scaling_group(war_file_info):
         {"ParameterKey": "ArtifactBucketNameParam", "ParameterValue": war_file_info["bucket_name"]},
         {"ParameterKey": "WarFileUrlParam", "ParameterValue": war_file_url},
         {"ParameterKey": "AppSetupRoleParam", "ParameterValue": app_setup_role},
-        {"ParameterKey": "AppConfigXmlUrlParm", "ParameterValue": context_config_url},
-        {"ParameterKey": "ContextRootParm", "ParameterValue": app_context_root}
+        {"ParameterKey": "AppConfigXmlUrlParam", "ParameterValue": context_config_url},
+        {"ParameterKey": "ContextRootParam", "ParameterValue": app_context_root},
+        {"ParameterKey": "AppDnsNameParam", "ParameterValue": app_fqdn},
+        {"ParameterKey": "DomainNameHostedZoneNameParam", "ParameterValue": domain_name}
     ]
     cfn_client.create_stack(
         StackName=(group_id + "-" + artifact_id + "-" + version).replace(".", "-"),

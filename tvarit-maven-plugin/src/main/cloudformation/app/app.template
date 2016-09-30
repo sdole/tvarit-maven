@@ -168,7 +168,7 @@
               },
               "/opt/tomcat/conf/Catalina/localhost/web_app.xml": {
                 "source": {
-                  "Ref": "AppConfigXmlUrlParm"
+                  "Ref": "AppConfigXmlUrlParam"
                 },
                 "owner": "tomcat",
                 "group": "tomcat",
@@ -189,7 +189,7 @@
                       [
                         "/opt/tomcat/conf/Catalina/localhost/",
                         {
-                          "Ref": "ContextRootParm"
+                          "Ref": "ContextRootParam"
                         },
                         ".xml"
                       ]
@@ -276,6 +276,32 @@
           }
         ]
       }
+    },
+    "AppCname": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Type": "A",
+        "AliasTarget": {
+          "HostedZoneId": {
+            "Fn::GetAtt": [
+              "AppElb",
+              "CanonicalHostedZoneNameID"
+            ]
+          },
+          "DNSName": {
+            "Fn::GetAtt": [
+              "AppElb",
+              "DNSName"
+            ]
+          }
+        },
+        "Name": {
+          "Ref": "AppDnsNameParam"
+        },
+        "HostedZoneName": {
+          "Ref": "DomainNameHostedZoneNameParam"
+        }
+      }
     }
   },
   "Parameters": {
@@ -309,7 +335,7 @@
     },
     "ArtifactBucketNameParam": {
       "Type": "String",
-      "Description": "The bucket name where deployale artifacts are saved."
+      "Description": "The bucket name where deployable artifacts are saved."
     },
     "AppSetupRoleParam": {
       "Type": "String",
@@ -319,10 +345,16 @@
       "Type": "String",
       "Description": "The S3 url of the war file"
     },
-    "AppConfigXmlUrlParm": {
+    "AppConfigXmlUrlParam": {
       "Type": "String"
     },
-    "ContextRootParm": {
+    "ContextRootParam": {
+      "Type": "String"
+    },
+    "AppDnsNameParam": {
+      "Type": "String"
+    },
+    "DomainNameHostedZoneNameParam": {
       "Type": "String"
     }
   }

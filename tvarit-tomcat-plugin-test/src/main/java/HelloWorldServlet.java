@@ -36,7 +36,6 @@ public class HelloWorldServlet extends HttpServlet {
         responseWriter.println("<table border=''>");
         responseWriter.println(
                 "<thead><th>Name</th><th>Value</th><th>Domain</th><th>Path</th><th>MaxAge</th>"
-
         );
         if (cookies != null) {
             Arrays.asList(cookies).forEach(cookie -> {
@@ -44,8 +43,7 @@ public class HelloWorldServlet extends HttpServlet {
                         "<tr><td>" + cookie.getName() + "</td><td>" + cookie.getValue() + "</td><td>" + cookie.getDomain() + "</td><td>" + cookie.getPath() + "</td><td>" + cookie.getMaxAge() + "</td>" + "</tr>"
 
                 );
-            })
-            ;
+            });
         }
 
         responseWriter.println("</table>");

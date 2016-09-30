@@ -19,7 +19,6 @@ class MakeBaseInfrastructureParameterMaker {
         final String projectVersion = TvaritEnvironment.getInstance().getMavenProject().getVersion();
         final String artifactBucketName = TvaritEnvironment.getInstance().getArtifactBucketName();
         final String availabilityZones = TvaritEnvironment.getInstance().<MakeBaseInfrastructureMojo>getMojo().getAvailabilityZones();
-        final String domainName = TvaritEnvironment.getInstance().<MakeBaseInfrastructureMojo>getMojo().getDomainName();
         final Parameter bucketNameParm = new Parameter().withParameterKey("ArtifactBucketNameParm").withParameterValue(artifactBucketName);
         final Parameter projectNameParm = new Parameter().withParameterKey("ProjectNameParm").withParameterValue(projectName);
         final Parameter availabilityZonesParm = new Parameter().withParameterKey("AvailabilityZones").withParameterValue(availabilityZones);
@@ -53,7 +52,6 @@ class MakeBaseInfrastructureParameterMaker {
         final Parameter deployerLambdaFunctionCodeS3BucketParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3BucketParam").withParameterValue(TVARIT_BUCKET_NAME);
         final Parameter deployerLambdaFunctionCodeS3KeyParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3KeyParam").withParameterValue(allDeployerLambdaFunctionCodeS3Key);
         final Parameter snsTopicsUrlParam = new Parameter().withParameterKey("SnsTopicsTemplateUrl").withParameterValue(snsTopicsUrl);
-        final Parameter domainNameParam = new Parameter().withParameterKey("DomainNameParam").withParameterValue(domainName);
         final ArrayList<Parameter> listOfParms = new ArrayList<>();
         listOfParms.add(bucketNameParm);
         listOfParms.add(projectNameParm);
@@ -63,7 +61,6 @@ class MakeBaseInfrastructureParameterMaker {
         listOfParms.add(elbHealthCheckAbsoluteUrlParm);
         listOfParms.add(sshKeyParm);
         listOfParms.add(bastionHostTemplateUrlParam);
-        listOfParms.add(domainNameParam);
         listOfParms.add(iamTemplateUrlParm);
         listOfParms.add(deployerLambdaTemplateUrlParm);
         listOfParms.add(deployerLambdaFunctionCodeS3KeyParam);

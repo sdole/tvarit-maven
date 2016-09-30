@@ -81,9 +81,6 @@
                                 <configuration>
                                     <availability-zones>us-east-1a,us-east-1c</availability-zones>
                                     <ssh-key-pair-name>trelair</ssh-key-pair-name>
-                                    <domain-name>trelair.com</domain-name>
-
-
                                 </configuration>
                             </execution>
                         </executions>
@@ -110,6 +107,7 @@
                                     <ssh-key-name>trelair</ssh-key-name>
                                     <db-version>1.0.1</db-version>
                                     <health-check-url>HTTP:8080/</health-check-url>
+                                    <app-fqdn>demo.test.tvarit.io</app-fqdn>
                                 </configuration>
                             </execution>
                         </executions>

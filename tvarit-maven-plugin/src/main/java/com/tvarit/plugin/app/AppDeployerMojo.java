@@ -15,10 +15,12 @@ public class AppDeployerMojo extends AbstractTvaritMojo {
     private String dbVersion;
     @Parameter(name = "health-check-url")
     private String healthCheckUrl;
-    @Parameter(name = "context-config-url",defaultValue = "app/web_app.xml",required = false)
+    @Parameter(name = "context-config-url", defaultValue = "app/web_app.xml", required = false)
     private String contextConfigUrl;
-    @Parameter(name = "context-root",defaultValue = "/",required = false)
+    @Parameter(name = "context-root", defaultValue = "/", required = false)
     private String contextRoot;
+    @Parameter(name = "app-fqdn")
+    private String appFqdn;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -44,5 +46,9 @@ public class AppDeployerMojo extends AbstractTvaritMojo {
 
     public String getContextRoot() {
         return contextRoot;
+    }
+
+    public String getAppFqdn() {
+        return appFqdn;
     }
 }

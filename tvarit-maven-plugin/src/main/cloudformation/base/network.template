@@ -833,14 +833,6 @@
         }
       }
     },
-    "DnsZone": {
-      "Type": "AWS::Route53::HostedZone",
-      "Properties": {
-        "Name": {
-          "Ref": "DomainNameParam"
-        }
-      }
-    },
     "BastionSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -869,17 +861,9 @@
       "Description": "Enter a name for your project. This will be used as part of resource names and tags.",
       "AllowedPattern": "[a-zA-Z][-a-zA-Z0-9]*",
       "MinLength": "1"
-    },
-    "DomainNameParam": {
-      "Type": "String"
     }
   },
   "Outputs": {
-    "DnsHostedZoneId": {
-      "Value": {
-        "Ref": "DnsZone"
-      }
-    },
     "TvaritVpcIdOutput": {
       "Description": "The vpc created for Tvarit",
       "Value": {
