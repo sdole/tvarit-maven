@@ -76,7 +76,7 @@
     "AppLaunchConfiguration": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-3c3f792b",
+        "ImageId": "ami-f3d998e4",
         "InstanceType": "t2.micro",
         "KeyName": "trelair",
         "IamInstanceProfile": {
@@ -166,20 +166,85 @@
                 "mode": "000755",
                 "authentication": "S3AccessCreds"
               },
+              "/tmp/replace_jdbc.sh": {
+                "source": {
+                  "Ref": "JdbcSetupShParam"
+                },
+                "owner": "root",
+                "group": "root",
+                "mode": "000700",
+                "authentication": "S3AccessCreds"
+              },
               "/opt/tomcat/conf/Catalina/localhost/web_app.xml": {
                 "source": {
                   "Ref": "AppConfigXmlUrlParam"
                 },
                 "owner": "tomcat",
                 "group": "tomcat",
-                "mode": "000755",
+                "mode": "000644",
                 "authentication": "S3AccessCreds"
               }
             }
           },
           "startTomcat": {
             "commands": {
-              "01": {
+              "0010": {
+                "command": [
+                  "sed",
+                  "-i",
+                  "'s/\\r//g'",
+                  "/opt/tomcat/conf/Catalina/localhost/web_app.xml"
+                ]
+              },
+              "0020": {
+                "command": [
+                  "sed",
+                  "-i",
+                  "'s/\\r//g'",
+                  "/tmp/replace_jdbc.sh"
+                ]
+              },
+              "0100": {
+                "command": [
+                  "/tmp/replace_jdbc.sh",
+                  "DB_HOST",
+                  {
+                    "Ref": "DbHostParam"
+                  },
+                  "/opt/tomcat/conf/Catalina/localhost/web_app.xml"
+                ]
+              },
+              "0200": {
+                "command": [
+                  "/tmp/replace_jdbc.sh",
+                  "DB_USERNAME",
+                  {
+                    "Ref": "DbUsernameParam"
+                  },
+                  "/opt/tomcat/conf/Catalina/localhost/web_app.xml"
+                ]
+              },
+              "0300": {
+                "command": [
+                  "/tmp/replace_jdbc.sh",
+                  "DB_PASSWORD",
+                  {
+                    "Ref": "DbPasswordParam"
+                  },
+                  "/opt/tomcat/conf/Catalina/localhost/web_app.xml"
+                ]
+              },
+              "0400": {
+                "command": [
+                  "/tmp/replace_jdbc.sh",
+                  "DB_NAME",
+                  {
+                    "Ref": "DbNameParam"
+                  },
+                  "/opt/tomcat/conf/Catalina/localhost/web_app.xml"
+                ]
+              },
+              "0500": {
                 "command": [
                   "mv",
                   "/opt/tomcat/conf/Catalina/localhost/web_app.xml",
@@ -197,7 +262,13 @@
                   }
                 ]
               },
-              "03": {
+              "0600": {
+                "command": [
+                  "rm",
+                  "/tmp/replace_jdbc.sh"
+                ]
+              },
+              "0700": {
                 "command": [
                   "systemctl",
                   "start",
@@ -355,6 +426,21 @@
       "Type": "String"
     },
     "DomainNameHostedZoneNameParam": {
+      "Type": "String"
+    },
+    "DbHostParam": {
+      "Type": "String"
+    },
+    "DbUsernameParam": {
+      "Type": "String"
+    },
+    "DbPasswordParam": {
+      "Type": "String"
+    },
+    "DbNameParam": {
+      "Type": "String"
+    },
+    "JdbcSetupShParam": {
       "Type": "String"
     }
   }

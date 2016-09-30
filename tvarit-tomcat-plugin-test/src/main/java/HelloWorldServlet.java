@@ -1,13 +1,18 @@
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -62,6 +67,34 @@ public class HelloWorldServlet extends HttpServlet {
             }
         }
         responseWriter.println("</table>");
+        InitialContext cxt = null;
+        try {
+            cxt = new InitialContext();
+        } catch (NamingException e) {
+            throw new ServletException(e);
+        }
+
+        DataSource ds = null;
+        try {
+            ds = (DataSource) cxt.lookup("java:/comp/env/jdbc/postgres");
+        } catch (NamingException e) {
+            throw new ServletException(e);
+        }
+
+        if (ds == null) {
+            throw new ServletException("Data source not found!");
+        }
+        DatabaseMetaData databaseMetaData;
+        try {
+            databaseMetaData = ds.getConnection().getMetaData();
+        } catch (SQLException e) {
+            throw new ServletException(e);
+        }
+        try {
+            responseWriter.println("<span>Found data source: " + databaseMetaData.getDatabaseProductName() + ", connected as " + databaseMetaData.getUserName() + "</span>");
+        } catch (SQLException e) {
+            throw new ServletException(e);
+        }
         response.setContentType("text/html");
         response.getWriter().close();
 

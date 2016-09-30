@@ -1,6 +1,7 @@
 package com.tvarit.plugin.app;
 
 import com.tvarit.plugin.AbstractTvaritMojo;
+import com.tvarit.plugin.env.TvaritEnvironment;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -21,6 +22,12 @@ public class AppDeployerMojo extends AbstractTvaritMojo {
     private String contextRoot;
     @Parameter(name = "app-fqdn")
     private String appFqdn;
+    @Parameter(name = "db-name")
+    private String dbName;
+    @Parameter(name = "db-username", defaultValue = "fastup")
+    private String dbUsername;
+    @Parameter(name = "db-password", defaultValue = "fastup123")
+    private String dbPassword;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -50,5 +57,21 @@ public class AppDeployerMojo extends AbstractTvaritMojo {
 
     public String getAppFqdn() {
         return appFqdn;
+    }
+
+    public String getDbName() {
+        if (dbName == null || dbName.length() == 0) {
+            final TvaritEnvironment environment = TvaritEnvironment.getInstance();
+            dbName = (environment.getProjectNameCapitalized() + "Db");
+        }
+        return dbName;
+    }
+
+    public String getDbUsername() {
+        return dbUsername;
+    }
+
+    public String getDbPassword() {
+        return dbPassword;
     }
 }

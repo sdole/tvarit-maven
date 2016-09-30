@@ -9,16 +9,23 @@
         "MultiAZ": "false",
         "DBInstanceClass": "db.t2.micro",
         "DBSubnetGroupName": {
-          "Ref": "DbSubnetGroupNameParm"
+          "Ref": "DbSubnetGroupNameParam"
         },
         "Engine": "postgres",
-        "MasterUsername": "tvarit",
-        "MasterUserPassword": "tvarit123",
+        "DBName": {
+          "Ref": "DbNameParam"
+        },
+        "MasterUsername": {
+          "Ref": "DbUsernameParam"
+        },
+        "MasterUserPassword": {
+          "Ref": "DbPasswordParam"
+        },
         "Tags": [
           {
             "Key": "tvarit_version",
             "Value": {
-              "Ref": "DbVersionParm"
+              "Ref": "DbVersionParam"
             }
           }
         ]
@@ -26,18 +33,29 @@
     }
   },
   "Parameters": {
-    "DbSubnetGroupNameParm": {
+    "DbSubnetGroupNameParam": {
       "Type": "String",
       "Description": "the db subnet group for db instances",
       "MinLength": "1"
     },
-    "DbVersionParm": {
+    "DbNameParam": {
+      "Type": "String",
+      "MinLength": "1"
+    },
+    "DbVersionParam": {
       "Type": "String",
       "Description": "DB version"
+    },
+    "DbUsernameParam": {
+      "Type": "String"
+    },
+    "DbPasswordParam": {
+      "Type": "String",
+      "NoEcho": "true"
     }
   },
   "Outputs": {
-    "AppDbEndpoint": {
+    "AppDbEndpointOutput": {
       "Value": {
         "Fn::GetAtt": [
           "AppDB",

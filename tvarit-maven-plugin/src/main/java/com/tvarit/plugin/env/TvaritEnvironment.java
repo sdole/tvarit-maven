@@ -79,4 +79,11 @@ public final class TvaritEnvironment {
     }
 
 
+    public String getProjectNameCapitalized() {
+        final String groupId = mavenProject.getGroupId();
+        final String groupIdCapitalized = groupId.substring(0, 1).toUpperCase() + groupId.substring(1, groupId.length());
+        final String artifactId = mavenProject.getArtifactId();
+        final String artifactIdCapitalized = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1, groupId.length());
+        return groupIdCapitalized + artifactIdCapitalized;
+    }
 }

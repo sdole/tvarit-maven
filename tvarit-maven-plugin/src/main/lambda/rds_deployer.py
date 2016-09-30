@@ -21,6 +21,9 @@ def deploy(event, context):
     )
     print(json.dumps(app_metadata, indent=4, sort_keys=True, default=lambda x: str(x)))
     rds_version = app_metadata['Metadata']['db-version']
+    db_name = app_metadata['Metadata']['db-name']
+    db_username = app_metadata['Metadata']['db-username']
+    db_password = app_metadata['Metadata']['db-password']
     print("rds version is: " + str(rds_version))
     all_db_instances = rds_client.describe_db_instances()
     print(json.dumps(all_db_instances, indent=4, sort_keys=True, default=lambda x: str(x)))
@@ -47,17 +50,20 @@ def deploy(event, context):
         version = app_metadata['Metadata']["version"]
         print("db to be created: group, artifact, version: " + group_id + " : " + artifact_id + " : " + version)
 
-        network_resources = util.make_resources_map_from_cfn("Network")
+        network_resources = util.make_base_output_map_from_cfn("Network")
         print(json.dumps(network_resources, indent=4, sort_keys=True, default=lambda x: str(x)))
         db_subnet_group = network_resources["DbSubnetGroupOutput"]
 
         rds_stack_parameters = [
-            {"ParameterKey": "DbSubnetGroupNameParm", "ParameterValue": db_subnet_group},
-            {"ParameterKey": "DbVersionParm", "ParameterValue": rds_version}
+            {"ParameterKey": "DbSubnetGroupNameParam", "ParameterValue": db_subnet_group},
+            {"ParameterKey": "DbVersionParam", "ParameterValue": rds_version},
+            {"ParameterKey": "DbNameParam", "ParameterValue": db_name},
+            {"ParameterKey": "DbUsernameParam", "ParameterValue": db_username},
+            {"ParameterKey": "DbPasswordParam", "ParameterValue": db_password}
         ]
         print("printing rds_stack_parameters")
         print(json.dumps(rds_stack_parameters, indent=4, sort_keys=True, default=lambda x: str(x)))
-        sns_resources = util.make_resources_map_from_cfn("SnsTopics")
+        sns_resources = util.make_base_output_map_from_cfn("SnsTopics")
         deploy_complete_topic = sns_resources["ProvisioningAutomationSnsTopic"]
 
         stack_name = ("rds" + group_id + "-" + artifact_id + "-" + version).replace(".", "-")

@@ -70,7 +70,7 @@ def ensure_router_auto_scaling_group_has_instances():
         asg_client.update_auto_scaling_group(AutoScalingGroupName=router_asg_name, MinSize=2, MaxSize=6)
 
 
-def create_app_auto_scaling_group(war_file_info):
+def create_app_auto_scaling_group(war_file_info, rds_stack_name):
     '''
     Here, we know that the app auto scaling group does not exist. so, we find template url for app autoscaling group, set
     parameters on it from s3 war file metadata and execute it.
@@ -87,9 +87,9 @@ def create_app_auto_scaling_group(war_file_info):
 
     print(json.dumps(war_file_info, indent=True, sort_keys=True))
 
-    cfn_template_s3_url = util.make_cfn_url("app/app.template")
-    network_resources = util.make_resources_map_from_cfn("Network")
-    iam_resources = util.make_resources_map_from_cfn("IAM")
+    network_resources = util.make_base_output_map_from_cfn("Network")
+    iam_resources = util.make_base_output_map_from_cfn("IAM")
+    rds_output_map = util.make_stack_output_map(rds_stack_name)
 
     availability_zones = network_resources["AvailabilityZonesOutput"]
     app_security_groups = network_resources["AppSecurityGroupsOutput"]
@@ -102,6 +102,7 @@ def create_app_auto_scaling_group(war_file_info):
     app_fqdn = war_file_info["metadata"]["app_fqdn"]
     index_of_first_dot = app_fqdn.index(".")
     domain_name = app_fqdn[index_of_first_dot + 1:] + "."
+    jdbc_replacer_url = util.make_cfn_url("app/replace_jdbc_params.sh")
     app_stack_parameters = [
         {"ParameterKey": "AppSubnetsParam", "ParameterValue": app_subnets},
         {"ParameterKey": "AppInstanceProfileParam", "ParameterValue": instance_profile},
@@ -116,11 +117,16 @@ def create_app_auto_scaling_group(war_file_info):
         {"ParameterKey": "AppConfigXmlUrlParam", "ParameterValue": context_config_url},
         {"ParameterKey": "ContextRootParam", "ParameterValue": app_context_root},
         {"ParameterKey": "AppDnsNameParam", "ParameterValue": app_fqdn},
-        {"ParameterKey": "DomainNameHostedZoneNameParam", "ParameterValue": domain_name}
+        {"ParameterKey": "DomainNameHostedZoneNameParam", "ParameterValue": domain_name},
+        {"ParameterKey": "DbHostParam", "ParameterValue": rds_output_map["AppDbEndpointOutput"]},
+        {"ParameterKey": "DbUsernameParam", "ParameterValue": war_file_info["metadata"]["db-username"]},
+        {"ParameterKey": "DbPasswordParam", "ParameterValue": war_file_info["metadata"]["db-password"]},
+        {"ParameterKey": "DbNameParam", "ParameterValue": war_file_info["metadata"]["db-name"]},
+        {"ParameterKey": "JdbcSetupShParam", "ParameterValue": jdbc_replacer_url}
     ]
     cfn_client.create_stack(
         StackName=(group_id + "-" + artifact_id + "-" + version).replace(".", "-"),
-        TemplateURL=cfn_template_s3_url,
+        TemplateURL=util.make_cfn_url("app/app.template"),
         Parameters=app_stack_parameters
     )
 
@@ -166,7 +172,7 @@ def deploy(event, context):
         if each_part_split[0] == "StackName":
             rds_stack_name = each_part_split[1][1:-1]
 
-    # rds_stack = cfn_client.describe_stacks(StackName=rds_stack_name)
+    rds_stack = cfn_client.describe_stacks(StackName=rds_stack_name)
     # tags_on_rds_stack = rds_stack['Stacks'][0]['Tags']
     # map_of_tags_on_rds_stack = util.make_map_from_list("Key", "Value", tags_on_rds_stack)
     # app_file_object_parm = map_of_tags_on_rds_stack['app_file_object']
@@ -197,15 +203,7 @@ def deploy(event, context):
 
     if len(tags['Tags']) == 0:
         print("no asg found for " + key_of_deployable + " " + deployable_version)
-        create_app_auto_scaling_group(
-            war_info_and_metadata
-        )
-        # TODO Done till here!
-        '''
-        Stack creation for the app is started in method create_app_auto_scaling_group,
-        continue from here on to modify routing rules.
-        '''
-
+        create_app_auto_scaling_group(war_info_and_metadata, rds_stack_name)
         modify_router_rules()
 
     else:

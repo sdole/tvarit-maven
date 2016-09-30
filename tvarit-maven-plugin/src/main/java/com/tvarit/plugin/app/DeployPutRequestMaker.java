@@ -54,6 +54,9 @@ class DeployPutRequestMaker {
         userMetadata.put("artifact-id", tvaritEnvironment.getMavenProject().getArtifactId());
         userMetadata.put("version", tvaritEnvironment.getMavenProject().getVersion());
         userMetadata.put("app_fqdn", tvaritEnvironment.<AppDeployerMojo>getMojo().getAppFqdn());
+        userMetadata.put("db-name", tvaritEnvironment.<AppDeployerMojo>getMojo().getDbName());
+        userMetadata.put("db-username", tvaritEnvironment.<AppDeployerMojo>getMojo().getDbUsername());
+        userMetadata.put("db-password", tvaritEnvironment.<AppDeployerMojo>getMojo().getDbPassword());
         final String contextConfigUrl = tvaritEnvironment.<AppDeployerMojo>getMojo().getContextConfigUrl();
         final URL url;
         try {
