@@ -58,6 +58,16 @@
               ],
               "Effect": "Allow",
               "Sid": "Stmt1457233341000"
+            },
+            {
+              "Action": [
+                "autoscaling:*"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "Stmt1457233341000"
             }
           ]
         },
@@ -113,10 +123,36 @@
                 "logs:CreateLogStream",
                 "logs:DescribeLogGroups",
                 "logs:DescribeLogStreams",
-                "logs:PutLogEvents"
+                "logs:PutLogEvents",
+                "cloudwatch:PutMetricAlarm"
               ],
               "Resource": "*",
               "Effect": "Allow"
+            },
+            {
+              "Action": [
+                "route53:ListHostedZones",
+                "route53:ChangeResourceRecordSets",
+                "route53:GetChangeRequest",
+                "route53:GetChange"
+              ],
+              "Resource": "*",
+              "Effect": "Allow"
+            },
+            {
+              "Action": [
+                "elasticloadbalancing:CreateLoadBalancer",
+                "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                "elasticloadbalancing:CreateLoadBalancerPolicy",
+                "elasticloadbalancing:ConfigureHealthCheck",
+                "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
+                "elasticloadbalancing:DescribeLoadBalancers"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "Stmt1457234341040"
             },
             {
               "Action": [
@@ -172,7 +208,11 @@
                 "autoscaling:ResumeProcesses",
                 "autoscaling:SetDesiredCapacity",
                 "autoscaling:SuspendProcesses",
-                "autoscaling:TerminateInstanceInAutoScalingGroup"
+                "autoscaling:TerminateInstanceInAutoScalingGroup",
+                "autoscaling:DescribeTags",
+                "autoscaling:CreateLaunchConfiguration",
+                "autoscaling:CreateAutoScalingGroup",
+                "autoscaling:UpdateAutoScalingGroup"
               ],
               "Resource": [
                 "*"
