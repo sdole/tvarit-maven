@@ -67,7 +67,8 @@ def ensure_router_auto_scaling_group_has_instances():
 
     auto_scaling_groups = asg_client.describe_auto_scaling_groups(AutoScalingGroupNames=[router_asg_name])
     if auto_scaling_groups['AutoScalingGroups'][0]['MaxSize'] == 0:
-        asg_client.update_auto_scaling_group(AutoScalingGroupName=router_asg_name, MinSize=2, MaxSize=6)
+        # asg_client.update_auto_scaling_group(AutoScalingGroupName=router_asg_name, MinSize=2, MaxSize=6)
+        print("not starting router")
 
 
 def create_app_auto_scaling_group(war_file_info, rds_stack_name):
@@ -92,10 +93,10 @@ def create_app_auto_scaling_group(war_file_info, rds_stack_name):
     rds_output_map = util.make_stack_output_map(rds_stack_name)
 
     availability_zones = network_resources["AvailabilityZonesOutput"]
-    app_security_groups = network_resources["AppSecurityGroupsOutput"]
+    app_security_groups = network_resources["AppSecurityGroupOutput"]
     elb_subnets = network_resources["ElbSubnetsOutput"]
     app_subnets = network_resources["AppSubnetsOutput"]
-    app_elb_security_groups = network_resources["ElbSecurityGroupsOutput"]
+    app_elb_security_groups = network_resources["ElbSecurityGroupOutput"]
     instance_profile = iam_resources["AppInstanceProfileOutput"]
     app_setup_role = iam_resources["AppSetupRoleOutput"].split("/")[1]
     war_file_url = util.make_s3_base_url() + "/" + war_file_info["bucket_name"] + "/" + war_file_info["key"]

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -67,6 +68,7 @@ public class HelloWorldServlet extends HttpServlet {
             }
         }
         responseWriter.println("</table>");
+
         InitialContext cxt = null;
         try {
             cxt = new InitialContext();
@@ -85,13 +87,20 @@ public class HelloWorldServlet extends HttpServlet {
             throw new ServletException("Data source not found!");
         }
         DatabaseMetaData databaseMetaData;
+        final Connection connection;
         try {
-            databaseMetaData = ds.getConnection().getMetaData();
+            connection = ds.getConnection();
+            databaseMetaData = connection.getMetaData();
         } catch (SQLException e) {
             throw new ServletException(e);
         }
         try {
             responseWriter.println("<span>Found data source: " + databaseMetaData.getDatabaseProductName() + ", connected as " + databaseMetaData.getUserName() + "</span>");
+        } catch (SQLException e) {
+            throw new ServletException(e);
+        }
+        try {
+            connection.close();
         } catch (SQLException e) {
             throw new ServletException(e);
         }

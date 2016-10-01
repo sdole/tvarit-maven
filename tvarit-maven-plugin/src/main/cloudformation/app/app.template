@@ -14,13 +14,13 @@
           "Ref": "ElbSubnetsParam"
         },
         "HealthCheck": {
-          "HealthyThreshold": "10",
-          "Interval": "30",
+          "HealthyThreshold": "3",
+          "Interval": "5",
           "Target": {
             "Ref": "HealthCheckUrlParam"
           },
-          "Timeout": "5",
-          "UnhealthyThreshold": "2"
+          "Timeout": "3",
+          "UnhealthyThreshold": "5"
         },
         "ConnectionDrainingPolicy": {
           "Enabled": "true",
@@ -192,7 +192,7 @@
                 "command": [
                   "sed",
                   "-i",
-                  "'s/\\r//g'",
+                  "s/\\r//g",
                   "/opt/tomcat/conf/Catalina/localhost/web_app.xml"
                 ]
               },
@@ -200,7 +200,7 @@
                 "command": [
                   "sed",
                   "-i",
-                  "'s/\\r//g'",
+                  "s/\\r//g",
                   "/tmp/replace_jdbc.sh"
                 ]
               },

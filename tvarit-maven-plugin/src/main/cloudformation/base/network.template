@@ -833,6 +833,33 @@
         }
       }
     },
+    "DbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "SecurityGroupIngress": [
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "AppSecurityGroup"
+            },
+            "FromPort": "5432",
+            "ToPort": "5432",
+            "IpProtocol": "tcp"
+          },
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "BastionSecurityGroup"
+            },
+            "FromPort": "5432",
+            "ToPort": "5432",
+            "IpProtocol": "tcp"
+          }
+        ],
+        "GroupDescription": "For db to be allowed access from bastion and from app.",
+        "VpcId": {
+          "Ref": "TvaritVpc"
+        }
+      }
+    },
     "BastionSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -870,7 +897,7 @@
         "Ref": "TvaritVpc"
       }
     },
-    "ElbSecurityGroupsOutput": {
+    "ElbSecurityGroupOutput": {
       "Description": "The security groups subnets for elb",
       "Value": {
         "Ref": "ElbSecurityGroup"
@@ -882,10 +909,16 @@
         "Ref": "BastionSecurityGroup"
       }
     },
-    "AppSecurityGroupsOutput": {
+    "AppSecurityGroupOutput": {
       "Description": "The security groups subnets for apps",
       "Value": {
         "Ref": "AppSecurityGroup"
+      }
+    },
+    "DbSecurityGroupsOutput": {
+      "Description": "The security groups subnets for db",
+      "Value": {
+        "Ref": "DbSecurityGroup"
       }
     },
     "DbSubnetGroupOutput": {

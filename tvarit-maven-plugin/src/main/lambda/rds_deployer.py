@@ -53,13 +53,15 @@ def deploy(event, context):
         network_resources = util.make_base_output_map_from_cfn("Network")
         print(json.dumps(network_resources, indent=4, sort_keys=True, default=lambda x: str(x)))
         db_subnet_group = network_resources["DbSubnetGroupOutput"]
+        db_security_group = network_resources["DbSecurityGroupOutput"]
 
         rds_stack_parameters = [
             {"ParameterKey": "DbSubnetGroupNameParam", "ParameterValue": db_subnet_group},
             {"ParameterKey": "DbVersionParam", "ParameterValue": rds_version},
             {"ParameterKey": "DbNameParam", "ParameterValue": db_name},
             {"ParameterKey": "DbUsernameParam", "ParameterValue": db_username},
-            {"ParameterKey": "DbPasswordParam", "ParameterValue": db_password}
+            {"ParameterKey": "DbPasswordParam", "ParameterValue": db_password},
+            {"ParameterKey": "DbSecurityGroupParam", "ParameterValue": db_security_group}
         ]
         print("printing rds_stack_parameters")
         print(json.dumps(rds_stack_parameters, indent=4, sort_keys=True, default=lambda x: str(x)))
