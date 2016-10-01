@@ -20,6 +20,7 @@
           "Version": "2008-10-17",
           "Statement": [
             {
+              "Sid": "St1",
               "Effect": "Allow",
               "Principal": {
                 "Service": "ec2.amazonaws.com"
@@ -38,6 +39,7 @@
           "Version": "2012-10-17",
           "Statement": [
             {
+              "Sid": "St2",
               "Action": [
                 "s3:GetObject",
                 "s3:GetObjectAcl",
@@ -46,28 +48,27 @@
               "Resource": [
                 "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test/*"
               ],
-              "Effect": "Allow",
-              "Sid": "Stmt1457233272000"
+              "Effect": "Allow"
             },
             {
+              "Sid": "St19",
               "Action": [
                 "cloudformation:*"
               ],
               "Resource": [
                 "*"
               ],
-              "Effect": "Allow",
-              "Sid": "Stmt1457233341000"
+              "Effect": "Allow"
             },
             {
+              "Sid": "St4",
               "Action": [
                 "autoscaling:*"
               ],
               "Resource": [
                 "*"
               ],
-              "Effect": "Allow",
-              "Sid": "Stmt1457233341000"
+              "Effect": "Allow"
             }
           ]
         },
@@ -85,6 +86,7 @@
           "Version": "2008-10-17",
           "Statement": [
             {
+              "Sid": "St5",
               "Effect": "Allow",
               "Principal": {
                 "Service": "ec2.amazonaws.com"
@@ -92,6 +94,7 @@
               "Action": "sts:AssumeRole"
             },
             {
+              "Sid": "St6",
               "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
@@ -99,7 +102,7 @@
               "Action": "sts:AssumeRole"
             },
             {
-              "Sid": "",
+              "Sid": "St7",
               "Effect": "Allow",
               "Principal": {
                 "Service": "vpc-flow-logs.amazonaws.com"
@@ -118,6 +121,7 @@
           "Version": "2012-10-17",
           "Statement": [
             {
+              "Sid": "St8",
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
@@ -130,6 +134,7 @@
               "Effect": "Allow"
             },
             {
+              "Sid": "St9",
               "Action": [
                 "route53:ListHostedZones",
                 "route53:ChangeResourceRecordSets",
@@ -140,6 +145,7 @@
               "Effect": "Allow"
             },
             {
+              "Sid": "St10",
               "Action": [
                 "elasticloadbalancing:CreateLoadBalancer",
                 "elasticloadbalancing:ModifyLoadBalancerAttributes",
@@ -151,10 +157,10 @@
               "Resource": [
                 "*"
               ],
-              "Effect": "Allow",
-              "Sid": "Stmt1457234341040"
+              "Effect": "Allow"
             },
             {
+              "Sid": "St11",
               "Action": [
                 "s3:GetObject",
                 "s3:GetObjectAcl",
@@ -165,20 +171,20 @@
               "Resource": [
                 "arn:aws:s3:::tvarit-tvarit-tomcat-plugin-test/*"
               ],
-              "Effect": "Allow",
-              "Sid": "Stmt1457233272000"
+              "Effect": "Allow"
             },
             {
+              "Sid": "St12",
               "Action": [
                 "cloudformation:*"
               ],
               "Resource": [
                 "*"
               ],
-              "Effect": "Allow",
-              "Sid": "Stmt1457233341000"
+              "Effect": "Allow"
             },
             {
+              "Sid": "St13",
               "Action": [
                 "iam:PassRole",
                 "iam:ListInstanceProfiles",
@@ -190,10 +196,10 @@
               "Resource": [
                 "*"
               ],
-              "Effect": "Allow",
-              "Sid": "Stmt1457233476000"
+              "Effect": "Allow"
             },
             {
+              "Sid": "St14",
               "Action": [
                 "autoscaling:AttachInstances",
                 "autoscaling:CompleteLifecycleAction",
@@ -217,10 +223,10 @@
               "Resource": [
                 "*"
               ],
-              "Effect": "Allow",
-              "Sid": "Stmt1457233833000"
+              "Effect": "Allow"
             },
             {
+              "Sid": "St15",
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
@@ -230,6 +236,7 @@
               "Effect": "Allow"
             },
             {
+              "Sid": "St16",
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
@@ -239,21 +246,21 @@
               "Effect": "Allow"
             },
             {
+              "Sid": "St17",
               "Action": [
                 "rds:DescribeDBInstances",
                 "rds:CreateDBInstance"
               ],
               "Resource": "*",
-              "Effect": "Allow",
-              "Sid": "Stmt1473564181448"
+              "Effect": "Allow"
             },
             {
+              "Sid": "St18",
               "Action": [
                 "sns:Publish"
               ],
               "Resource": "arn:aws:sns:us-east-1:085224677438:tvarit-base-infrastructure-SnsTopics*",
-              "Effect": "Allow",
-              "Sid": "Stmt1473566289186"
+              "Effect": "Allow"
             }
           ]
         },
