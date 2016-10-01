@@ -36,8 +36,8 @@ public class HelloWorldServlet extends HttpServlet {
         } catch (UnknownHostException e) {
             hostName = "Unkonwn";
         }
-        responseWriter.println("<div>" + hostName + "</div>");
-        responseWriter.println("<div>cookies</div>");
+        responseWriter.println("<div>Server Host: " + hostName + "</div>");
+        responseWriter.println("<div>Cookies</div>");
         final Cookie[] cookies = request.getCookies();
         responseWriter.println("<table border=''>");
         responseWriter.println(
@@ -95,7 +95,7 @@ public class HelloWorldServlet extends HttpServlet {
             throw new ServletException(e);
         }
         try {
-            responseWriter.println("<span>Found data source: " + databaseMetaData.getDatabaseProductName() + ", connected as " + databaseMetaData.getUserName() + "</span>");
+            responseWriter.println("<span>Found data source: " + databaseMetaData.getDatabaseProductName() + ", connected as db user " + databaseMetaData.getUserName() + "</span>");
         } catch (SQLException e) {
             throw new ServletException(e);
         }

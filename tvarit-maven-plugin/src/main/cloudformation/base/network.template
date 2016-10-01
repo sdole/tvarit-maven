@@ -915,7 +915,7 @@
         "Ref": "AppSecurityGroup"
       }
     },
-    "DbSecurityGroupsOutput": {
+    "DbSecurityGroupOutput": {
       "Description": "The security groups subnets for db",
       "Value": {
         "Ref": "DbSecurityGroup"

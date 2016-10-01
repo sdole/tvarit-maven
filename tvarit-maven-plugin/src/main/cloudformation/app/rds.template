@@ -46,7 +46,7 @@
     "DbSecurityGroupParam": {
       "Type": "String",
       "MinLength": "1"
-    }
+    },
     "DbNameParam": {
       "Type": "String",
       "MinLength": "1"
