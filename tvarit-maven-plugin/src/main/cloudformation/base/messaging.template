@@ -2,6 +2,12 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "",
   "Resources": {
+    "RdsDeployedSqsQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "VisibilityTimeout": "300"
+      }
+    },
     "ProvisioningDoneNotificationTopic": {
       "Type": "AWS::SNS::Topic",
       "Properties": {
@@ -23,10 +29,14 @@
     }
   },
   "Outputs": {
-    "ProvisioningAutomationSnsTopic": {
-      "Description": "Notify here when provisioning done",
+    "RdsDeployedSnsTopicOutput": {
       "Value": {
         "Ref": "ProvisioningDoneNotificationTopic"
+      }
+    },
+    "RdsAlreadyDeployedSqsTopicOutput": {
+      "Value": {
+        "Ref": "RdsDeployedSqsQueue"
       }
     }
   }

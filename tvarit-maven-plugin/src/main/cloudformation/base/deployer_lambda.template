@@ -58,7 +58,7 @@
             "Ref": "DeployerLambdaFunctionCodeS3KeyParam"
           }
         },
-        "Handler": "deployer.deploy",
+        "Handler": "deploy_from_new_rds.deploy",
         "Runtime": "python2.7",
         "Timeout": "300",
         "Role": {

@@ -19,7 +19,7 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": {
-          "Ref": "SnsTopicsTemplateUrl"
+          "Ref": "MessagingTemplateUrl"
         },
         "Parameters": {
           "AppDeployerLambdaFunctionArnParm": {
@@ -208,7 +208,7 @@
       "Description": "The URL to the cloudformation template describing the reverse proxy router and its autoscaling config.",
       "MinLength": "1"
     },
-    "SnsTopicsTemplateUrl": {
+    "MessagingTemplateUrl": {
       "Type": "String",
       "Description": "The URL to the cloudformation template describing the sns topics to be used for automation purposes.",
       "MinLength": "1"

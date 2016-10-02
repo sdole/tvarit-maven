@@ -33,7 +33,7 @@ class MakeBaseInfrastructureParameterMaker {
         String snsTopicsUrl;
         String allDeployerLambdaFunctionCodeS3Key = "default/io.tvarit/tvarit-maven-plugin/0.1.2-SNAPSHOT/lambda/tvarit-lambda.zip";
         try {
-            snsTopicsUrl = new TemplateUrlMaker().makeUrl("base/sns_topics.template").toString();
+            snsTopicsUrl = new TemplateUrlMaker().makeUrl("base/messaging.template").toString();
             iamTemplateUrl = new TemplateUrlMaker().makeUrl("base/iam.template").toString();
             deployerLambdaTemplateUrl = new TemplateUrlMaker().makeUrl("base/deployer_lambda.template").toString();
             networkTemplateUrl = new TemplateUrlMaker().makeUrl("base/network.template").toString();
@@ -51,7 +51,7 @@ class MakeBaseInfrastructureParameterMaker {
         final Parameter tvaritArtifactBucketS3BucketParam = new Parameter().withParameterKey("TvaritArtifactBucketTemplateUrl").withParameterValue(tvaritArtifactBucketTemplateUrl);
         final Parameter deployerLambdaFunctionCodeS3BucketParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3BucketParam").withParameterValue(TVARIT_BUCKET_NAME);
         final Parameter deployerLambdaFunctionCodeS3KeyParam = new Parameter().withParameterKey("DeployerLambdaFunctionCodeS3KeyParam").withParameterValue(allDeployerLambdaFunctionCodeS3Key);
-        final Parameter snsTopicsUrlParam = new Parameter().withParameterKey("SnsTopicsTemplateUrl").withParameterValue(snsTopicsUrl);
+        final Parameter snsTopicsUrlParam = new Parameter().withParameterKey("MessagingTemplateUrl").withParameterValue(snsTopicsUrl);
         final ArrayList<Parameter> listOfParms = new ArrayList<>();
         listOfParms.add(bucketNameParm);
         listOfParms.add(projectNameParm);

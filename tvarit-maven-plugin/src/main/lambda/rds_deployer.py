@@ -9,6 +9,7 @@ import util
 
 cfn_client = boto3.client("cloudformation")
 rds_client = boto3.client("rds")
+sqs_client = boto3.client("sqs")
 
 
 def deploy(event, context):
@@ -19,31 +20,25 @@ def deploy(event, context):
         deployable_bucket_name,
         deployable_key_name
     )
-    print(json.dumps(app_metadata, indent=4, sort_keys=True, default=lambda x: str(x)))
     rds_version = app_metadata['Metadata']['db-version']
     db_name = app_metadata['Metadata']['db-name']
     db_username = app_metadata['Metadata']['db-username']
     db_password = app_metadata['Metadata']['db-password']
-    print("rds version is: " + str(rds_version))
     all_db_instances = rds_client.describe_db_instances()
-    print(json.dumps(all_db_instances, indent=4, sort_keys=True, default=lambda x: str(x)))
     found_db = False
     if len(all_db_instances['DBInstances']) > 0:
-        print("inside for - found at least one db instance")
         for each_db_instance in all_db_instances['DBInstances']:
-            print("inside if - iterating over dbs")
             all_tags = each_db_instance['Tags'] if "Tags" in each_db_instance else {}
-            print(json.dumps(all_tags, indent=4, sort_keys=True, default=lambda x: str(x)))
             if "tvarit_version" in all_tags and all_tags['tvarit_version'] == rds_version:
-                print("found the version tag and it was same as rds version " + rds_version)
-                # version found... no need to create new - just send sns notification to kick off app deploy
-                found_db = True
+                found_db = each_db_instance["Endpoint"]
             else:
-                # first find template, create new rds and send notification via cloudformation
-                print("db not found!")
                 found_db = False
 
+    sns_resources = util.make_base_output_map_from_cfn("SnsTopics")
+    deploy_complete_topic = sns_resources["RdsDeployedSnsTopicOutput"]
+    rds_already_deployed_sqs_q = sns_resources["RdsAlreadyDeployedSqsTopicOutput"]
     if not found_db:
+        print("db not found!")
         rds_template = util.make_cfn_url("app/rds.template")
         group_id = app_metadata['Metadata']["group-id"]
         artifact_id = app_metadata['Metadata']["artifact-id"]
@@ -65,8 +60,6 @@ def deploy(event, context):
         ]
         print("printing rds_stack_parameters")
         print(json.dumps(rds_stack_parameters, indent=4, sort_keys=True, default=lambda x: str(x)))
-        sns_resources = util.make_base_output_map_from_cfn("SnsTopics")
-        deploy_complete_topic = sns_resources["ProvisioningAutomationSnsTopic"]
 
         stack_name = ("rds" + group_id + "-" + artifact_id + "-" + version).replace(".", "-")
         cfn_client.create_stack(
@@ -77,7 +70,8 @@ def deploy(event, context):
             Tags=[{"Key": "app_file_object", "Value": deployable_bucket_name + "::" + deployable_key_name}]
         )
     else:
-        print("found db of same version, so nothing to do.")
+        print("found the version tag and it was same as rds version " + rds_version)
+        sqs_client.send_message(QueueUrl=rds_already_deployed_sqs_q, MessageBody=json.dumps(found_db))
 
 
 if __name__ == "__main__":

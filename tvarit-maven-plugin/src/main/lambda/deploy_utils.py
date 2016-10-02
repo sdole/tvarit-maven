@@ -16,59 +16,46 @@ asg_client = boto3.client('autoscaling')
 ec2 = boto3.client('ec2')
 
 
-def find_template():
-    print("in find template")
+# def do_instances_exist(app_instance_tag):
+#     instances = ec2.describe_instances(Filters=[{'Name': 'tag-key', 'Values': [app_instance_tag]}])
+#     return len(instances['Reservations'][0]['Instances']) > 0
 
 
-def modify_template():
-    print("in modify template")
+# def do_router_exists():
+#     tags = asg_client.describe_tags(Filters=[
+#         {
+#             "Name": "key",
+#             "Values": ["tvarit:purpose"]
+#         },
+#         {
+#             "Name": "value",
+#             "Values": ["router"]
+#         }
+#     ])
+#
+#     instances = ec2.describe_instances(Filters=[{'Name': 'tag:key', 'Values': ["tvarit:purpose=router"]}])
+#     print(json.dumps(instances))
+#
+#     return len(instances['Reservations']) > 0 and len(instances['Reservations'][0]['Instances']) > 0
 
 
-def execute_stack():
-    print("in execute stack")
-
-
-def do_instances_exist(app_instance_tag):
-    instances = ec2.describe_instances(Filters=[{'Name': 'tag-key', 'Values': [app_instance_tag]}])
-    return len(instances['Reservations'][0]['Instances']) > 0
-
-
-def do_router_exists():
-    tags = asg_client.describe_tags(Filters=[
-        {
-            "Name": "key",
-            "Values": ["tvarit:purpose"]
-        },
-        {
-            "Name": "value",
-            "Values": ["router"]
-        }
-    ])
-
-    instances = ec2.describe_instances(Filters=[{'Name': 'tag:key', 'Values': ["tvarit:purpose=router"]}])
-    print(json.dumps(instances))
-
-    return len(instances['Reservations']) > 0 and len(instances['Reservations'][0]['Instances']) > 0
-
-
-def ensure_router_auto_scaling_group_has_instances():
-    tags = asg_client.describe_tags(Filters=[
-        {
-            "Name": "key",
-            "Values": ["tvarit:purpose"]
-        },
-        {
-            "Name": "value",
-            "Values": ["router"]
-        }
-    ])
-
-    router_asg_name = tags['Tags'][0]['ResourceId']
-
-    auto_scaling_groups = asg_client.describe_auto_scaling_groups(AutoScalingGroupNames=[router_asg_name])
-    if auto_scaling_groups['AutoScalingGroups'][0]['MaxSize'] == 0:
-        # asg_client.update_auto_scaling_group(AutoScalingGroupName=router_asg_name, MinSize=2, MaxSize=6)
-        print("not starting router")
+# def ensure_router_auto_scaling_group_has_instances():
+#     tags = asg_client.describe_tags(Filters=[
+#         {
+#             "Name": "key",
+#             "Values": ["tvarit:purpose"]
+#         },
+#         {
+#             "Name": "value",
+#             "Values": ["router"]
+#         }
+#     ])
+#
+#     router_asg_name = tags['Tags'][0]['ResourceId']
+#
+#     auto_scaling_groups = asg_client.describe_auto_scaling_groups(AutoScalingGroupNames=[router_asg_name])
+#     if auto_scaling_groups['AutoScalingGroups'][0]['MaxSize'] == 0:
+#         asg_client.update_auto_scaling_group(AutoScalingGroupName=router_asg_name, MinSize=2, MaxSize=6)
 
 
 def create_app_auto_scaling_group(war_file_info, rds_stack_name):
@@ -139,56 +126,24 @@ def modify_router_rules():
     print("do router")
 
 
-def deploy(event, context):
-    '''
 
-        1. Find if router already exists
-            2.a. if router doees not exist,
-                2.a.i create router.
-        3. find if instance for app/version already exists.
-            3.a. if version already exists,
-                3.a.i.  read appsec file if it exists and start all dependencies recursively if they have not
-                already been started - this step may need some architecture around sqs and more lambda functions.
-                3.a.ii  find its template on S3,
-                3.a.ii  modify it, create change set and execute
-            3.b. if version does not exist,
-                3.b.i.  read appsec file if it exists and start all dependencies recursively if they have not
-                already been started - this step may need some architecture around sqs and more lambda functions.
-                3.b.ii. find template, create stack
-                3.b.iii. add this new version to version rules
-    '''
-    print("Starting deploy process")
-    print("Event is: " + json.dumps(event))
-    message_parts = event['Records'][0]['Sns']['Message'].split("\n")
-    create_complete = False
-    for each_part in message_parts:
-        each_part_split = each_part.split("=")
-        if each_part_split[0] == "ResourceStatus" and each_part_split[1] == "'CREATE_COMPLETE'":
-            create_complete = True
-            break
-    if not create_complete:
-        return
-    for each_part in message_parts:
-        each_part_split = each_part.split("=")
-        if each_part_split[0] == "StackName":
-            rds_stack_name = each_part_split[1][1:-1]
 
+def do_deploy(rds_stack_name):
     rds_stack = cfn_client.describe_stacks(StackName=rds_stack_name)
-    # tags_on_rds_stack = rds_stack['Stacks'][0]['Tags']
-    # map_of_tags_on_rds_stack = util.make_map_from_list("Key", "Value", tags_on_rds_stack)
-    # app_file_object_parm = map_of_tags_on_rds_stack['app_file_object']
-    # bucket_name = app_file_object_parm.split("::")[0]
-    # key_of_deployable = app_file_object_parm.split("::")[1]
-    bucket_name = "tvarit-tvarit-tomcat-plugin-test"
-    key_of_deployable = "deployables/tvarit/tomcat-plugin-test/1.0.1-SNAPSHOT/tomcat-plugin-test-1.0.1-SNAPSHOT.war"
+    tags_on_rds_stack = rds_stack['Stacks'][0]['Tags']
+    map_of_tags_on_rds_stack = util.make_map_from_list("Key", "Value", tags_on_rds_stack)
+    app_file_object_parm = map_of_tags_on_rds_stack['app_file_object']
+    bucket_name = app_file_object_parm.split("::")[0]
+    key_of_deployable = app_file_object_parm.split("::")[1]
+    # bucket_name = "tvarit-tvarit-tomcat-plugin-test"
+    # key_of_deployable = "deployables/tvarit/tomcat-plugin-test/1.0.1-SNAPSHOT/tomcat-plugin-test-1.0.1-SNAPSHOT.war"
     # util.get_app_metadata(bucket_name)
     # bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
     # key_of_deployable = event["Records"][0]["s3"]["object"]["key"]
     all_metadata = util.get_app_metadata(bucket_name, key_of_deployable)
     war_info_and_metadata = {"metadata": all_metadata['Metadata'], "bucket_name": bucket_name, "key": key_of_deployable}
-
-    ensure_router_auto_scaling_group_has_instances()
-
+    # ensure_router_auto_scaling_group_has_instances()
+    print("not starting router")
     deployable_name = key_of_deployable.split("/")[1]
     deployable_version = all_metadata['Metadata']['version']
     tags = asg_client.describe_tags(Filters=[
@@ -201,7 +156,6 @@ def deploy(event, context):
             "Values": [deployable_version, deployable_name]
         }
     ])
-
     if len(tags['Tags']) == 0:
         print("no asg found for " + key_of_deployable + " " + deployable_version)
         create_app_auto_scaling_group(war_info_and_metadata, rds_stack_name)
