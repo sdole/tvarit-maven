@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.tvarit</groupId>
-    <artifactId>tvarit-maven-plugin</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
+    <groupId>io.fastup</groupId>
+    <artifactId>fastup-maven-plugin</artifactId>
+    <version>0.1.2</version>
     <packaging>maven-plugin</packaging>
-    <name>tvarit-maven-plugin</name>
+    <name>fastup-maven-plugin</name>
     <url>http://maven.apache.org</url>
     <description>AWS DevOps Automation for JEE</description>
     <developers>
