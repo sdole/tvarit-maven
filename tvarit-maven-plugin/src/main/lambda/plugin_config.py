@@ -1,1 +1,1 @@
-plugin_config = {"groupId":"io.fastup","artifactId":"fastup-maven-plugin","version":"0.1.2-SNAPSHOT"}
+plugin_config = {"groupId":"io.fastup","artifactId":"fastup-maven-plugin","version":"0.1.2"}
