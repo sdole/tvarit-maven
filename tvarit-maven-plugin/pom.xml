@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.fastup</groupId>
     <artifactId>fastup-maven-plugin</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>fastup-maven-plugin</name>
     <url>http://maven.apache.org</url>
@@ -190,9 +190,9 @@
                     <version>3.4</version>
                 </plugin>
                 <plugin>
-                    <groupId>com.bazaarvoice.maven.plugins</groupId>
+                    <groupId>io.fastup</groupId>
                     <artifactId>s3-upload-maven-plugin</artifactId>
-                    <version>1.5-SNAPSHOT</version>
+                    <version>1.0.0-SNAPSHOT</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -230,7 +230,7 @@
                 <artifactId>maven-plugin-plugin</artifactId>
                 <configuration>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-                    <goalPrefix>tvarit</goalPrefix>
+                    <goalPrefix>fastup</goalPrefix>
                 </configuration>
                 <executions>
                     <execution>
