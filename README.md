@@ -1,4 +1,6 @@
 #Tvarit
+This tool is being migrated to a different repository: https://github.com/sdole/fastup
+
 [![Build Status](https://travis-ci.org/sdole/tvarit-maven.svg?branch=master)](https://travis-ci.org/sdole/tvarit-maven)
 ##About
 Tvarit is a dev ops automation maven plugin project for continuous delivery of JEE apps using Maven and AWS platforms.
